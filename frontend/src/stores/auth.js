@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
 
-import api from "../services/api";
+import api, { clearAuthStorage } from "../services/api";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
-    token: localStorage.getItem("authToken") || "",
+    token: localStorage.getItem("accessToken") || "",
+    refreshToken: localStorage.getItem("refreshToken") || "",
     user: readStoredUser(),
     loading: false,
     error: "",
@@ -14,9 +15,11 @@ export const useAuthStore = defineStore("auth", {
   },
   actions: {
     persist(payload) {
-      this.token = payload.token;
+      this.token = payload.access;
+      this.refreshToken = payload.refresh;
       this.user = payload.user;
-      localStorage.setItem("authToken", payload.token);
+      localStorage.setItem("accessToken", payload.access);
+      localStorage.setItem("refreshToken", payload.refresh);
       localStorage.setItem("authUser", JSON.stringify(payload.user));
     },
     async signup(form) {
@@ -78,9 +81,9 @@ export const useAuthStore = defineStore("auth", {
     },
     clearSession() {
       this.token = "";
+      this.refreshToken = "";
       this.user = null;
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("authUser");
+      clearAuthStorage();
     },
   },
 });
@@ -89,8 +92,7 @@ function readStoredUser() {
   try {
     return JSON.parse(localStorage.getItem("authUser") || "null");
   } catch {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("authUser");
+    clearAuthStorage();
     return null;
   }
 }

@@ -38,6 +38,9 @@
       </div>
       <div class="equipment-grid">
         <RouterLink v-for="item in filtered" :key="item.id" class="equipment-card" :to="`/equipment/${item.id}`">
+          <div class="equipment-thumb" :style="imageBackground(item.image_url)">
+            <span>{{ item.type }}</span>
+          </div>
           <span>{{ item.type }}</span>
           <strong>{{ item.name }}</strong>
           <p>{{ item.fit }}</p>
@@ -88,6 +91,13 @@ const filtered = computed(() => {
     return matchesType && matchesKeyword;
   });
 });
+
+function imageBackground(url) {
+  if (!url) return {};
+  return {
+    backgroundImage: `linear-gradient(180deg, rgba(248, 250, 252, 0.05), rgba(15, 23, 42, 0.52)), url("${url}")`,
+  };
+}
 
 function runAiRecommendation() {
   const prompt = aiPrompt.value.trim();

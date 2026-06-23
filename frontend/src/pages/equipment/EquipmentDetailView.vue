@@ -3,7 +3,7 @@
     <RouterLink class="back-link" to="/equipment">목록으로 돌아가기</RouterLink>
 
     <header class="detail-header">
-      <div class="detail-art equipment-art">
+      <div class="detail-art equipment-art" :style="imageBackground(item.image_url)">
         <span>{{ item.type }}</span>
       </div>
       <div>
@@ -67,6 +67,13 @@ import api from "../../services/api";
 const route = useRoute();
 const item = ref({});
 const price = computed(() => Number(item.value.price || 0).toLocaleString("ko-KR"));
+
+function imageBackground(url) {
+  if (!url) return {};
+  return {
+    backgroundImage: `linear-gradient(180deg, rgba(20, 30, 46, 0.08), rgba(20, 30, 46, 0.72)), url("${url}")`,
+  };
+}
 
 onMounted(async () => {
   const { data } = await api.get(`/catalog/equipment/${route.params.id}/`);

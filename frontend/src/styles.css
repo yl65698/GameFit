@@ -889,6 +889,8 @@ label {
 .game-art,
 .detail-art {
   background: linear-gradient(145deg, #23314a, #17637d 55%, #8dc6b9);
+  background-position: center;
+  background-size: cover;
   color: #fff;
   display: grid;
   align-items: end;
@@ -1005,9 +1007,44 @@ label {
   border: 1px solid #dbe3ee;
   border-radius: 8px;
   background: #f8fafc;
-  padding: 16px;
+  overflow: hidden;
   display: grid;
-  gap: 8px;
+  grid-template-rows: 130px auto auto 1fr auto;
+}
+
+.equipment-card > span,
+.equipment-card > strong,
+.equipment-card > p,
+.equipment-card > em {
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+.equipment-card > span {
+  margin-top: 16px;
+}
+
+.equipment-card > em {
+  margin-bottom: 16px;
+}
+
+.equipment-thumb {
+  background: linear-gradient(145deg, #2b3340, #596a82);
+  background-position: center;
+  background-size: cover;
+  color: #fff;
+  display: grid;
+  align-items: end;
+  padding: 12px;
+}
+
+.equipment-thumb span {
+  width: fit-content;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  padding: 7px 10px;
+  font-weight: 900;
 }
 
 .equipment-card span,
