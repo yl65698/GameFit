@@ -11,25 +11,25 @@
     <div class="welcome-media">
       <div class="media-grid">
         <div class="media-card is-large">
-          <span>구동 가능</span>
+          <span>내 PC로 구동 가능</span>
           <strong>RTX 3070 Ti</strong>
         </div>
         <div class="media-card">
-          <span>할인</span>
-          <strong>60%</strong>
+          <span>최대 할인</span>
+          <strong>75%</strong>
         </div>
         <div class="media-card">
-          <span>취향</span>
+          <span>AI 취향 분석</span>
           <strong>전략 · 협동</strong>
         </div>
       </div>
     </div>
 
     <div class="welcome-copy">
-      <p class="eyebrow">GameFit</p>
-      <h1>내 PC와 취향에 맞춰 게임 구매를 판단하세요</h1>
+      <p class="eyebrow">GameFit — AI 게임 플랫폼</p>
+      <h1>내 PC와 취향에 딱 맞는 게임을 찾아드립니다</h1>
       <p>
-        보유 게임과 PC 사양을 기준으로 구동 가능 여부, 할인 타이밍, 취향 추천을 한 번에 확인합니다.
+        PC 사양 기반 구동 가능 여부, 할인 타이밍 알림, AI 맞춤 추천까지 — 게임 구매 결정을 한 번에.
       </p>
       <div class="welcome-actions">
         <template v-if="auth.isAuthenticated">

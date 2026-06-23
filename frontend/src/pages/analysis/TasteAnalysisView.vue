@@ -184,16 +184,8 @@ const recommendedGames = computed(() => {
 });
 
 const topGenre = computed(() => genreAxes.slice().sort((a, b) => b.score - a.score)[0]);
-const selectedDetail = computed(() => selectedNode.value || playedGameNodes[0]);
-const visualNodes = computed(() =>
-  [...genreAxes, ...playedGameNodes].map((node) => ({
-    ...node,
-    screenX: 50 + node.position[0] * 12,
-    screenY: 52 - node.position[1] * 12 + node.position[2] * 4,
-    depth: Math.round((node.position[2] + 3) * 10) + (node.type === "game" ? 100 : 0),
-    size: node.type === "genre" ? 58 + node.score / 4 : 48,
-  })),
-);
+const selectedDetail = computed(() => selectedNode.value);
+const visualNodes = computed(() => []);
 const analysisSummary = computed(() => {
   return `현재 벡터 중심은 ${topGenre.value.label} 축에 가장 가깝고, 보유 게임은 전략/협동/반복 성장 쪽으로 묶여 있어요. 관심 게임까지 포함하면 액션 협동과 서사 선택형 RPG로 확장되는 흐름이 보여요.`;
 });
@@ -250,8 +242,6 @@ function initThreeMap() {
   directional.position.set(3, 5, 4);
   scene.add(directional);
 
-  createGrid();
-  createAxes();
   createNodes();
   connectNearbyGames();
 
@@ -263,57 +253,45 @@ function initThreeMap() {
   animateThreeMap();
 }
 
-function createGrid() {
-  const grid = new THREE.GridHelper(8, 8, "#9fb4c9", "#d4dfeb");
-  grid.rotation.x = Math.PI / 2;
-  grid.position.z = -2.6;
-  scene.add(grid);
-}
-
-function createAxes() {
-  const axes = [
-    { from: [-3.8, 0, 0], to: [3.8, 0, 0], color: "#17637d", label: "전략" },
-    { from: [0, -2.8, 0], to: [0, 2.8, 0], color: "#176457", label: "협동" },
-    { from: [0, 0, -2.8], to: [0, 0, 2.8], color: "#b85f36", label: "액션" },
-  ];
-
-  axes.forEach((axis) => {
-    const geometry = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(...axis.from),
-      new THREE.Vector3(...axis.to),
-    ]);
-    const material = new THREE.LineBasicMaterial({ color: axis.color, linewidth: 2 });
-    const line = new THREE.Line(geometry, material);
-    scene.add(line);
-
-    const labelPosition = axis.to.map((value) => value * 1.05);
-    scene.add(createTextSprite(axis.label, axis.color, labelPosition, 0.8));
-  });
-}
-
 function createNodes() {
   const allNodes = [...genreAxes, ...playedGameNodes];
   nodeMeshes = allNodes.map((node) => {
     const radius = node.type === "genre" ? 0.28 + node.score / 420 : 0.2;
-    const geometry = new THREE.SphereGeometry(radius, 32, 24);
+    const geometry =
+      node.type === "genre"
+        ? new THREE.SphereGeometry(radius, 32, 24)
+        : new THREE.OctahedronGeometry(radius, 1);
     const material = new THREE.MeshStandardMaterial({
       color: node.color,
-      roughness: 0.42,
-      metalness: node.type === "genre" ? 0.18 : 0.04,
+      roughness: node.type === "genre" ? 0.32 : 0.5,
+      metalness: node.type === "genre" ? 0.28 : 0.06,
       emissive: node.color,
-      emissiveIntensity: node.type === "genre" ? 0.08 : 0.03,
+      emissiveIntensity: node.type === "genre" ? 0.16 : 0.04,
     });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(...node.position);
     mesh.userData = node;
     nodeGroup.add(mesh);
 
-    const label = createTextSprite(node.label, node.color, [node.position[0], node.position[1] + radius + 0.34, node.position[2]], node.type === "genre" ? 0.72 : 0.56);
+    if (node.type === "genre") {
+      const ringGeometry = new THREE.TorusGeometry(radius * 1.35, 0.025, 10, 48);
+      const ringMaterial = new THREE.MeshBasicMaterial({ color: node.color, transparent: true, opacity: 0.8 });
+      const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+      ring.position.copy(mesh.position);
+      ring.rotation.x = Math.PI / 2;
+      nodeGroup.add(ring);
+    }
+
+    const label = createTextSprite(
+      node.label,
+      node.color,
+      [node.position[0], node.position[1] + radius + 0.34, node.position[2]],
+      node.type === "genre" ? 0.76 : 0.52,
+      { isGenre: node.type === "genre" },
+    );
     nodeGroup.add(label);
     return mesh;
   });
-
-  selectedNode.value = playedGameNodes[0];
 }
 
 function connectNearbyGames() {
@@ -339,20 +317,20 @@ function connectNearbyGames() {
   });
 }
 
-function createTextSprite(text, color, position, scale = 0.6) {
+function createTextSprite(text, color, position, scale = 0.6, options = {}) {
   const canvas = document.createElement("canvas");
   canvas.width = 256;
   canvas.height = 96;
   const context = canvas.getContext("2d");
   context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = "rgba(255,255,255,0.92)";
+  context.fillStyle = options.isGenre ? "rgba(255,255,255,0.98)" : "rgba(20,33,49,0.78)";
   roundRect(context, 12, 18, 232, 56, 16);
   context.fill();
   context.strokeStyle = color;
-  context.lineWidth = 4;
+  context.lineWidth = options.isGenre ? 5 : 3;
   context.stroke();
-  context.fillStyle = "#142131";
-  context.font = "bold 26px sans-serif";
+  context.fillStyle = options.isGenre ? color : "#ffffff";
+  context.font = options.isGenre ? "bold 28px sans-serif" : "bold 23px sans-serif";
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.fillText(text, 128, 46);
@@ -393,6 +371,10 @@ function handlePointerDown(event) {
 
 function selectVisualNode(node) {
   selectedNode.value = node;
+}
+
+function selectOverallAnalysis() {
+  selectedNode.value = null;
 }
 
 function animateThreeMap() {
@@ -483,7 +465,7 @@ function looksBroken(value = "") {
                 :key="node.id"
                 type="button"
                 class="vector3d-node"
-                :class="[`node-${node.type}`, { active: selectedDetail.id === node.id }]"
+                :class="[`node-${node.type}`, { active: selectedDetail?.id === node.id }]"
                 :style="{
                   left: `${node.screenX}%`,
                   top: `${node.screenY}%`,
@@ -507,7 +489,30 @@ function looksBroken(value = "") {
         </section>
 
         <aside class="ai-analysis-card vector-node-detail">
-          <span class="eyebrow">{{ selectedDetail.type === "genre" ? "성향 축" : "게임 노드" }}</span>
+          <template v-if="!selectedDetail">
+            <span class="eyebrow">통합 분석</span>
+            <h3>보유 / 관심 게임 기반 플레이 성향</h3>
+            <p>{{ analysisSummary }}</p>
+
+            <div class="tag-row">
+              <span v-for="tag in tasteTags" :key="tag">#{{ tag }}</span>
+            </div>
+
+            <div class="achievement-list">
+              <strong>주요 성향 분포</strong>
+              <span v-for="genre in genreAxes" :key="genre.id" :style="{ borderLeftColor: genre.color }">
+                {{ genre.label }} {{ genre.score }}%
+              </span>
+            </div>
+
+            <div class="vector-summary-box">
+              <strong>노드 상세 보기</strong>
+              <p>왼쪽 3D 맵에서 성향 노드나 게임 노드를 클릭하면 해당 노드의 분석 근거를 확인할 수 있어요.</p>
+            </div>
+          </template>
+
+          <template v-else>
+          <span class="eyebrow">{{ selectedDetail.type === "genre" ? "성향 노드" : "게임 노드" }}</span>
           <h3>{{ selectedDetail.label }}</h3>
           <p>{{ selectedDetail.summary }}</p>
 
@@ -534,11 +539,10 @@ function looksBroken(value = "") {
             <strong>{{ selectedDetail.type === "genre" ? "분석 근거" : "이 게임이 끌어당기는 성향" }}</strong>
             <span v-for="item in selectedDetail.evidence || selectedDetail.tags" :key="item">{{ item }}</span>
           </div>
-
-          <div class="vector-summary-box">
-            <strong>전체 해석</strong>
-            <p>{{ analysisSummary }}</p>
+          <div class="vector-detail-switch">
+            <button type="button" @click="selectOverallAnalysis">전체 분석으로 돌아가기</button>
           </div>
+          </template>
         </aside>
       </div>
 

@@ -2,15 +2,15 @@
   <div class="app-shell">
     <header v-if="showServiceNav" class="topbar">
       <RouterLink class="brand" to="/">
-        <span>GameFit</span>
-        <small>PC 사양 기반 게임 판단</small>
+        <span>Game<span class="brand-accent">Fit</span></span>
+        <small>AI 기반 게임 가격 비교 · 추천</small>
       </RouterLink>
       <nav class="topnav">
         <RouterLink to="/profile">프로필</RouterLink>
-        <RouterLink to="/taste">게임성향분석</RouterLink>
-        <RouterLink to="/games">게임탐색</RouterLink>
+        <RouterLink to="/taste">성향 분석</RouterLink>
+        <RouterLink to="/games">게임 탐색</RouterLink>
         <RouterLink to="/equipment">장비 탐색</RouterLink>
-        <RouterLink to="/calendar">할인 켈린더</RouterLink>
+        <RouterLink to="/calendar">할인 캘린더</RouterLink>
       </nav>
       <button class="icon-text-button" @click="handleLogout">로그아웃</button>
     </header>

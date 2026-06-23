@@ -1,5 +1,8 @@
 asgiref==3.11.1
 Django==5.2.14
 djangorestframework==3.17.1
+fastapi==0.138.0
+pydantic==2.13.4
 sqlparse==0.5.5
 tzdata==2026.2
+uvicorn==0.49.0
