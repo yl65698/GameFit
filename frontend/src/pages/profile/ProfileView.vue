@@ -19,8 +19,14 @@
           <strong>{{ profile.nickname || "플레이어" }}</strong>
           <p class="taste-summary">{{ tasteKeywords }}</p>
           <div class="stat-row">
-            <span>follow 1</span>
-            <span>follower 10K</span>
+            <button @click="openSocialModal('following')">
+              <strong>{{ followingUsers.length }}</strong>
+              <span>팔로잉</span>
+            </button>
+            <button @click="openSocialModal('followers')">
+              <strong>{{ followerUsers.length.toLocaleString("ko-KR") }}</strong>
+              <span>팔로워</span>
+            </button>
           </div>
           <RouterLink class="text-link taste-link" to="/taste">게임 성향 더보기</RouterLink>
         </div>
@@ -83,6 +89,20 @@
         </RouterLink>
       </div>
     </section>
+
+    <div v-if="socialModal" class="modal-backdrop" @click.self="socialModal = ''">
+      <section class="social-modal">
+        <button class="modal-close" @click="socialModal = ''">닫기</button>
+        <p class="eyebrow">내 프로필</p>
+        <h2>{{ socialModal === "followers" ? "팔로워" : "팔로잉" }}</h2>
+        <div class="social-list">
+          <RouterLink v-for="name in visibleSocialUsers" :key="name" :to="`/players/${name}`" @click="socialModal = ''">
+            <span class="avatar avatar--small">{{ name.slice(0, 1).toUpperCase() }}</span>
+            <strong>{{ name }}</strong>
+          </RouterLink>
+        </div>
+      </section>
+    </div>
   </section>
 </template>
 
@@ -94,6 +114,7 @@ import { useAuthStore } from "../../stores/auth";
 const auth = useAuthStore();
 const ownedView = ref("card");
 const interestView = ref("card");
+const socialModal = ref("");
 const platforms = [
   { label: "Steam", value: "Steam" },
   { label: "Epic games", value: "Epic games" },
@@ -113,6 +134,21 @@ const filteredOwnedGames = computed(() =>
   ownedGames.value.filter((game) => selectedPlatforms.value.includes(gamePlatform(game))),
 );
 const interestedGames = computed(() => profile.value.interested_games || []);
+const followedPlayers = computed(() => {
+  try {
+    return JSON.parse(localStorage.getItem("followedPlayers") || "[]");
+  } catch {
+    return [];
+  }
+});
+const followerUsers = computed(() => ["strategy_admin", "sale_watcher", "coop_player", "party_maker"]);
+const followingUsers = computed(() => {
+  const saved = followedPlayers.value;
+  return saved.length ? saved : ["strategy_admin"];
+});
+const visibleSocialUsers = computed(() =>
+  socialModal.value === "followers" ? followerUsers.value : followingUsers.value,
+);
 
 const platformByGame = {
   "Civilization VI": "Steam",
@@ -161,5 +197,9 @@ function gameDetailPath(game) {
 function interestAlertLabel(game) {
   const alerts = profile.value.interest_alerts || {};
   return alerts[game] ?? true ? "할인 알림 켜짐" : "할인 알림 꺼짐";
+}
+
+function openSocialModal(type) {
+  socialModal.value = type;
 }
 </script>

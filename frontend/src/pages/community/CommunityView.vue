@@ -105,16 +105,33 @@
       <aside class="panel group-panel">
         <section class="community-group-section">
           <h2>내가 참여중인 그룹</h2>
-          <button v-for="group in myGroups" :key="group.id" class="group-card group-card-button joined" @click="openGroup(group)">
-            <strong>{{ group.name }}</strong>
-            <span>{{ group.members }}/{{ group.capacity }}명</span>
-            <small>{{ group.schedule }}</small>
-          </button>
+          <article v-for="group in myGroups" :key="group.id" class="group-card group-card-button joined" @click="openGroup(group)">
+            <button class="group-card-main" @click="openGroup(group)">
+              <strong>{{ group.name }}</strong>
+              <span>{{ group.members }}/{{ group.capacity }}명</span>
+              <small>{{ group.schedule }}</small>
+            </button>
+            <button class="secondary-button group-leave-button" @click.stop="leaveGroup(group.id)">그룹 나가기</button>
+          </article>
           <p v-if="myGroups.length === 0" class="subtle">아직 참여중인 그룹이 없습니다.</p>
         </section>
 
         <section class="community-group-section">
-          <h2>그룹 탐색</h2>
+          <div class="group-section-heading">
+            <h2>그룹 탐색</h2>
+            <button class="secondary-button" @click="showGroupCreator = !showGroupCreator">
+              {{ showGroupCreator ? "닫기" : "그룹 만들기" }}
+            </button>
+          </div>
+          <form v-if="showGroupCreator" class="group-create-form" @submit.prevent="createGroup">
+            <input v-model="groupDraft.name" placeholder="그룹 이름" />
+            <input v-model="groupDraft.schedule" placeholder="일정 예: 토 20:00" />
+            <input v-model="groupDraft.style" placeholder="플레이 스타일" />
+            <input v-model="groupDraft.role" placeholder="필요 역할" />
+            <input v-model.number="groupDraft.capacity" type="number" min="2" max="12" placeholder="최대 인원" />
+            <textarea v-model="groupDraft.description" placeholder="그룹 설명" />
+            <button class="primary-button">그룹 생성</button>
+          </form>
           <div class="group-search-row">
             <input v-model="groupQuery" placeholder="그룹 검색" />
             <button class="secondary-button">검색</button>
@@ -153,8 +170,15 @@
             <dt>필요 역할</dt>
             <dd>{{ selectedGroup.role }}</dd>
           </div>
+          <div>
+            <dt>현재 구성원</dt>
+            <dd>
+              <span v-for="member in selectedGroup.memberNames" :key="member" class="group-member-chip">{{ member }}</span>
+            </dd>
+          </div>
         </dl>
-        <button class="primary-button">그룹 참여 신청</button>
+        <button v-if="!selectedGroup.joined" class="primary-button" @click="joinGroup(selectedGroup.id)">그룹 참여</button>
+        <button v-else class="secondary-button" @click="leaveGroup(selectedGroup.id)">그룹 나가기</button>
       </section>
     </div>
   </section>
@@ -176,10 +200,19 @@ const selectedPostId = ref(null);
 const selectedGroup = ref(null);
 const groupQuery = ref("");
 const commentText = ref("");
+const showGroupCreator = ref(false);
 const draft = reactive({
   category: "질문",
   title: "",
   body: "",
+});
+const groupDraft = reactive({
+  name: "",
+  schedule: "",
+  style: "",
+  role: "",
+  capacity: 4,
+  description: "",
 });
 
 const gameTitles = {
@@ -196,17 +229,18 @@ const visiblePosts = computed(() => {
   }
   return sorted.sort((a, b) => b.id - a.id);
 });
-const gameGroups = computed(() => groups.filter((group) => group.gameId === Number(route.params.id)));
+const gameGroups = computed(() => groups.value.filter((group) => group.gameId === Number(route.params.id)));
 const myGroups = computed(() => gameGroups.value.filter((group) => group.joined));
 const filteredGroups = computed(() => {
   const query = groupQuery.value.trim().toLowerCase();
-  if (!query) return groups;
-  return groups.filter((group) =>
+  const availableGroups = gameGroups.value.filter((group) => !group.joined);
+  if (!query) return availableGroups;
+  return availableGroups.filter((group) =>
     [group.name, group.style, group.schedule, group.role].some((value) => value.toLowerCase().includes(query)),
   );
 });
 
-const groups = [
+const groups = ref([
   {
     id: 1,
     gameId: 1,
@@ -218,6 +252,7 @@ const groups = [
     style: "느긋한 전략 플레이",
     role: "외교 담당 1명",
     description: "초보도 참여 가능한 장기 전략 그룹입니다. 한 판을 여러 번 나눠서 진행합니다.",
+    memberNames: ["admin", "strategy_admin", "turn_master"],
   },
   {
     id: 2,
@@ -230,6 +265,7 @@ const groups = [
     style: "공격적인 진행",
     role: "초반 러시 가능 유저",
     description: "짧은 시간 안에 승부를 보는 정복전 위주 그룹입니다.",
+    memberNames: ["rush_leader", "early_push"],
   },
   {
     id: 3,
@@ -242,6 +278,7 @@ const groups = [
     style: "스토리 몰입",
     role: "파트너 1명",
     description: "처음부터 엔딩까지 같이 진행할 협동 플레이어를 찾습니다.",
+    memberNames: ["admin"],
   },
   {
     id: 4,
@@ -254,8 +291,9 @@ const groups = [
     style: "공략 공유",
     role: "빌드 추천 가능 유저",
     description: "무기 조합과 보스 패턴을 공유하는 공략 중심 그룹입니다.",
+    memberNames: ["build_note", "boss_reader", "dash_main", "nyx_route", "weapon_lab", "mirror_pick"],
   },
-];
+]);
 
 onMounted(async () => {
   const { data } = await api.get(`/catalog/games/${route.params.id}/community/`);
@@ -335,5 +373,61 @@ function submitComment() {
 
 function openGroup(group) {
   selectedGroup.value = group;
+}
+
+function currentMemberName() {
+  return auth.user?.nickname || auth.user?.username || "admin";
+}
+
+function joinGroup(groupId) {
+  const group = groups.value.find((item) => item.id === groupId);
+  if (!group || group.joined || group.members >= group.capacity) return;
+  const memberName = currentMemberName();
+  group.joined = true;
+  if (!group.memberNames.includes(memberName)) {
+    group.memberNames = [...group.memberNames, memberName];
+  }
+  group.members = group.memberNames.length;
+  selectedGroup.value = null;
+}
+
+function leaveGroup(groupId) {
+  const group = groups.value.find((item) => item.id === groupId);
+  if (!group) return;
+  group.joined = false;
+  group.memberNames = group.memberNames.filter((member) => member !== currentMemberName());
+  group.members = Math.max(0, group.memberNames.length || group.members - 1);
+  if (group.members === 0) {
+    groups.value = groups.value.filter((item) => item.id !== groupId);
+  }
+  if (selectedGroup.value?.id === groupId) {
+    selectedGroup.value = null;
+  }
+}
+
+function createGroup() {
+  const name = groupDraft.name.trim();
+  if (!name) return;
+  const memberName = currentMemberName();
+  groups.value.unshift({
+    id: Date.now(),
+    gameId: Number(route.params.id),
+    name,
+    members: 1,
+    capacity: Number(groupDraft.capacity) || 4,
+    joined: true,
+    schedule: groupDraft.schedule.trim() || "일정 협의",
+    style: groupDraft.style.trim() || "자유 플레이",
+    role: groupDraft.role.trim() || "함께할 플레이어",
+    description: groupDraft.description.trim() || "새로 만들어진 게임 그룹입니다.",
+    memberNames: [memberName],
+  });
+  groupDraft.name = "";
+  groupDraft.schedule = "";
+  groupDraft.style = "";
+  groupDraft.role = "";
+  groupDraft.capacity = 4;
+  groupDraft.description = "";
+  showGroupCreator.value = false;
 }
 </script>

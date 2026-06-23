@@ -10,14 +10,14 @@
 
     <section class="panel equipment-search-panel">
       <div class="search-mode-tabs equipment-type-tabs">
-        <button v-for="type in searchTypes" :key="type.value" :class="{ active: selectedType === type.value }" @click="selectedType = type.value">
+        <button v-for="type in searchTypes" :key="type.value" :class="{ active: selectedType === type.value }" @click="chooseType(type.value)">
           {{ type.label }}
         </button>
       </div>
 
       <div class="equipment-search-row">
-        <input v-model="query" placeholder="장비명, 용도, 게임명으로 검색" />
-        <button class="secondary-button" @click="query = ''">초기화</button>
+        <input v-model="query" placeholder="장비명, 용도, 게임명으로 검색" @input="clearAiResults" />
+        <button class="secondary-button" @click="resetSearch">초기화</button>
       </div>
 
       <form class="ai-equipment-search" @submit.prevent="runAiRecommendation">
@@ -25,10 +25,13 @@
           LLM 장비 추천
           <textarea v-model="aiPrompt" placeholder="예: QHD에서 전략 게임이랑 협동 게임을 쾌적하게 하고 싶은데 GPU를 추천해줘" />
         </label>
-        <button class="primary-button">추천 받기</button>
+        <button class="primary-button" :disabled="aiLoading">
+          {{ aiLoading ? "추천 중..." : "추천 받기" }}
+        </button>
       </form>
 
       <p v-if="aiSummary" class="ai-summary">{{ aiSummary }}</p>
+      <p v-if="aiError" class="error-text">{{ aiError }}</p>
     </section>
 
     <section class="panel">
@@ -51,12 +54,16 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 
+import aiApi from "../../services/aiApi";
 import api from "../../services/api";
 
 const query = ref("");
 const selectedType = ref("all");
 const aiPrompt = ref("");
 const aiSummary = ref("");
+const aiError = ref("");
+const aiLoading = ref(false);
+const aiResults = ref([]);
 const equipment = ref([]);
 const extraEquipment = [
   { id: 101, name: "Logitech G Pro X Superlight", type: "주변장치", price: 169000, fit: "FPS와 빠른 클릭 중심 플레이용 경량 마우스" },
@@ -79,6 +86,7 @@ onMounted(async () => {
 
 const activeTitle = computed(() => searchTypes.find((type) => type.value === selectedType.value)?.label || "통합");
 const filtered = computed(() => {
+  if (aiResults.value.length) return aiResults.value;
   const keyword = query.value.trim().toLowerCase();
   return equipment.value.filter((item) => {
     const matchesType = selectedType.value === "all" || item.type === selectedType.value;
@@ -89,34 +97,43 @@ const filtered = computed(() => {
   });
 });
 
-function runAiRecommendation() {
+async function runAiRecommendation() {
   const prompt = aiPrompt.value.trim();
   if (!prompt) return;
-  const lower = prompt.toLowerCase();
+  aiError.value = "";
+  aiSummary.value = "";
+  aiLoading.value = true;
 
-  if (lower.includes("vr")) {
-    selectedType.value = "VR";
-    query.value = "quest";
-    aiSummary.value = "VR 플레이가 목적이면 Meta Quest 3부터 확인하는 걸 추천해요.";
-    return;
+  try {
+    const { data } = await aiApi.post("/ai/equipment-search", {
+      query: prompt,
+      equipment: equipment.value,
+    });
+    aiResults.value = data.results;
+    aiSummary.value = data.summary;
+    selectedType.value = "all";
+    query.value = "";
+  } catch (error) {
+    aiError.value = "AI 장비 추천 서버에 연결할 수 없습니다. FastAPI 서버가 실행 중인지 확인해주세요.";
+  } finally {
+    aiLoading.value = false;
   }
+}
 
-  if (lower.includes("qhd") || lower.includes("gpu") || prompt.includes("그래픽")) {
-    selectedType.value = "GPU";
-    query.value = "4070";
-    aiSummary.value = "QHD 기준이면 RTX 4070 SUPER급 GPU가 가장 먼저 볼 후보예요.";
-    return;
-  }
+function chooseType(type) {
+  selectedType.value = type;
+  clearAiResults();
+}
 
-  if (lower.includes("cpu") || prompt.includes("전략") || prompt.includes("시뮬")) {
-    selectedType.value = "CPU";
-    query.value = "7800";
-    aiSummary.value = "전략/시뮬레이션 게임은 Ryzen 7 7800X3D 같은 CPU 업그레이드가 체감이 커요.";
-    return;
-  }
-
-  selectedType.value = "all";
+function resetSearch() {
   query.value = "";
-  aiSummary.value = "조건이 넓어서 CPU, GPU, 저장장치 후보를 함께 비교해보는 걸 추천해요.";
+  aiPrompt.value = "";
+  aiSummary.value = "";
+  aiError.value = "";
+  clearAiResults();
+}
+
+function clearAiResults() {
+  aiResults.value = [];
 }
 </script>

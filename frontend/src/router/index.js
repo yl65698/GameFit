@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import TasteAnalysisView from "../pages/analysis/TasteAnalysisView.vue";
+import TasteMiniGameView from "../pages/analysis/TasteMiniGameView.vue";
 import CalendarView from "../pages/calendar/CalendarView.vue";
 import CommunityView from "../pages/community/CommunityView.vue";
 import EquipmentDetailView from "../pages/equipment/EquipmentDetailView.vue";
@@ -24,6 +25,7 @@ const routes = [
   { path: "/equipment", name: "equipment", component: EquipmentExploreView, meta: { requiresAuth: true } },
   { path: "/equipment/:id", name: "equipment-detail", component: EquipmentDetailView, meta: { requiresAuth: true } },
   { path: "/taste", name: "taste", component: TasteAnalysisView, meta: { requiresAuth: true } },
+  { path: "/taste/minigame", name: "taste-minigame", component: TasteMiniGameView, meta: { requiresAuth: true } },
   { path: "/calendar", name: "calendar", component: CalendarView, meta: { requiresAuth: true } },
 ];
 

@@ -66,11 +66,12 @@
           <section class="detail-panel">
             <h2>가격 비교</h2>
             <div class="price-market-list">
-              <a v-for="market in priceMarkets" :key="market.platform" :href="market.url" target="_blank" rel="noreferrer">
+              <article v-for="market in priceMarkets" :key="market.platform">
                 <strong>{{ market.platform }}</strong>
                 <span>{{ market.price.toLocaleString("ko-KR") }}원</span>
                 <em>{{ market.discount }}%</em>
-              </a>
+                <a class="price-link-button" :href="market.url" target="_blank" rel="noreferrer">이동</a>
+              </article>
             </div>
           </section>
 
@@ -303,7 +304,7 @@ const priceMarkets = computed(() => {
       discount: Math.max(0, Number(game.value.discount || 0) - 5),
       url: "https://store.ubisoft.com/kr/home",
     },
-  ];
+  ].sort((a, b) => a.price - b.price);
 });
 const timingHeadline = computed(() => {
   if ((game.value.discount || 0) >= 50) return "지금 구매 추천";

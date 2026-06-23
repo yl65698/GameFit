@@ -10,7 +10,6 @@
           <button :class="{ active: viewMode === 'schedule' }" @click="viewMode = 'schedule'">일정버전으로 보기</button>
           <button :class="{ active: viewMode === 'calendar' }" @click="viewMode = 'calendar'">캘린더로 보기</button>
         </div>
-        <button class="secondary-button">알림 설정</button>
       </div>
     </header>
 
@@ -39,7 +38,11 @@
 
     <section v-else class="panel month-calendar">
       <div class="month-header">
-        <h2>2026년 6월</h2>
+        <div class="month-nav">
+          <button class="secondary-button" @click="moveMonth(-1)">이전 달</button>
+          <h2>{{ currentYear }}년 {{ currentMonth }}월</h2>
+          <button class="secondary-button" @click="moveMonth(1)">다음 달</button>
+        </div>
         <div class="calendar-legend">
           <span class="event-sale">할인</span>
           <span class="event-game">게임</span>
@@ -48,8 +51,8 @@
       </div>
       <div class="calendar-grid">
         <strong v-for="day in weekDays" :key="day">{{ day }}</strong>
-        <div v-for="blank in 3" :key="`blank-${blank}`" class="calendar-cell muted-cell"></div>
-        <div v-for="day in 30" :key="day" class="calendar-cell">
+        <div v-for="blank in leadingBlanks" :key="`blank-${blank}`" class="calendar-cell muted-cell"></div>
+        <div v-for="day in daysInMonth" :key="day" class="calendar-cell">
           <span>{{ day }}</span>
           <p v-for="event in eventsByDay(day)" :key="event.title" :class="`event-${event.type}`">
             <strong>{{ eventLabel(event.type) }}</strong>
@@ -70,6 +73,8 @@ const events = ref([]);
 const viewMode = ref("schedule");
 const activeFilter = ref("all");
 const gameQuery = ref("");
+const currentYear = ref(2026);
+const currentMonth = ref(6);
 const weekDays = ["월", "화", "수", "목", "금", "토", "일"];
 const filters = [
   { label: "전체", value: "all" },
@@ -107,12 +112,26 @@ const filteredEvents = computed(() => {
     return matchesType && matchesKeyword;
   });
 });
+const daysInMonth = computed(() => new Date(currentYear.value, currentMonth.value, 0).getDate());
+const leadingBlanks = computed(() => {
+  const day = new Date(currentYear.value, currentMonth.value - 1, 1).getDay();
+  return day === 0 ? 6 : day - 1;
+});
 
 function eventLabel(type) {
   return { sale: "할인", game: "게임", release: "출시" }[type] || type;
 }
 
 function eventsByDay(day) {
-  return filteredEvents.value.filter((event) => Number(event.date.split("-")[2]) === day);
+  return filteredEvents.value.filter((event) => {
+    const [year, month, date] = event.date.split("-").map(Number);
+    return year === currentYear.value && month === currentMonth.value && date === day;
+  });
+}
+
+function moveMonth(delta) {
+  const next = new Date(currentYear.value, currentMonth.value - 1 + delta, 1);
+  currentYear.value = next.getFullYear();
+  currentMonth.value = next.getMonth() + 1;
 }
 </script>
