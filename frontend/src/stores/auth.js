@@ -70,6 +70,26 @@ export const useAuthStore = defineStore("auth", {
       localStorage.setItem("authUser", JSON.stringify(data));
       return data;
     },
+    async uploadProfileImage(file) {
+      const formData = new FormData();
+      formData.append("profile_image", file);
+      const { data } = await api.patch("/accounts/profile/", formData);
+      this.user = data;
+      localStorage.setItem("authUser", JSON.stringify(data));
+      return data;
+    },
+    async followUser(userId) {
+      const { data } = await api.post(`/accounts/users/${userId}/follow/`);
+      return data;
+    },
+    async fetchUserByUsername(username) {
+      const { data } = await api.get(`/accounts/users/by-username/${username}/`);
+      return data;
+    },
+    async searchUsers(query) {
+      const { data } = await api.get("/accounts/users/search/", { params: { q: query } });
+      return data;
+    },
     async logout() {
       try {
         if (this.token) {

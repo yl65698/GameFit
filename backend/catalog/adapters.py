@@ -79,6 +79,7 @@ def game_to_catalog(game, request=None):
         "min_cpu": game.min_cpu,
         "min_gpu": game.min_gpu,
         "min_ram": game.min_ram,
+        "min_storage": game.min_storage,
         "rec_cpu": game.rec_cpu,
         "rec_gpu": game.rec_gpu,
         "rec_ram": game.rec_ram,

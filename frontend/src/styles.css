@@ -2864,6 +2864,22 @@ label {
   margin-bottom: 6px;
 }
 
+.review-delete-btn {
+  margin-left: auto;
+  background: none;
+  border: 1px solid #e0c0c0;
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-size: 0.78rem;
+  color: #c0392b;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.review-delete-btn:hover {
+  background: #fdf0ef;
+}
+
 .review-meta a {
   font-weight: 800;
   color: #1c2430;
@@ -3402,32 +3418,24 @@ select {
 }
 
 .storage-spec-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 22px;
-  gap: 10px;
+  display: flex;
   align-items: center;
+  gap: 12px;
   margin-top: 12px;
   border-bottom: 1px solid #edf1f6;
   padding-bottom: 10px;
 }
 
-.storage-spec-row div {
-  display: grid;
-  gap: 2px;
-}
-
 .storage-spec-row strong {
-  color: #050505;
-  font-size: 16px;
-}
-
-.storage-spec-row span:not(.spec-badge) {
-  color: #1c2430;
-}
-
-.storage-spec-row small {
   color: #68778d;
-  font-size: 12px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.storage-spec-row span {
+  color: #1c2430;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .storage-meter span {
@@ -5159,4 +5167,31 @@ select {
   padding: 10px 14px;
   border-radius: 0 8px 8px 0;
   line-height: 1.6;
+}
+
+/* ── 해시태그 칩 공통 ── */
+.hashtag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.hashtag-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(23, 99, 125, 0.1);
+  color: var(--clr-primary, #17637d);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.header-hashtags {
+  margin-top: 0.35rem;
+}
+
+.card-hashtags {
+  margin: 0.3rem 0 0.5rem;
 }

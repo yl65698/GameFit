@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -90,6 +91,42 @@ def user_detail(request, user_id):
     return Response(UserSerializer(user, context={"request": request}).data)
 
 
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def search_users(request):
+    query = request.query_params.get("q", "").strip()
+    if not query:
+        return Response([])
+    users = User.objects.filter(
+        Q(username__icontains=query) | Q(nickname__icontains=query)
+    ).exclude(pk=request.user.pk)[:20]
+    return Response(UserSerializer(users, many=True, context={"request": request}).data)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def user_detail_by_username(request, username):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response(UserSerializer(user, context={"request": request}).data)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    current = request.data.get("current_password", "")
+    new_pw = request.data.get("new_password", "")
+    if not request.user.check_password(current):
+        return Response({"current_password": "현재 비밀번호가 올바르지 않습니다."}, status=400)
+    if len(new_pw) < 8:
+        return Response({"new_password": "비밀번호는 8자 이상이어야 합니다."}, status=400)
+    request.user.set_password(new_pw)
+    request.user.save()
+    return Response({"detail": "비밀번호가 변경되었습니다."})
+
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def toggle_follow(request, user_id):
@@ -99,8 +136,14 @@ def toggle_follow(request, user_id):
         return Response(status=status.HTTP_404_NOT_FOUND)
     if target == request.user:
         return Response({"error": "자기 자신은 팔로우할 수 없습니다."}, status=400)
-    if request.user in target.followers.all():
+    if target.followers.filter(pk=request.user.pk).exists():
         target.followers.remove(request.user)
-        return Response({"followed": False})
-    target.followers.add(request.user)
-    return Response({"followed": True})
+        followed = False
+    else:
+        target.followers.add(request.user)
+        followed = True
+    return Response({
+        "followed": followed,
+        "followers_count": target.followers.count(),
+        "following_count": target.following.count(),
+    })

@@ -13,6 +13,9 @@ urlpatterns = [
     path("me/profile/", views.update_profile, name="update_profile"),
     path("me/pc-spec/", views.update_pc_spec, name="update_pc_spec"),
     path("profile/", views.update_profile, name="profile"),
+    path("password/change/", views.change_password, name="change_password"),
+    path("users/search/", views.search_users, name="search_users"),
     path("users/<int:user_id>/", views.user_detail, name="user_detail"),
     path("users/<int:user_id>/follow/", views.toggle_follow, name="toggle_follow"),
+    path("users/by-username/<str:username>/", views.user_detail_by_username, name="user_detail_by_username"),
 ]

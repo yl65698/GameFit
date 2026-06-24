@@ -16,9 +16,10 @@ class PCSpec(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='pc_spec')
     cpu = models.CharField(max_length=100, blank=True, default='')
     gpu = models.CharField(max_length=100, blank=True, default='')
-    ram = models.CharField(max_length=50, blank=True, default='')
+    ram = models.CharField(max_length=500, blank=True, default='')
     storage = models.CharField(max_length=100, blank=True, default='')
     has_vr = models.BooleanField(default=False)
+    vr_type = models.CharField(max_length=100, blank=True, default='')
     has_console = models.BooleanField(default=False)
     console_type = models.CharField(max_length=50, blank=True, default='')
 

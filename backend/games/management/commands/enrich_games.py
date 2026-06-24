@@ -28,6 +28,7 @@ SYSTEM_PROMPT = (
     "- min_cpu: minimum CPU (e.g. \"Intel Core i5-4460\")\n"
     "- min_gpu: minimum GPU (e.g. \"NVIDIA GTX 970\")\n"
     "- min_ram: minimum RAM (e.g. \"8GB\")\n"
+    "- min_storage: minimum storage required (e.g. \"50GB\", \"100GB SSD\")\n"
     "- rec_cpu: recommended CPU (e.g. \"Intel Core i7-8700K\")\n"
     "- rec_gpu: recommended GPU (e.g. \"NVIDIA RTX 2060\")\n"
     "- rec_ram: recommended RAM (e.g. \"16GB\")\n"
@@ -77,12 +78,16 @@ class Command(BaseCommand):
                             help='이미 채워진 필드도 재생성')
         parser.add_argument('--genre-only', action='store_true',
                             help='genre=other 인 게임만 재분류')
+        parser.add_argument('--storage-only', action='store_true',
+                            help='min_storage가 비어있는 게임만 업데이트')
         parser.add_argument('--batch', type=int, default=0,
                             help='최대 처리 개수 (0=전체)')
 
     def handle(self, *args, **options):
         if options['genre_only']:
             games = list(Game.objects.filter(genre='other').order_by('id'))
+        elif options.get('storage_only'):
+            games = list(Game.objects.filter(min_storage='').order_by('id'))
         elif options['all_games']:
             games = list(Game.objects.all().order_by('id'))
         else:
@@ -110,11 +115,16 @@ class Command(BaseCommand):
             update_fields = []
 
             if not options['genre_only']:
-                desc = (data.get('description') or '').strip()
-                if desc:
-                    game.description = desc
-                    update_fields.append('description')
-                for field in ('min_cpu', 'min_gpu', 'min_ram', 'rec_cpu', 'rec_gpu', 'rec_ram'):
+                if not options.get('storage_only'):
+                    desc = (data.get('description') or '').strip()
+                    if desc:
+                        game.description = desc
+                        update_fields.append('description')
+                spec_fields = ('min_cpu', 'min_gpu', 'min_ram', 'min_storage', 'rec_cpu', 'rec_gpu', 'rec_ram')
+                for field in spec_fields:
+                    # storage-only 모드면 min_storage만 업데이트
+                    if options.get('storage_only') and field != 'min_storage':
+                        continue
                     val = (data.get(field) or '').strip()
                     if val:
                         setattr(game, field, val)
@@ -128,8 +138,9 @@ class Command(BaseCommand):
             if update_fields:
                 game.save(update_fields=list(set(update_fields)))
 
+            storage_info = f'  storage={game.min_storage}' if game.min_storage else ''
             self.stdout.write(
-                self.style.SUCCESS(f'OK  genre={game.genre}')
+                self.style.SUCCESS(f'OK  genre={game.genre}{storage_info}')
             )
             ok += 1
             time.sleep(0.4)

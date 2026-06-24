@@ -19,6 +19,7 @@ urlpatterns = [
     path("api/games/", include("games.urls")),
     path("api/hardware/", include("hardware.urls")),
     path("api/catalog/", include("catalog.urls")),
+    re_path(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
     re_path(r"^assets/(?P<path>.*)$", serve_frontend_asset),
-    re_path(r"^(?!api/|admin/|assets/).*", TemplateView.as_view(template_name="index.html")),
+    re_path(r"^(?!api/|admin/|assets/|media/).*", TemplateView.as_view(template_name="index.html")),
 ]

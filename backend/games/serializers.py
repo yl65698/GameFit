@@ -11,7 +11,7 @@ class GameSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'description', 'genre', 'platform',
             'price', 'original_price', 'discount_percent', 'image_url',
-            'min_cpu', 'min_gpu', 'min_ram', 'rec_cpu', 'rec_gpu', 'rec_ram',
+            'min_cpu', 'min_gpu', 'min_ram', 'min_storage', 'rec_cpu', 'rec_gpu', 'rec_ram',
             'created_at', 'is_owned', 'is_interested',
         ]
 
@@ -41,12 +41,13 @@ class UserGameSerializer(serializers.ModelSerializer):
 
 class GameReviewSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.nickname', read_only=True)
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
     avatar = serializers.SerializerMethodField()
 
     class Meta:
         model = GameReview
-        fields = ['id', 'username', 'avatar', 'content', 'rating', 'recommend', 'created_at']
-        read_only_fields = ['id', 'username', 'avatar', 'created_at']
+        fields = ['id', 'user_id', 'username', 'avatar', 'content', 'rating', 'recommend', 'created_at']
+        read_only_fields = ['id', 'user_id', 'username', 'avatar', 'created_at']
 
     def get_avatar(self, obj):
         name = obj.user.nickname or obj.user.username or "?"

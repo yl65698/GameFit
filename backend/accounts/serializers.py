@@ -10,7 +10,22 @@ User = get_user_model()
 class PCSpecSerializer(serializers.ModelSerializer):
     class Meta:
         model = PCSpec
-        fields = ["id", "cpu", "gpu", "ram", "storage", "has_vr", "has_console", "console_type"]
+        fields = ["id", "cpu", "gpu", "ram", "storage", "has_vr", "vr_type", "has_console", "console_type"]
+
+
+class UserBasicSerializer(serializers.ModelSerializer):
+    avatar_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "nickname", "avatar_url"]
+
+    def get_avatar_url(self, obj):
+        if not obj.profile_image:
+            return ""
+        request = self.context.get("request")
+        url = obj.profile_image.url
+        return request.build_absolute_uri(url) if request else url
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -25,6 +40,9 @@ class UserSerializer(serializers.ModelSerializer):
     game_platforms = serializers.SerializerMethodField()
     interest_alerts = serializers.SerializerMethodField()
     discount_alerts = serializers.SerializerMethodField()
+    followers_list = serializers.SerializerMethodField()
+    following_list = serializers.SerializerMethodField()
+    is_following = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -37,6 +55,9 @@ class UserSerializer(serializers.ModelSerializer):
             "pc_spec",
             "followers_count",
             "following_count",
+            "followers_list",
+            "following_list",
+            "is_following",
             "avatar_url",
             "pc_specs",
             "owned_games",
@@ -52,6 +73,18 @@ class UserSerializer(serializers.ModelSerializer):
     def get_following_count(self, obj):
         return obj.following.count()
 
+    def get_followers_list(self, obj):
+        return UserBasicSerializer(obj.followers.all(), many=True, context=self.context).data
+
+    def get_following_list(self, obj):
+        return UserBasicSerializer(obj.following.all(), many=True, context=self.context).data
+
+    def get_is_following(self, obj):
+        request = self.context.get("request")
+        if not request or not request.user.is_authenticated:
+            return False
+        return obj.followers.filter(pk=request.user.pk).exists()
+
     def get_hashtags(self, obj):
         if not obj.hashtags:
             return []
@@ -66,34 +99,42 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_pc_specs(self, obj):
         pc_spec, _ = PCSpec.objects.get_or_create(user=obj)
+        memory_list = [m.strip() for m in (pc_spec.ram or "").split(",") if m.strip()]
         return {
             "cpu": pc_spec.cpu,
             "gpu": pc_spec.gpu,
-            "memory": pc_spec.ram,
-            "ram": pc_spec.ram,
+            "memory": memory_list,
             "storage": pc_spec.storage,
-            "vr": "있음" if pc_spec.has_vr else "없음",
+            "vr": pc_spec.vr_type if pc_spec.has_vr else "없음",
             "console": pc_spec.console_type if pc_spec.has_console else "없음",
         }
 
     def get_owned_games(self, obj):
-        return list(
-            obj.user_games.filter(status="owned")
-            .select_related("game")
-            .values_list("game__title", flat=True)
-        )
+        return [
+            {
+                "id": ug.game.id,
+                "title": ug.game.title,
+                "platform": ug.platform or ug.game.platform or "other",
+                "image_url": ug.game.image_url,
+            }
+            for ug in obj.user_games.filter(status="owned").select_related("game")
+        ]
 
     def get_interested_games(self, obj):
-        return list(
-            obj.user_games.filter(status="interested")
-            .select_related("game")
-            .values_list("game__title", flat=True)
-        )
+        return [
+            {
+                "id": ug.game.id,
+                "title": ug.game.title,
+                "platform": ug.platform or ug.game.platform or "other",
+                "image_url": ug.game.image_url,
+            }
+            for ug in obj.user_games.filter(status="interested").select_related("game")
+        ]
 
     def get_game_platforms(self, obj):
         return {
-            user_game.game.title: user_game.game.platform
-            for user_game in obj.user_games.select_related("game").all()
+            ug.game.title: ug.platform or ug.game.platform or "other"
+            for ug in obj.user_games.select_related("game").all()
         }
 
     def get_interest_alerts(self, obj):
@@ -172,7 +213,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         pc_specs = validated_data.pop("pc_specs", None)
         owned_games = validated_data.pop("owned_games", None)
         interested_games = validated_data.pop("interested_games", None)
-        validated_data.pop("game_platforms", None)
+        game_platforms = validated_data.pop("game_platforms", {})
         validated_data.pop("interest_alerts", None)
         validated_data.pop("discount_alerts", None)
         validated_data.pop("avatar_url", None)
@@ -187,9 +228,9 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         if pc_specs is not None:
             sync_pc_specs(instance, pc_specs)
         if owned_games is not None:
-            sync_user_games(instance, owned_games, "owned")
+            sync_user_games(instance, owned_games, "owned", game_platforms)
         if interested_games is not None:
-            sync_user_games(instance, interested_games, "interested")
+            sync_user_games(instance, interested_games, "interested", game_platforms)
 
         return instance
 
@@ -198,24 +239,32 @@ def sync_pc_specs(user, pc_specs):
     pc_spec, _ = PCSpec.objects.get_or_create(user=user)
     pc_spec.cpu = pc_specs.get("cpu", pc_specs.get("CPU", pc_spec.cpu))
     pc_spec.gpu = pc_specs.get("gpu", pc_specs.get("GPU", pc_spec.gpu))
-    pc_spec.ram = pc_specs.get("ram", pc_specs.get("memory", pc_spec.ram))
+    memory_value = pc_specs.get("memory", pc_specs.get("ram", None))
+    if memory_value is not None:
+        if isinstance(memory_value, list):
+            pc_spec.ram = ",".join(str(m).strip() for m in memory_value if str(m).strip())
+        else:
+            pc_spec.ram = str(memory_value).strip()
     pc_spec.storage = pc_specs.get("storage", pc_spec.storage)
-    vr_value = str(pc_specs.get("vr", "")).lower()
-    pc_spec.has_vr = vr_value in ["있음", "true", "yes", "1"]
+    vr_value = pc_specs.get("vr", "")
+    pc_spec.has_vr = bool(vr_value and str(vr_value).strip().lower() not in ["없음", "false", "no", "0", ""])
+    pc_spec.vr_type = "" if not pc_spec.has_vr else str(vr_value).strip()
     console_value = pc_specs.get("console", "")
     pc_spec.has_console = bool(console_value and console_value != "없음")
     pc_spec.console_type = "" if console_value == "없음" else console_value
     pc_spec.save()
 
 
-def sync_user_games(user, titles, status):
+def sync_user_games(user, titles, status, platforms=None):
+    platforms = platforms or {}
     UserGame.objects.filter(user=user, status=status).exclude(game__title__in=titles).delete()
     for title in titles:
         game = Game.objects.filter(title=title).first()
         if not game:
             continue
+        platform = platforms.get(title, game.platform or "other")
         UserGame.objects.update_or_create(
             user=user,
             game=game,
-            defaults={"status": status},
+            defaults={"status": status, "platform": platform},
         )

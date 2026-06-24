@@ -23,6 +23,16 @@ class GameListView(APIView):
         return Response([game_to_catalog(game, request) for game in games])
 
 
+class GameAutocompleteView(APIView):
+    """자동완성용 경량 API — id/title/genre/discount만 반환"""
+    def get(self, request):
+        games = Game.objects.only("id", "title", "genre", "discount_percent").order_by("-discount_percent")[:300]
+        return Response([
+            {"id": g.id, "title": g.title, "genre": g.genre, "discount": g.discount_percent}
+            for g in games
+        ])
+
+
 class FilteredGamesView(APIView):
     def get(self, request):
         filter_type = request.query_params.get("type", "top-discount")

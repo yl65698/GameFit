@@ -160,6 +160,12 @@
                 <span :class="['review-vote', review.recommend ? 'good' : 'bad']">
                   {{ review.recommend ? "추천" : "비추천" }}
                 </span>
+                <button
+                  v-if="auth.isAuthenticated && review.user_id === auth.user?.id"
+                  class="review-delete-btn"
+                  type="button"
+                  @click="deleteReview"
+                >삭제</button>
               </div>
               <p>{{ review.body }}</p>
             </div>
@@ -210,12 +216,8 @@
         </dl>
 
         <div class="storage-spec-row">
-          <div>
-            <strong>저장공간</strong>
-            <span>{{ storageSpec.current }}</span>
-            <small>{{ storageSpec.message }}</small>
-          </div>
-          <span :class="['spec-badge', storageSpec.status]">{{ storageSpec.icon }}</span>
+          <strong>필요 용량</strong>
+          <span>{{ requiredStorage }}</span>
         </div>
 
         <div class="compat-actions">
@@ -456,15 +458,7 @@ const specChecks = computed(() => {
   ];
 });
 
-const storageSpec = computed(() => {
-  const storage = auth.user?.pc_specs?.storage || "";
-  return {
-    current: storage || "정보 없음",
-    message: storage ? "설치 가능 여부 확인" : "장비를 등록해주세요",
-    status: storage ? "pass" : "none",
-    icon: storage ? "v" : "—",
-  };
-});
+const requiredStorage = computed(() => game.value.min_storage || "정보 없음");
 
 const compatibilitySummary = computed(() => {
   const specs = auth.user?.pc_specs || {};
@@ -538,6 +532,7 @@ async function loadReviews(page = 1) {
     const { data } = await api.get(`/games/${game.value.id}/reviews/?page=${page}`);
     reviews.value = data.results.map((r) => ({
       id: r.id,
+      user_id: r.user_id,
       username: r.username,
       avatar: r.avatar,
       recommend: r.recommend ?? r.rating >= 4,
@@ -561,6 +556,18 @@ async function loadMyReview(gameId) {
     }
   } catch {
     myReview.value = null;
+  }
+}
+
+async function deleteReview() {
+  try {
+    await api.delete(`/games/${game.value.id}/reviews/delete/`);
+    myReview.value = null;
+    reviewForm.body = "";
+    reviewForm.recommend = true;
+    await loadReviews(reviewPage.value);
+  } catch {
+    reviewError.value = "삭제 중 오류가 발생했습니다.";
   }
 }
 
