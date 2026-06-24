@@ -32,6 +32,19 @@ def paginated_response(queryset, serializer_class, request):
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
+def featured_games(request):
+    games = (
+        Game.objects
+        .filter(discount_percent__gt=0)
+        .exclude(image_url='')
+        .order_by('-discount_percent')[:10]
+    )
+    serializer = GameSerializer(games, many=True, context={'request': request})
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
 def game_list(request):
     games = Game.objects.all()
     q = request.query_params.get('q')
