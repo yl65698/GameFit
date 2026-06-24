@@ -42,13 +42,25 @@ class UserGameSerializer(serializers.ModelSerializer):
 class GameReviewSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.nickname', read_only=True)
     user_id = serializers.IntegerField(source='user.id', read_only=True)
+    user_username = serializers.CharField(source='user.username', read_only=True)
     avatar = serializers.SerializerMethodField()
+    avatar_url = serializers.SerializerMethodField()
 
     class Meta:
         model = GameReview
-        fields = ['id', 'user_id', 'username', 'avatar', 'content', 'rating', 'recommend', 'created_at']
-        read_only_fields = ['id', 'user_id', 'username', 'avatar', 'created_at']
+        fields = ['id', 'user_id', 'username', 'user_username', 'avatar', 'avatar_url', 'content', 'rating', 'recommend', 'created_at']
+        read_only_fields = ['id', 'user_id', 'username', 'user_username', 'avatar', 'avatar_url', 'created_at']
 
     def get_avatar(self, obj):
         name = obj.user.nickname or obj.user.username or "?"
         return name[:1].upper()
+
+    def get_avatar_url(self, obj):
+        if not obj.user.profile_image:
+            return ""
+        try:
+            url = obj.user.profile_image.url
+            request = self.context.get("request")
+            return request.build_absolute_uri(url) if request else url
+        except Exception:
+            return ""

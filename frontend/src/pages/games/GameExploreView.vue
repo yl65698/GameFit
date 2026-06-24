@@ -93,7 +93,6 @@
           </div>
           <footer>
             <span>{{ game.genre }}</span>
-            <strong>{{ game.buy_signal }}</strong>
           </footer>
         </RouterLink>
       </div>

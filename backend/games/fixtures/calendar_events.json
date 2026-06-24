@@ -1,0 +1,167 @@
+[
+  {
+    "model": "games.calendarevent",
+    "pk": 1,
+    "fields": {
+      "date": "2026-01-30",
+      "title": "NVIDIA GeForce RTX 5090 출시",
+      "description": "블랙웰 아키텍처 기반 플래그십 GPU. 전작 대비 약 2배 성능 향상",
+      "event_type": "hardware_release",
+      "url": ""
+    }
+  },
+  {
+    "model": "games.calendarevent",
+    "pk": 2,
+    "fields": {
+      "date": "2026-03-06",
+      "title": "AMD Radeon RX 9070 XT 출시",
+      "description": "RDNA 4 아키텍처 기반 미드-하이엔드 GPU. 레이트레이싱 성능 대폭 개선",
+      "event_type": "hardware_release",
+      "url": ""
+    }
+  },
+  {
+    "model": "games.calendarevent",
+    "pk": 3,
+    "fields": {
+      "date": "2026-05-22",
+      "title": "Steam 봄 세일 시작",
+      "description": "2026 Steam 봄 할인 행사. 수천 개 타이틀 최대 90% 할인",
+      "event_type": "discount",
+      "url": ""
+    }
+  },
+  {
+    "model": "games.calendarevent",
+    "pk": 4,
+    "fields": {
+      "date": "2026-05-30",
+      "title": "Elden Ring Nightreign PC 출시",
+      "description": "FromSoftware의 3인 협동 로그라이크 액션. 랜덤 생성 맵과 보스 조합",
+      "event_type": "game_release",
+      "url": ""
+    }
+  },
+  {
+    "model": "games.calendarevent",
+    "pk": 5,
+    "fields": {
+      "date": "2026-06-05",
+      "title": "Epic Games 여름 세일 시작",
+      "description": "에픽게임즈 스토어 여름 할인 행사. 주요 AAA 타이틀 대거 할인",
+      "event_type": "discount",
+      "url": ""
+    }
+  },
+  {
+    "model": "games.calendarevent",
+    "pk": 6,
+    "fields": {
+      "date": "2026-06-26",
+      "title": "Steam 여름 세일 시작",
+      "description": "Steam 연중 최대 할인 행사. 역대 최저가 경신 타이틀 다수 포함",
+      "event_type": "discount",
+      "url": ""
+    }
+  },
+  {
+    "model": "games.calendarevent",
+    "pk": 7,
+    "fields": {
+      "date": "2026-07-10",
+      "title": "Steam 여름 세일 종료",
+      "description": "Steam 여름 세일 마지막 날. 이 날까지 할인가 유지",
+      "event_type": "discount",
+      "url": ""
+    }
+  },
+  {
+    "model": "games.calendarevent",
+    "pk": 8,
+    "fields": {
+      "date": "2026-07-22",
+      "title": "NVIDIA GeForce RTX 5060 Ti 출시",
+      "description": "보급형 RTX 50 시리즈. 1080p~1440p 타깃 메인스트림 GPU",
+      "event_type": "hardware_release",
+      "url": ""
+    }
+  },
+  {
+    "model": "games.calendarevent",
+    "pk": 9,
+    "fields": {
+      "date": "2026-08-07",
+      "title": "Mafia: The Old Country 출시",
+      "description": "마피아 시리즈 신작. 1900년대 초 시칠리아를 배경으로 한 오픈월드 범죄 액션",
+      "event_type": "game_release",
+      "url": ""
+    }
+  },
+  {
+    "model": "games.calendarevent",
+    "pk": 10,
+    "fields": {
+      "date": "2026-09-05",
+      "title": "AMD Radeon RX 9060 XT 출시",
+      "description": "RDNA 4 보급형 GPU. 100만원대 이하 시장 공략",
+      "event_type": "hardware_release",
+      "url": ""
+    }
+  },
+  {
+    "model": "games.calendarevent",
+    "pk": 11,
+    "fields": {
+      "date": "2026-09-17",
+      "title": "GTA 6 출시",
+      "description": "Rockstar Games 차세대 오픈월드 대작. 바이스시티 배경, 역대 최대 규모 맵",
+      "event_type": "game_release",
+      "url": ""
+    }
+  },
+  {
+    "model": "games.calendarevent",
+    "pk": 12,
+    "fields": {
+      "date": "2026-09-17",
+      "title": "Intel Core Ultra 300 (Arrow Lake S Refresh) 출시",
+      "description": "인텔 14세대 후속 데스크탑 CPU. AI 연산 성능 강화",
+      "event_type": "hardware_release",
+      "url": ""
+    }
+  },
+  {
+    "model": "games.calendarevent",
+    "pk": 13,
+    "fields": {
+      "date": "2026-11-27",
+      "title": "Steam 추수감사절 세일",
+      "description": "연말 할인 시즌 시작. Black Friday 시즌 대형 할인",
+      "event_type": "discount",
+      "url": ""
+    }
+  },
+  {
+    "model": "games.calendarevent",
+    "pk": 14,
+    "fields": {
+      "date": "2026-12-01",
+      "title": "Fable 출시",
+      "description": "Xbox Game Studios의 Fable 시리즈 리부트. PC Game Pass 동시 출시",
+      "event_type": "game_release",
+      "url": ""
+    }
+  },
+  {
+    "model": "games.calendarevent",
+    "pk": 15,
+    "fields": {
+      "date": "2026-12-22",
+      "title": "Steam 겨울 세일 시작",
+      "description": "Steam 연말 최대 할인 행사. The Game Awards 공개작 포함 대규모 세일",
+      "event_type": "discount",
+      "url": ""
+    }
+  }
+]

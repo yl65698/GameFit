@@ -159,7 +159,7 @@ def game_reviews(request, game_id):
     paginator = Paginator(qs, 10)
     page_obj = paginator.get_page(page)
     return Response({
-        'results': GameReviewSerializer(page_obj, many=True).data,
+        'results': GameReviewSerializer(page_obj, many=True, context={'request': request}).data,
         'total': paginator.count,
         'total_pages': paginator.num_pages,
         'page': page_obj.number,

@@ -89,10 +89,63 @@
         </section>
 
         <div class="detail-info-grid-2col">
-          <section class="detail-panel">
+          <section class="detail-panel buy-timing-panel">
             <h2>구매 추천 시점</h2>
-            <strong class="buy-timing">{{ timingHeadline }}</strong>
-            <p>{{ timingMessage }}</p>
+
+            <div v-if="buyTimingLoading" class="timing-loading">
+              <span class="timing-spinner"></span> AI 분석 중...
+            </div>
+
+            <template v-else-if="buyTiming">
+              <div class="timing-score-row">
+                <div class="timing-score-track">
+                  <div
+                    class="timing-score-fill"
+                    :class="`signal-${buyTiming.signal}`"
+                    :style="{ width: buyTiming.score + '%' }"
+                  ></div>
+                </div>
+                <span class="timing-score-num">{{ buyTiming.score }}<small>/100</small></span>
+              </div>
+
+              <div class="timing-headline-row">
+                <span class="timing-signal-badge" :class="`signal-${buyTiming.signal}`">
+                  {{ signalLabel }}
+                </span>
+                <strong class="buy-timing">{{ buyTiming.headline }}</strong>
+              </div>
+              <p class="timing-message">{{ buyTiming.message }}</p>
+
+              <ul v-if="buyTiming.factors?.length" class="timing-factors">
+                <li
+                  v-for="f in buyTiming.factors"
+                  :key="f.label"
+                  :class="f.positive ? 'factor-positive' : 'factor-negative'"
+                >
+                  <span class="factor-icon">{{ f.positive ? "▲" : "▼" }}</span>
+                  <div class="factor-text">
+                    <strong>{{ f.label }}</strong>
+                    <small>{{ f.detail }}</small>
+                  </div>
+                </li>
+              </ul>
+
+              <div v-if="buyTiming.history_low_all || buyTiming.history_low_1y" class="timing-lows">
+                <span v-if="buyTiming.history_low_all">
+                  역대 최저 <strong>{{ buyTiming.history_low_all.toLocaleString("ko-KR") }}원</strong>
+                </span>
+                <span v-if="buyTiming.history_low_1y">
+                  1년 최저 <strong>{{ buyTiming.history_low_1y.toLocaleString("ko-KR") }}원</strong>
+                </span>
+                <span v-if="buyTiming.history_low_3m">
+                  3개월 최저 <strong>{{ buyTiming.history_low_3m.toLocaleString("ko-KR") }}원</strong>
+                </span>
+              </div>
+            </template>
+
+            <div v-else class="empty-state" style="padding: 12px 0;">
+              <p>분석 정보를 불러올 수 없습니다.</p>
+            </div>
           </section>
 
           <section class="detail-panel">
@@ -153,10 +206,15 @@
             <p>아직 작성된 리뷰가 없습니다. 첫 번째 리뷰를 남겨보세요.</p>
           </div>
           <article v-for="review in reviews" :key="review.id" class="review-card">
-            <span class="review-avatar">{{ review.avatar }}</span>
+            <RouterLink :to="`/players/${review.user_username}`" class="review-avatar-link">
+              <span class="review-avatar">
+                <img v-if="review.avatar_url" :src="review.avatar_url" :alt="review.username" />
+                <template v-else>{{ review.avatar }}</template>
+              </span>
+            </RouterLink>
             <div>
               <div class="review-meta">
-                <span>{{ review.username }}</span>
+                <RouterLink :to="`/players/${review.user_username}`">{{ review.username }}</RouterLink>
                 <span :class="['review-vote', review.recommend ? 'good' : 'bad']">
                   {{ review.recommend ? "추천" : "비추천" }}
                 </span>
@@ -402,57 +460,76 @@ async function loadLivePrices(gameId) {
   }
 }
 
-// ── 구매 추천 시점 ──
-const timingHeadline = computed(() => {
-  const d = game.value.discount || 0;
-  if (d >= 50) return "지금 구매 추천";
-  if (d >= 25) return "관심 등록 후 한 번 더 확인";
-  return "다음 대형 세일까지 대기";
-});
-const timingMessage = computed(() => {
-  const d = game.value.discount || 0;
-  if (d >= 50) return "최근 가격 흐름상 할인 폭이 충분히 커서 바로 구매해도 괜찮아요.";
-  if (d >= 25) return "현재도 나쁘지 않지만 이전 최저가보다 높아서 관심게임에 넣고 알림을 보는 쪽이 좋아요.";
-  return "할인율이 낮아서 여름/연말 세일 때 다시 확인하는 걸 추천해요.";
-});
+// ── 구매 추천 시점 (AI + ITAD 기반) ──
+const buyTiming = ref(null);
+const buyTimingLoading = ref(false);
 
-// ── PC 호환성 체크 ──
-function parseGB(str) {
-  const m = String(str || "").match(/(\d+)/);
-  return m ? parseInt(m[1]) : 0;
+const SIGNAL_LABELS = {
+  buy_now: "지금 구매",
+  good: "좋은 가격",
+  watch: "지켜보기",
+  wait: "대기 추천",
+};
+const signalLabel = computed(() => SIGNAL_LABELS[buyTiming.value?.signal] ?? "");
+
+async function loadBuyTiming(gameId) {
+  buyTimingLoading.value = true;
+  try {
+    const { data } = await api.get(`/catalog/games/${gameId}/buy-timing/`);
+    buyTiming.value = data;
+  } catch {
+    buyTiming.value = null;
+  } finally {
+    buyTimingLoading.value = false;
+  }
 }
 
-function ramStatus(userRam, minRam, recRam) {
-  const userGB = parseGB(userRam);
-  const minGB = parseGB(minRam);
-  const recGB = parseGB(recRam);
-  if (!userGB) return { status: "none", message: "정보 없음" };
-  if (!minGB) return { status: "pass", message: "요구사양 없음" };
-  if (recGB && userGB >= recGB) return { status: "pass", message: "권장 사양 충족" };
-  if (userGB >= minGB) return { status: "pass", message: "최소 사양 충족" };
-  return { status: "fail", message: `최소 ${minGB}GB 필요` };
-}
+// ── PC 호환성 체크 (GMS AI 분석) ──
+const compatResult = ref(null);
+const compatLoading = ref(false);
 
-function cpuGpuStatus(userVal, minVal) {
-  if (!userVal) return { status: "none", message: "정보 없음" };
-  if (!minVal) return { status: "pass", message: "요구사양 없음" };
-  return { status: "pass", message: `최소: ${minVal}` };
-}
+async function loadCompat(gameId) {
+  const specs = auth.user?.pc_specs || {};
+  const cpu = specs.cpu || "";
+  const gpu = specs.gpu || "";
+  const ram = specs.memory || specs.ram || "";
+  if (!cpu && !gpu && !ram) return;
 
-function iconFor(status) {
-  return status === "pass" ? "v" : status === "fail" ? "✕" : "—";
+  compatLoading.value = true;
+  try {
+    const params = new URLSearchParams();
+    if (cpu) params.set("cpu", cpu);
+    if (gpu) params.set("gpu", gpu);
+    if (ram) params.set("ram", ram);
+    const { data } = await api.get(`/catalog/games/${gameId}/compat/?${params}`);
+    compatResult.value = data;
+  } catch {
+    compatResult.value = null;
+  } finally {
+    compatLoading.value = false;
+  }
 }
 
 const specChecks = computed(() => {
   const specs = auth.user?.pc_specs || {};
-  const g = game.value;
-  const ramRes = ramStatus(specs.memory || specs.ram, g.min_ram, g.rec_ram);
-  const cpuRes = cpuGpuStatus(specs.cpu, g.min_cpu);
-  const gpuRes = cpuGpuStatus(specs.gpu, g.min_gpu);
+  const aiChecks = compatResult.value?.spec_checks || [];
+  const aiMap = Object.fromEntries(aiChecks.map((c) => [c.label, c]));
+
+  const loading = compatLoading.value;
+  const loadingItem = (label, current) => ({
+    label, current: current || "정보 없음",
+    message: loading ? "분석 중..." : "정보 없음",
+    status: "none", icon: "—",
+  });
+
+  const cpu = aiMap["CPU"] ?? loadingItem("CPU", specs.cpu);
+  const ram = aiMap["메모리"] ?? loadingItem("메모리", specs.memory || specs.ram);
+  const gpu = aiMap["GPU"] ?? loadingItem("GPU", specs.gpu);
+
   return [
-    { label: "CPU", current: specs.cpu || "정보 없음", message: cpuRes.message, status: cpuRes.status, icon: iconFor(cpuRes.status) },
-    { label: "메모리", current: specs.memory || specs.ram || "정보 없음", message: ramRes.message, status: ramRes.status, icon: iconFor(ramRes.status) },
-    { label: "GPU", current: specs.gpu || "정보 없음", message: gpuRes.message, status: gpuRes.status, icon: iconFor(gpuRes.status) },
+    { ...cpu, label: "CPU" },
+    { ...ram, label: "메모리" },
+    { ...gpu, label: "GPU" },
     { label: "VR", current: specs.vr || "없음", message: "게임 지원 여부 확인", status: "empty", icon: "—" },
     { label: "콘솔", current: specs.console || "없음", message: "PC 플레이 가능", status: "empty", icon: "—" },
   ];
@@ -461,10 +538,11 @@ const specChecks = computed(() => {
 const requiredStorage = computed(() => game.value.min_storage || "정보 없음");
 
 const compatibilitySummary = computed(() => {
+  if (compatLoading.value) return "AI가 호환성을 분석하고 있어요...";
+  if (compatResult.value?.summary) return compatResult.value.summary;
   const specs = auth.user?.pc_specs || {};
   if (!specs.cpu && !specs.gpu) return "내 장비 정보를 먼저 등록해주세요.";
-  if (specChecks.value.some((s) => s.status === "fail")) return "일부 핵심 부품 업그레이드가 필요해요.";
-  return "현재 장비로 플레이 가능해 보여요.";
+  return "내 장비 정보를 먼저 등록해주세요.";
 });
 
 // ── 액션: 내 게임 추가/삭제 (UserGame API 사용) ──
@@ -534,7 +612,9 @@ async function loadReviews(page = 1) {
       id: r.id,
       user_id: r.user_id,
       username: r.username,
+      user_username: r.user_username || r.username,
       avatar: r.avatar,
+      avatar_url: r.avatar_url || "",
       recommend: r.recommend ?? r.rating >= 4,
       body: r.content,
     }));
@@ -602,6 +682,8 @@ onMounted(async () => {
   game.value = data;
 
   loadLivePrices(id);
+  loadBuyTiming(id);
+  loadCompat(id);
   loadReviews(1);
   loadMyReview(id);
 });

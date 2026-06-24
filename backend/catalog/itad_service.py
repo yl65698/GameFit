@@ -1,9 +1,27 @@
+import logging
 import os
 import time
 import requests
 
-ITAD_API_KEY = os.environ.get("IS_THERE_ANY_DEAL_API_KEY", "")
+logger = logging.getLogger(__name__)
+
 ITAD_BASE = "https://api.isthereanydeal.com"
+
+
+def _get_api_key() -> str:
+    key = os.environ.get("IS_THERE_ANY_DEAL_API_KEY", "")
+    if not key:
+        # settings.py가 load_dotenv()를 호출한 후에도 없으면 직접 시도
+        try:
+            from dotenv import load_dotenv
+            from pathlib import Path
+            load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
+            key = os.environ.get("IS_THERE_ANY_DEAL_API_KEY", "")
+        except ImportError:
+            pass
+    return key
+
+
 _cache: dict = {}
 _CACHE_TTL = 1800  # 30분
 _shop_url_cache: dict = {}  # itad_shop_id → homepage url
@@ -29,7 +47,11 @@ def get_live_prices(itad_id: str) -> list[dict]:
     ITAD /games/prices/v3 로 현재 전체 샵 가격 조회 (KRW).
     30분 캐싱.
     """
-    if not ITAD_API_KEY or not itad_id:
+    api_key = _get_api_key()
+    if not api_key:
+        logger.error("ITAD API key is not set. Check IS_THERE_ANY_DEAL_API_KEY in .env")
+        return []
+    if not itad_id:
         return []
 
     ck = _cache_key(itad_id)
@@ -40,13 +62,14 @@ def get_live_prices(itad_id: str) -> list[dict]:
     try:
         resp = requests.post(
             f"{ITAD_BASE}/games/prices/v3",
-            params={"country": "KR", "key": ITAD_API_KEY},
+            params={"country": "KR", "key": api_key},
             json=[str(itad_id)],
             timeout=8,
         )
         resp.raise_for_status()
         items = resp.json()
-    except Exception:
+    except Exception as e:
+        logger.error("ITAD API error for %s: %s", itad_id, e)
         return []
 
     if not items:

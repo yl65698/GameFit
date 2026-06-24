@@ -2572,26 +2572,26 @@ label {
   font-size: 14px;
 }
 
-.calendar-card.event-sale {
+.calendar-card.event-discount {
   border-left-color: #f59e0b;
   background: #fffbeb;
 }
 
-.calendar-card.event-sale time {
+.calendar-card.event-discount time {
   color: #b45309;
 }
 
-.calendar-card.event-game {
+.calendar-card.event-game_release {
   border-left-color: #17637d;
   background: #f0f9ff;
 }
 
-.calendar-card.event-release {
+.calendar-card.event-hardware_release {
   border-left-color: #7c3aed;
   background: #faf5ff;
 }
 
-.calendar-card.event-release time {
+.calendar-card.event-hardware_release time {
   color: #6d28d9;
 }
 
@@ -2661,17 +2661,17 @@ label {
   line-height: 1.4;
 }
 
-.calendar-cell p.event-sale {
+.calendar-cell p.event-discount {
   background: #fef3c7;
   color: #92400e;
 }
 
-.calendar-cell p.event-game {
+.calendar-cell p.event-game_release {
   background: #dbeafe;
   color: #1e40af;
 }
 
-.calendar-cell p.event-release {
+.calendar-cell p.event-hardware_release {
   background: #ede9fe;
   color: #5b21b6;
 }
@@ -3426,9 +3426,170 @@ select {
 
 .buy-timing {
   display: block;
-  margin-bottom: 8px;
-  color: #17637d;
-  font-size: 18px;
+  margin: 4px 0 6px;
+  color: #0f1923;
+  font-size: 17px;
+}
+
+/* ── 구매 추천 시점 패널 ── */
+.buy-timing-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.timing-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--clr-text-muted);
+  font-size: 14px;
+  padding: 8px 0;
+}
+
+.timing-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #d4dde8;
+  border-top-color: var(--clr-primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.timing-score-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.timing-score-track {
+  flex: 1;
+  height: 7px;
+  background: #e6edf5;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.timing-score-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.timing-score-fill.signal-buy_now { background: #16a34a; }
+.timing-score-fill.signal-good    { background: #17637d; }
+.timing-score-fill.signal-watch   { background: #d97706; }
+.timing-score-fill.signal-wait    { background: #94a3b8; }
+
+.timing-score-num {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f1923;
+  min-width: 52px;
+  text-align: right;
+}
+.timing-score-num small {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--clr-text-muted);
+}
+
+.timing-headline-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.timing-signal-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.timing-signal-badge.signal-buy_now { background: #dcfce7; color: #15803d; }
+.timing-signal-badge.signal-good    { background: #e0f2fe; color: #0369a1; }
+.timing-signal-badge.signal-watch   { background: #fef3c7; color: #b45309; }
+.timing-signal-badge.signal-wait    { background: #f1f5f9; color: #64748b; }
+
+.timing-message {
+  margin: 0 0 14px;
+  color: var(--clr-text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.timing-factors {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.timing-factors li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.timing-factors li.factor-positive {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.timing-factors li.factor-negative {
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+}
+
+.factor-icon {
+  font-size: 10px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.factor-positive .factor-icon { color: #16a34a; }
+.factor-negative .factor-icon { color: #94a3b8; }
+
+.factor-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.factor-text strong {
+  font-size: 13px;
+  color: #0f1923;
+}
+
+.factor-text small {
+  color: var(--clr-text-muted);
+  font-size: 12px;
+}
+
+.timing-lows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding-top: 12px;
+  border-top: 1px solid #edf1f6;
+  font-size: 12px;
+  color: var(--clr-text-muted);
+}
+
+.timing-lows strong {
+  color: #0f1923;
+  font-weight: 700;
 }
 
 .game-info-list,
@@ -4230,7 +4391,7 @@ select {
   padding: 12px;
 }
 
-.equipment-fit-panel span {
+.equipment-fit-panel span:not(.fit-badge) {
   color: #68778d;
   font-size: 13px;
   font-weight: 800;
@@ -4281,9 +4442,8 @@ select {
 }
 
 .equipment-judgement-card {
-  min-height: 240px;
   display: grid;
-  align-content: space-between;
+  align-content: start;
   gap: 14px;
   margin-top: 26px;
   border-radius: 8px;
@@ -4532,15 +4692,15 @@ select {
   max-width: 420px;
 }
 
-.calendar-card.event-sale {
+.calendar-card.event-discount {
   border-left: 6px solid #2f9e44;
 }
 
-.calendar-card.event-game {
+.calendar-card.event-game_release {
   border-left: 6px solid #17637d;
 }
 
-.calendar-card.event-release {
+.calendar-card.event-hardware_release {
   border-left: 6px solid #b7791f;
 }
 
@@ -4558,37 +4718,37 @@ select {
   font-weight: 900;
 }
 
-.event-sale {
+.event-discount {
   border: 1px solid #bce8d1;
   background: #e7f6ed;
   color: #176457;
 }
 
-.event-game {
+.event-game_release {
   border: 1px solid #bfd4e4;
   background: #e7f0f7;
   color: #17637d;
 }
 
-.event-release {
+.event-hardware_release {
   border: 1px solid #f1d28d;
   background: #fff4db;
   color: #8a5a00;
 }
 
-.calendar-cell p.event-sale {
+.calendar-cell p.event-discount {
   border: 1px solid #bce8d1;
   background: #e7f6ed;
   color: #176457;
 }
 
-.calendar-cell p.event-game {
+.calendar-cell p.event-game_release {
   border: 1px solid #bfd4e4;
   background: #e7f0f7;
   color: #17637d;
 }
 
-.calendar-cell p.event-release {
+.calendar-cell p.event-hardware_release {
   border: 1px solid #f1d28d;
   background: #fff4db;
   color: #8a5a00;
@@ -5286,3 +5446,466 @@ select {
 .card-hashtags {
   margin: 0.3rem 0 0.5rem;
 }
+
+/* ══ 장비 상세 페이지 고도화 스타일 ══════════════════ */
+
+/* 가격 비교 패널 */
+.equip-price-panel { display: grid; gap: 16px; }
+
+.price-stats-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  background: #f0f7fa;
+  border: 1px solid #c8e1eb;
+  border-radius: 10px;
+}
+.price-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.price-stat-item > span {
+  font-size: 11px;
+  color: #68778d;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.price-stat-item > strong {
+  font-size: 16px;
+  color: #0f1923;
+}
+.price-low { color: #16a34a !important; }
+.price-high { color: #dc2626 !important; }
+
+.price-trend-badge {
+  margin-left: auto;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+.trend-up { background: #fee2e2; color: #b91c1c; }
+.trend-down { background: #dcfce7; color: #15803d; }
+.trend-stable { background: #f1f5f9; color: #475569; }
+
+.price-market-list { display: grid; gap: 8px; }
+.price-market-list article {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2eaf3;
+  border-radius: 8px;
+}
+.price-market-list strong {
+  flex: 1;
+  font-size: 14px;
+  color: #253043;
+}
+.price-market-list span {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f1923;
+}
+.price-market-list em {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 800;
+  color: #b45309;
+  background: #fff3cd;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+.price-search-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 게임 적합도 패널 그리드 */
+.fit-panels-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.game-fit-card {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2eaf3;
+  border-radius: 8px;
+}
+.game-fit-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.game-fit-header strong {
+  font-size: 14px;
+  color: #0f1923;
+  line-height: 1.4;
+  flex: 1;
+}
+.game-fit-detail {
+  margin: 0;
+  font-size: 12px;
+  color: #68778d;
+  line-height: 1.5;
+}
+
+/* 적합도 배지 */
+.fit-badge {
+  flex-shrink: 0;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.fit-pass    { background: #dcfce7; color: #15803d; }
+.fit-warn    { background: #fef9c3; color: #a16207; }
+.fit-fail    { background: #fee2e2; color: #b91c1c; }
+.fit-unknown { background: #f1f5f9; color: #64748b; }
+.fit-info    { background: #dbeafe; color: #1d4ed8; }
+
+/* 로딩 상태 */
+.fit-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  color: #68778d;
+  font-size: 13px;
+}
+
+/* PC 비교 카드 */
+.compare-current-new {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.compare-spec-box {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #d4dde8;
+  border-radius: 8px;
+}
+.compare-spec-box.compare-spec-new {
+  background: #f0f7fa;
+  border-color: #a3c5d4;
+}
+.compare-label {
+  font-size: 11px;
+  color: #68778d;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.compare-spec-box strong {
+  font-size: 13px;
+  color: #0f1923;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+.compare-arrow {
+  font-size: 20px;
+  color: #17637d;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+.compare-diff-summary {
+  margin: 0;
+  font-size: 13px;
+  color: #4c5b70;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.compare-points {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 4px;
+}
+.compare-points li {
+  font-size: 13px;
+  color: #4c5b70;
+  line-height: 1.5;
+}
+
+/* 업그레이드 추천 배지 */
+.upgrade-verdict-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+}
+.upgrade-high      { background: #dcfce7; color: #15803d; }
+.upgrade-medium    { background: #dbeafe; color: #1d4ed8; }
+.upgrade-low       { background: #f1f5f9; color: #475569; }
+.upgrade-downgrade { background: #fee2e2; color: #b91c1c; }
+.upgrade-na        { background: #f1f5f9; color: #94a3b8; }
+
+/* ── Community: category filter chips ── */
+.board-category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding-bottom: 4px;
+}
+
+.category-chip {
+  padding: 4px 13px;
+  border-radius: 999px;
+  border: 1px solid #d4dde8;
+  background: #fff;
+  color: #4c5b70;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.category-chip:hover {
+  border-color: #9ab4c7;
+  background: #f4f9fb;
+}
+
+.category-chip.active {
+  background: #176457;
+  color: #fff;
+  border-color: #176457;
+}
+
+/* ── Community: category badges ── */
+.post-category-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #4c5b70;
+}
+
+/* Category-specific colors — high specificity to override .post-detail-heading span */
+.post-detail-heading .cat-공략,
+.post-category-badge.cat-공략 { background: #dbeafe; color: #1e40af; }
+
+.post-detail-heading .cat-질문,
+.post-category-badge.cat-질문 { background: #fef3c7; color: #92400e; }
+
+.post-detail-heading .cat-구매상담,
+.post-category-badge.cat-구매상담 { background: #dcfce7; color: #166534; }
+
+.post-detail-heading .cat-그룹모집,
+.post-category-badge.cat-그룹모집 { background: #ede9fe; color: #5b21b6; }
+
+.post-detail-heading .cat-후기,
+.post-category-badge.cat-후기 { background: #fce7f3; color: #9d174d; }
+
+.post-detail-heading .cat-잡담,
+.post-category-badge.cat-잡담 { background: #f1f5f9; color: #475569; }
+
+.post-detail-heading .cat-기타,
+.post-category-badge.cat-기타 { background: #e2e8f0; color: #64748b; }
+
+/* ── Community: vote button states ── */
+.vote-btn {
+  border: 0;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #68778d;
+  padding: 3px 7px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1;
+}
+
+.vote-btn:hover {
+  background: #fee2e2;
+  color: #e11d48;
+}
+
+.vote-btn.liked {
+  background: #fee2e2;
+  color: #e11d48;
+}
+
+/* ── Community: post detail actions row ── */
+.post-detail-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.secondary-button.like-active {
+  background: #fee2e2;
+  color: #e11d48;
+  border-color: #fca5a5;
+}
+
+.post-delete-btn {
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.post-delete-btn:hover {
+  background: #fee2e2;
+}
+
+/* ── Community: comment improvements ── */
+.comment-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.comment-time {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 400;
+  margin-left: auto;
+}
+
+.comment-delete-btn {
+  background: none;
+  border: none;
+  color: #b91c1c;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 0.1s;
+}
+
+.comment-delete-btn:hover {
+  background: #fee2e2;
+}
+
+/* ── User avatar circles ── */
+.user-avatar-sm {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #dff2ee;
+  color: #176457;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  overflow: hidden;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.user-avatar-xs {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #dff2ee;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.user-avatar-sm img,
+.user-avatar-xs img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* ── Review avatar image support ── */
+.review-avatar-link {
+  display: contents;
+}
+
+.review-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.review-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* ── Post detail author row ── */
+.post-author-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: #68778d;
+  margin-top: 2px;
+}
+
+.post-author-avatar-link,
+.comment-avatar-link {
+  display: contents;
+}
+
+.post-author-name,
+.comment-author-link {
+  font-weight: 800;
+  color: #1c2430;
+  text-decoration: none;
+}
+
+.post-author-name:hover,
+.comment-author-link:hover {
+  color: #176457;
+  text-decoration: underline;
+}
+
+.post-meta-sep {
+  color: #d4dde8;
+}
+
+.post-date {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+/* ── Group member chips as links ── */
+.group-member-chip-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  color: #4c5b70;
+  transition: background 0.15s, color 0.15s;
+}
+
+.group-member-chip-link:hover {
+  background: #dff2ee;
+  color: #176457;
+  border-color: #bce8d1;
+}
+

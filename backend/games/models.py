@@ -148,6 +148,10 @@ class GameGroup(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, default='')
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_groups')
+    schedule = models.CharField(max_length=100, blank=True, default='')
+    play_style = models.CharField(max_length=100, blank=True, default='')
+    required_role = models.CharField(max_length=100, blank=True, default='')
+    capacity = models.IntegerField(default=4)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -169,10 +173,20 @@ class GameGroupMember(models.Model):
 
 class Post(models.Model):
     """커뮤니티 게시글 (ERD: post)"""
+    CATEGORY_CHOICES = [
+        ('공략', '공략'),
+        ('질문', '질문'),
+        ('구매상담', '구매상담'),
+        ('그룹모집', '그룹모집'),
+        ('후기', '후기'),
+        ('잡담', '잡담'),
+        ('기타', '기타'),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='posts', null=True, blank=True)
     title = models.CharField(max_length=200)
     content = models.TextField()
+    category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, default='잡담')
     likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -196,3 +210,22 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.user.nickname}: {self.content[:30]}"
+
+
+class CalendarEvent(models.Model):
+    EVENT_TYPE_CHOICES = [
+        ('discount', '할인'),
+        ('game_release', '게임 출시'),
+        ('hardware_release', '장비 출시'),
+    ]
+    date = models.DateField()
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True, default='')
+    event_type = models.CharField(max_length=20, choices=EVENT_TYPE_CHOICES)
+    url = models.URLField(blank=True, default='')
+
+    class Meta:
+        ordering = ['date']
+
+    def __str__(self):
+        return f"[{self.get_event_type_display()}] {self.date} - {self.title}"

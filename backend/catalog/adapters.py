@@ -354,30 +354,6 @@ def recommendation_payload(user, request=None):
     }
 
 
-def calendar_payload(user=None):
-    discounted_games = Game.objects.filter(discount_percent__gt=0).order_by("-discount_percent")[:8]
-    events = [
-        {
-            "date": "2026-06-25",
-            "title": f"{game.title} {game.discount_percent}% 할인",
-            "game": game.title,
-            "type": "sale",
-        }
-        for game in discounted_games
-    ]
-    if user and user.is_authenticated:
-        interested = user.user_games.filter(status="interested").select_related("game")[:5]
-        events.extend(
-            {
-                "date": "2026-06-28",
-                "title": f"{item.game.title} 관심 게임 가격 확인",
-                "game": item.game.title,
-                "type": "alert",
-            }
-            for item in interested
-        )
-    return events
-
 
 def catalog_queryset(model, query, sort, category_field=None):
     queryset = model.objects.all()

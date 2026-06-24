@@ -3,7 +3,7 @@
     <header class="page-header">
       <div>
         <p class="eyebrow">캘린더</p>
-        <h1>찜한 게임의 할인과 출시 일정</h1>
+        <h1>게임 할인 및 출시 일정</h1>
       </div>
       <div class="panel-actions">
         <div class="segmented-control">
@@ -20,8 +20,8 @@
         </button>
       </div>
       <label class="calendar-name-filter">
-        게임 이름
-        <input v-model="gameQuery" placeholder="게임 이름으로 필터링" />
+        검색
+        <input v-model="searchQuery" placeholder="이름으로 필터링" />
       </label>
     </section>
 
@@ -30,7 +30,7 @@
         <time>{{ event.date }}</time>
         <div>
           <strong>{{ event.title }}</strong>
-          <p>{{ event.game }} · {{ eventLabel(event.type) }}</p>
+          <p>{{ event.description || eventLabel(event.type) }}</p>
         </div>
       </article>
       <p v-if="filteredEvents.length === 0" class="subtle">조건에 맞는 일정이 없습니다.</p>
@@ -44,9 +44,9 @@
           <button class="secondary-button" @click="moveMonth(1)">다음 달</button>
         </div>
         <div class="calendar-legend">
-          <span class="event-sale">할인</span>
-          <span class="event-game">게임</span>
-          <span class="event-release">출시</span>
+          <span class="event-discount">할인</span>
+          <span class="event-game_release">게임 출시</span>
+          <span class="event-hardware_release">장비 출시</span>
         </div>
       </div>
       <div class="calendar-grid">
@@ -56,7 +56,7 @@
           <span>{{ day }}</span>
           <p v-for="event in eventsByDay(day)" :key="event.title" :class="`event-${event.type}`">
             <strong>{{ eventLabel(event.type) }}</strong>
-            {{ event.game }}
+            {{ event.title }}
           </p>
         </div>
       </div>
@@ -72,46 +72,33 @@ import api from "../../services/api";
 const events = ref([]);
 const viewMode = ref("schedule");
 const activeFilter = ref("all");
-const gameQuery = ref("");
-const currentYear = ref(2026);
-const currentMonth = ref(6);
+const searchQuery = ref("");
+const currentYear = ref(new Date().getFullYear());
+const currentMonth = ref(new Date().getMonth() + 1);
 const weekDays = ["월", "화", "수", "목", "금", "토", "일"];
 const filters = [
   { label: "전체", value: "all" },
-  { label: "할인", value: "sale" },
-  { label: "게임", value: "game" },
-  { label: "출시", value: "release" },
+  { label: "할인", value: "discount" },
+  { label: "게임 출시", value: "game_release" },
+  { label: "장비 출시", value: "hardware_release" },
 ];
-const fallbackGames = {
-  "Steam 여름 할인 시작": "Steam 전체",
-  "It Takes Two 할인 종료": "It Takes Two",
-  "관심 게임 출시 예정": "Civilization VII",
-};
 
 onMounted(async () => {
   const { data } = await api.get("/catalog/calendar/");
-  events.value = [
-    ...data.map((event) => ({
-      ...event,
-      game: fallbackGames[event.title] || event.title,
-      type: event.type === "alert" ? "game" : event.type,
-    })),
-    { date: "2026-06-12", title: "Hades II 패치 업데이트", game: "Hades II", type: "game" },
-    { date: "2026-06-18", title: "Civilization VII 예약 할인", game: "Civilization VII", type: "sale" },
-    { date: "2026-06-30", title: "인디 신작 출시", game: "신규 인디 게임", type: "release" },
-  ];
+  events.value = data;
 });
 
 const filteredEvents = computed(() => {
-  const keyword = gameQuery.value.trim().toLowerCase();
+  const keyword = searchQuery.value.trim().toLowerCase();
   return events.value.filter((event) => {
     const matchesType = activeFilter.value === "all" || event.type === activeFilter.value;
     const matchesKeyword =
       !keyword ||
-      [event.game, event.title].some((value) => String(value).toLowerCase().includes(keyword));
+      [event.title, event.description].some((v) => String(v || "").toLowerCase().includes(keyword));
     return matchesType && matchesKeyword;
   });
 });
+
 const daysInMonth = computed(() => new Date(currentYear.value, currentMonth.value, 0).getDate());
 const leadingBlanks = computed(() => {
   const day = new Date(currentYear.value, currentMonth.value - 1, 1).getDay();
@@ -119,7 +106,7 @@ const leadingBlanks = computed(() => {
 });
 
 function eventLabel(type) {
-  return { sale: "할인", game: "게임", release: "출시" }[type] || type;
+  return { discount: "할인", game_release: "게임 출시", hardware_release: "장비 출시" }[type] || type;
 }
 
 function eventsByDay(day) {
