@@ -1,13 +1,14 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
+import api from "../../services/api";
 import { useAuthStore } from "../../stores/auth";
 
 const auth = useAuthStore();
 
 // ── Constants ──────────────────────────────────────────────
-const CW = 640, CH = 200;
-const FLOOR = 148;
+const CW = 640, CH = 320;
+const FLOOR = 248;
 const NPC_X = 548;
 const NEAR_DIST = 64;
 const SPD = 2.8;
@@ -21,6 +22,8 @@ const interactionOpen = ref(false);
 const introSpeechDismissed = ref(false);
 const answers = ref([]);
 const saveMessage = ref("");
+const resultSaving = ref(false);
+const resultSaved = ref(false);
 // Reactive playerX so computed props stay in sync
 const playerX = ref(60);
 
@@ -50,12 +53,12 @@ const sndChoose  = () => [330, 440, 550, 880].forEach((f, i) => setTimeout(() =>
 
 // ── Scenes ─────────────────────────────────────────────────
 const scenes = [
-  { id:"gate",    type:"intro",  title:"취향의 관문",      theme:"gate",    actor:"fairy",
+  { id:"gate",    type:"intro",  title:"원정의 시작",      theme:"gate",    actor:"fairy",
     npcName:"루미", fairy:"A·D (또는 ← →) 이동, W (또는 ↑) 점프, Z (또는 Space) 상호작용!",
     text:"NPC 곁에 다가가 Z를 눌러. 장면마다 선택지를 고르면 다음 스테이지가 열려.", tags:["튜토리얼"] },
   { id:"rival",   title:"다리 위의 라이벌",  theme:"arena",   actor:"rival",
     npcName:"도전자", fairy:"저 플레이어가 길을 막고 있어. 다가가서 말을 걸어봐.",
-    text:"상대가 바로 대결을 걸어왔다!", tags:["경쟁","대전"],
+    text:"우하하 나와 실력을 겨루자!!", tags:["경쟁","대전"],
     choices:[
       { text:"바로 승부한다",    tone:"승부욕이 올라온다",   scores:{competitive:3,action:1},    tags:["경쟁형","PvP선호"] },
       { text:"패턴 보고 공략",   tone:"이길 방법부터 찾는다", scores:{strategy:3,challenge:1},    tags:["전략형","공략선호"] },
@@ -63,7 +66,7 @@ const scenes = [
     ]},
   { id:"helper",  title:"고장 난 수레",      theme:"village", actor:"helper",
     npcName:"여행자", fairy:"수레 바퀴가 빠졌대. 다가가서 도움을 줄 수 있어.",
-    text:"도와주면 마을의 이야기를 얻을 수 있어.", tags:["협동","선택"],
+    text:"도와줘!! 내 수레에 바퀴가 빠져서 집에 갈 수 없어!ㅠㅠ", tags:["협동","선택"],
     choices:[
       { text:"같이 고쳐준다",    tone:"같이 해결하는 게 좋다", scores:{social:3,story:1},         tags:["협동형","서포터"] },
       { text:"도구만 건네준다",  tone:"효율적으로 돕는다",     scores:{strategy:2,social:1},      tags:["실용형","균형형"] },
@@ -71,7 +74,7 @@ const scenes = [
     ]},
   { id:"scenery", title:"노을빛 숲길",        theme:"forest",  actor:"scenery",
     npcName:"샛길", fairy:"저쪽 샛길이 엄청 예뻐. 가볼 만할 것 같아.",
-    text:"샛길엔 숨겨진 풍경과 작은 이야기가 있어.", tags:["탐험","감성"],
+    text:"이 샛길로 가면 오래걸리지만 숨겨진 멋진 풍경과 작은 선물들이 있어", tags:["탐험","감성"],
     choices:[
       { text:"샛길로 돌아간다",  tone:"맵 구경은 못 참아",     scores:{exploration:3,cozy:1},     tags:["탐험형","오픈월드"] },
       { text:"풍경만 보고 복귀", tone:"분위기와 진행 둘 다",   scores:{story:2,strategy:1},       tags:["균형형","서사선호"] },
@@ -79,21 +82,21 @@ const scenes = [
     ]},
   { id:"ruin",    title:"어두운 유적",        theme:"dungeon", actor:"dungeon",
     npcName:"수상한 문", fairy:"문 앞까지 가보자. 안쪽은 위험하지만 보상이 있을 수도 있어.",
-    text:"문 너머에 강한 적과 퍼즐, 숨겨진 보상이 있어.", tags:["도전","공포"],
+    text:"이 문으로 들어오면 강한 몬스터와 함정이 있지만 숨겨진 보물들이 있다", tags:["도전","공포"],
     choices:[
       { text:"위험해도 들어간다",  tone:"실패해도 다시 하면 돼", scores:{challenge:3,action:1},    tags:["도전형","하드코어"] },
       { text:"단서 모은 뒤 진입", tone:"준비한 만큼 편해진다",  scores:{strategy:3,exploration:1},tags:["전략형","퍼즐선호"] },
       { text:"오늘은 밝은 곳이 좋아", tone:"긴장감은 피하고 싶어", scores:{cozy:3,story:1},       tags:["힐링형","라이트유저"] },
     ]},
-  { id:"market",  title:"할인 상인의 마차",   theme:"market",  actor:"shop",
+  { id:"market",  title:"보드게임 상인의 마차",   theme:"market",  actor:"shop",
     npcName:"상인", fairy:"마지막이야! 상인이 게임 살 때의 습관을 물어볼 거야.",
-    text:"신작, 할인, 친구 추천... 지금 사는 선택도 취향이야.", tags:["구매성향"],
+    text:"없는게 없지만 우리 상점 보드게임 가격은 항상 변한다구!", tags:["구매성향"],
     choices:[
-      { text:"할인율 먼저 확인",       tone:"가격 타이밍이 제일 중요해", scores:{strategy:2,cozy:1},       tags:["할인헌터","가성비"] },
+      { text:"가격 변동 파악하기",     tone:"가격 타이밍이 제일 중요해", scores:{strategy:2,cozy:1},       tags:["할인헌터","가성비"] },
       { text:"같이 할 수 있는지 본다", tone:"같이 하면 훨씬 재밌어",      scores:{social:3,competitive:1},  tags:["파티플레이","멀티선호"] },
-      { text:"트레일러 보고 바로 구매",tone:"꽂히면 바로 시작!",           scores:{action:2,story:2},        tags:["직감형","몰입형"] },
+      { text:"보드게임 표지 보고 바로 구매", tone:"꽂히면 바로 시작!",           scores:{action:2,story:2},        tags:["직감형","몰입형"] },
     ]},
-  { id:"result",  type:"result", title:"취향 결정의 제단",  theme:"result",  actor:"fairy",
+  { id:"result",  type:"result", title:"선택의 제단",  theme:"result",  actor:"fairy",
     npcName:"루미", fairy:"여기까지 직접 걸어온 선택들이 꽤 선명해졌어.",
     text:"이번 모험에서 고른 행동을 바탕으로 취향 태그를 만들었어.", tags:["결과"] },
 ];
@@ -114,6 +117,11 @@ const currentScene   = computed(() => scenes[sceneIndex.value]);
 const playableScenes = computed(() => scenes.filter(s => s.choices));
 const completedCount = computed(() => answers.value.length);
 const isComplete     = computed(() => currentScene.value.type === "result");
+const hudStageLabel  = computed(() => {
+  if (currentScene.value.type === "intro") return "START";
+  if (isComplete.value) return "RESULT";
+  return `STAGE ${Math.min(completedCount.value + 1, playableScenes.value.length)} / ${playableScenes.value.length}`;
+});
 const isNearNpc      = computed(() => Math.abs(playerX.value - NPC_X) <= NEAR_DIST);
 const canInteract    = computed(() => isNearNpc.value && !interactionOpen.value && !isComplete.value);
 
@@ -176,6 +184,17 @@ function drawBg(theme, t) {
   if (theme === "forest") {
     for (let i=0;i<7;i++) { const tx=(i*100-t*0.018)%(CW+80)-40; tree(tx,FLOOR,["#1a5228","#2a6438","#3a7448"][i%3]); }
     cloud(60-t*0.006,20,0.55);
+    // Distant glowing island
+    const ig=Math.sin(t*0.0015)*0.4+0.6;
+    ctx.fillStyle=`rgba(255,220,100,${ig*0.14})`; ctx.fillRect(428,55,130,90);
+    ctx.fillStyle=`rgba(255,235,140,${ig*0.22})`; ctx.fillRect(448,68,90,65);
+    r(452,110,78,10,"#4a3820"); r(448,100,82,12,"#5a4828"); r(446,90,84,12,"#6a5830");
+    r(446,87,84,5,"#3a8030"); r(446,85,84,3,"#4a9840");
+    r(454,73,4,15,"#5a3a1a"); r(450,59,14,16,"#2a6438");
+    r(472,74,4,13,"#5a3a1a"); r(468,61,16,15,"#1a5228");
+    r(494,73,4,15,"#5a3a1a"); r(490,60,14,15,"#3a7448");
+    ctx.fillStyle=`rgba(255,245,170,${ig*0.9})`; ctx.fillRect(481,75,6,6);
+    ctx.fillStyle=`rgba(255,255,220,${ig*0.6})`; ctx.fillRect(478,72,12,12);
   }
   if (theme === "dungeon") {
     for (let i=0;i<7;i++) r(40+i*88,0,14,14+(i%3)*10,"#1e2230");
@@ -190,12 +209,14 @@ function drawBg(theme, t) {
     cloud(90-t*0.009,28,0.7);
   }
   if (theme === "result") {
-    for (let i=0;i<26;i++) {
-      const sx=(i*134+t*0.012*(i%3+1))%CW, sy=(i*93.7)%(FLOOR-24);
-      ctx.fillStyle=`rgba(190,130,255,${Math.sin(t*0.002+i)*0.5+0.5})`; ctx.fillRect(sx,sy,4,4);
+    const RC={competitive:["#5c0000","#9a1a00"],strategy:["#5c2800","#aa5500"],exploration:["#5c4a00","#aa8800"],social:["#003c00","#007722"],story:["#00148c","#0022d0"],action:["#00005c","#000099"],challenge:["#340066","#5500aa"],cozy:["#004040","#007777"]};
+    const sk=RC[topKey.value]||RC.cozy;
+    const rg2=ctx.createLinearGradient(0,0,0,FLOOR); rg2.addColorStop(0,sk[0]); rg2.addColorStop(1,sk[1]);
+    ctx.fillStyle=rg2; ctx.fillRect(0,0,CW,FLOOR);
+    for (let i=0;i<30;i++) {
+      const sx=(i*97+t*0.01*(i%4+1))%CW, sy=(i*71.3)%(FLOOR-20);
+      ctx.fillStyle=`rgba(255,255,200,${Math.sin(t*0.002+i)*0.45+0.55})`; ctx.fillRect(sx,sy,3,3);
     }
-    r(NPC_X-26,FLOOR-80,52,80,"#6030b0"); r(NPC_X-16,FLOOR-98,32,22,"#8050d0"); r(NPC_X-8,FLOOR-110,16,16,"#a070f0");
-    ctx.fillStyle=`rgba(130,70,255,${0.18+Math.sin(t*0.003)*0.08})`; ctx.fillRect(NPC_X-48,FLOOR-118,96,118);
   }
 }
 
@@ -216,8 +237,9 @@ function house(x, y) {
 
 function drawFloor(theme) {
   const cols = { gate:["#5a9838","#4a8828"], arena:["#9a5220","#7a3a10"], village:["#5aaa40","#4a9a30"],
-    forest:["#2a6828","#1e5020"], dungeon:["#20263a","#181e2c"], market:["#b07828","#906020"], result:["#381268","#280a50"] };
-  const [c1,c2] = cols[theme] || cols.gate;
+    forest:["#2a6828","#1e5020"], dungeon:["#20263a","#181e2c"], market:["#b07828","#906020"] };
+  const RFC={competitive:["#4a0000","#340000"],strategy:["#4a1c00","#341000"],exploration:["#4a3800","#342800"],social:["#003000","#002000"],story:["#001066","#000a44"],action:["#000044","#00002c"],challenge:["#280050","#1a0038"],cozy:["#003030","#002020"]};
+  const [c1,c2] = theme==="result" ? (RFC[topKey.value]||RFC.cozy) : (cols[theme]||cols.gate);
   for (let i=0;i<Math.ceil(CW/36)+1;i++) {
     r(i*36,FLOOR+6,36,16,i%2===0?c1:c2); r(i*36+18,FLOOR+22,36,16,i%2===0?c2:c1);
     r(i*36,FLOOR+38,36,CH-FLOOR-38,i%2===0?c2:c1);
@@ -469,7 +491,7 @@ function draw(t) {
   drawBg(scene.theme, t);
   drawFloor(scene.theme);
   if (scene.id !== "gate") fairy(pl.x+20, pl.y-62, t);
-  drawNpc(scene.actor, t);
+  if (!isComplete.value) drawNpc(scene.actor, t);
   if (isNearNpc.value && !interactionOpen.value && !isComplete.value) drawIndicator(t);
   hero(pl.x, pl.y, pl.dir, pl.frame, pl.grounded);
 }
@@ -543,13 +565,42 @@ function advance(idx) {
 function reset() {
   sceneIndex.value=0; pl.x=60; pl.y=FLOOR; pl.dir=1; pl.frame=0; pl.grounded=true;
   playerX.value=60; interactionOpen.value=false; introSpeechDismissed.value=false;
-  answers.value=[]; saveMessage.value="";
+  answers.value=[]; saveMessage.value=""; resultSaving.value=false; resultSaved.value=false;
 }
 
 async function saveTags() {
-  if (!auth.user) return;
-  await auth.updateProfile({ ...auth.user, hashtags: result.value.tags });
-  saveMessage.value = "프로필 취향 태그에 저장했어!";
+  if (!auth.user || resultSaving.value || resultSaved.value) return;
+  resultSaving.value = true;
+  const scoreMap = scores.value;
+  try {
+    await api.post("/accounts/taste-results/", {
+      result_key: topKey.value,
+      result_title: result.value.title,
+      result_summary: result.value.summary,
+      competitive_score: scoreMap.competitive || 0,
+      strategy_score: scoreMap.strategy || 0,
+      exploration_score: scoreMap.exploration || 0,
+      social_score: scoreMap.social || 0,
+      story_score: scoreMap.story || 0,
+      action_score: scoreMap.action || 0,
+      challenge_score: scoreMap.challenge || 0,
+      cozy_score: scoreMap.cozy || 0,
+      tags: result.value.tags,
+      recommended_games: result.value.games,
+      answers: answers.value.map((answer) => ({
+        scene_id: answer.sceneId,
+        choice: answer.label,
+        tone: answer.tone,
+        scores: answer.scores,
+        tags: answer.tags,
+      })),
+    });
+    resultSaved.value = true;
+    await auth.updateProfile({ ...auth.user, hashtags: result.value.tags });
+    saveMessage.value = "미니게임 결과와 프로필 취향 태그를 저장했어!";
+  } finally {
+    resultSaving.value = false;
+  }
 }
 
 onMounted(() => {
@@ -573,8 +624,8 @@ onBeforeUnmount(() => {
     <div class="bit-page-header">
       <RouterLink class="bit-back" to="/taste">← 성향 분석으로</RouterLink>
       <div>
-        <h1 class="bit-title">8비트 취향 원정대</h1>
-        <p class="bit-subtitle">직접 걸어가 NPC와 상호작용하며 내 게임 취향을 찾는 벨트스크롤형 미니게임</p>
+        <h1 class="bit-title">도트 원정대</h1>
+        <p class="bit-subtitle">직접 걸어가 NPC와 상호작용하며 내 게임 취향을 찾는 미니게임</p>
       </div>
       <button class="bit-reset-btn" @click="reset">↺ 처음부터</button>
     </div>
@@ -583,7 +634,7 @@ onBeforeUnmount(() => {
       <div class="bit-game-col">
         <!-- HUD -->
         <div class="bit-hud">
-          <span class="bit-hud-stage">STAGE {{ Math.min(completedCount+1, playableScenes.length) }} / {{ playableScenes.length }}</span>
+          <span class="bit-hud-stage">{{ hudStageLabel }}</span>
           <strong class="bit-hud-title">{{ currentScene.title }}</strong>
           <span class="bit-hud-tags">{{ currentScene.tags.join(" · ") }}</span>
         </div>
@@ -645,7 +696,9 @@ onBeforeUnmount(() => {
             <span v-for="game in result.games" :key="game">{{ game }}</span>
           </div>
           <div class="bit-result-actions">
-            <button class="bit-btn-primary" @click="saveTags">프로필에 저장</button>
+            <button class="bit-btn-primary" :disabled="resultSaving || resultSaved" @click="saveTags">
+              {{ resultSaved ? "저장 완료" : resultSaving ? "저장 중" : "프로필에 저장" }}
+            </button>
             <button class="bit-btn-ghost" @click="reset">↺ 다시 플레이</button>
           </div>
           <p v-if="saveMessage" class="bit-save-msg">{{ saveMessage }}</p>

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from games.models import Game, UserGame
-from .models import PCSpec
+from .models import PCSpec, TasteMiniGameResult
 
 User = get_user_model()
 
@@ -26,6 +26,33 @@ class UserBasicSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         url = obj.profile_image.url
         return request.build_absolute_uri(url) if request else url
+
+
+class TasteMiniGameResultSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = TasteMiniGameResult
+        fields = [
+            "id",
+            "user_id",
+            "result_key",
+            "result_title",
+            "result_summary",
+            "competitive_score",
+            "strategy_score",
+            "exploration_score",
+            "social_score",
+            "story_score",
+            "action_score",
+            "challenge_score",
+            "cozy_score",
+            "tags",
+            "recommended_games",
+            "answers",
+            "created_at",
+        ]
+        read_only_fields = ["id", "user_id", "created_at"]
 
 
 class UserSerializer(serializers.ModelSerializer):

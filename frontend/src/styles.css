@@ -1909,6 +1909,51 @@ label {
   background: #17637d;
 }
 
+.taste-axis-bar {
+  display: grid;
+  gap: 6px;
+}
+
+.taste-axis-bar-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: #344155;
+}
+
+.taste-axis-bar-label span {
+  position: static;
+  border-left: 0;
+  padding-left: 0;
+  color: #344155;
+}
+
+.taste-axis-bar-label span::before {
+  display: none;
+}
+
+.taste-axis-bar-label strong {
+  color: #142131;
+  font-size: 13px;
+}
+
+.taste-axis-bar-track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e5edf5;
+}
+
+.taste-axis-bar-track i {
+  display: block;
+  width: var(--axis-score);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--axis-color);
+}
+
 .taste-action-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 240px;
@@ -1934,10 +1979,13 @@ label {
   min-height: 150px;
   border: 1px solid #dbe3ee;
   border-radius: 8px;
-  background: #ffffff;
+  background-color: #142131;
+  background-position: center;
+  background-size: cover;
   padding: 14px;
-  color: inherit;
+  color: #ffffff;
   text-decoration: none;
+  overflow: hidden;
 }
 
 .taste-recommend-cards a:hover,
@@ -1947,7 +1995,7 @@ label {
 }
 
 .taste-recommend-cards span {
-  color: #17637d;
+  color: #9ce8b0;
   font-size: 13px;
   font-weight: 900;
 }
@@ -1958,14 +2006,14 @@ label {
 
 .taste-recommend-cards p {
   margin: 0;
-  color: #4c5b70;
+  color: #dbe8f6;
   font-size: 14px;
   line-height: 1.5;
 }
 
 .taste-recommend-cards em {
   align-self: end;
-  color: #176457;
+  color: #f8d66d;
   font-size: 13px;
   font-style: normal;
   font-weight: 900;
@@ -1981,6 +2029,42 @@ label {
     #172235;
   color: #e9f2ff;
   text-decoration: none;
+}
+
+.mini-game-column {
+  display: grid;
+  gap: 12px;
+  align-content: stretch;
+}
+
+.mini-game-result-card {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  min-height: 148px;
+  border: 1px solid color-mix(in srgb, var(--mini-result-accent), #ffffff 50%);
+  border-left: 5px solid var(--mini-result-accent);
+  border-radius: 8px;
+  padding: 16px;
+  color: #142131;
+  box-shadow: 0 10px 22px rgba(20, 33, 49, 0.08);
+}
+
+.mini-game-result-card span {
+  color: var(--mini-result-accent);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.mini-game-result-card strong {
+  font-size: 20px;
+}
+
+.mini-game-result-card p {
+  margin: 0;
+  color: #344155;
+  font-size: 13px;
+  line-height: 1.55;
 }
 
 .mini-game-cta span {
@@ -4514,7 +4598,7 @@ select {
   margin-right: 4px;
 }
 
-/* ── 8비트 취향 원정대 ─────────────────────────────────── */
+/* ── 도트 원정대 ─────────────────────────────────── */
 
 .bit-page {
   display: grid;
@@ -4541,9 +4625,9 @@ select {
 .bit-title {
   margin: 0;
   font-size: 22px;
-  font-family: "Courier New", monospace;
+  font-family: inherit;
   font-weight: 900;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 
 .bit-subtitle {
@@ -4610,6 +4694,7 @@ select {
   display: block;
   width: 100%;
   height: auto;
+  aspect-ratio: 2 / 1;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
@@ -4861,6 +4946,12 @@ select {
   box-shadow: 0 3px 0 #1f2a3a;
 }
 .bit-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 0 #1f2a3a; }
+.bit-btn-primary:disabled {
+  cursor: default;
+  opacity: 0.62;
+  transform: none;
+  box-shadow: 0 2px 0 #1f2a3a;
+}
 
 .bit-btn-ghost {
   border: 2px solid #1f2a3a; border-radius: 8px;

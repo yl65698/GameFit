@@ -13,6 +13,7 @@ urlpatterns = [
     path("me/profile/", views.update_profile, name="update_profile"),
     path("me/pc-spec/", views.update_pc_spec, name="update_pc_spec"),
     path("profile/", views.update_profile, name="profile"),
+    path("taste-results/", views.taste_minigame_results, name="taste_minigame_results"),
     path("password/change/", views.change_password, name="change_password"),
     path("users/search/", views.search_users, name="search_users"),
     path("users/<int:user_id>/", views.user_detail, name="user_detail"),
