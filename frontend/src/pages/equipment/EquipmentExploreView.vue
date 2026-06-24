@@ -100,9 +100,6 @@ const filtered = computed(() => {
   });
 });
 
-<<<<<<< HEAD
-async function runAiRecommendation() {
-=======
 function imageBackground(url) {
   if (!url) return {};
   return {
@@ -111,7 +108,6 @@ function imageBackground(url) {
 }
 
 function runAiRecommendation() {
->>>>>>> 1b33145453e61c91df1ebb21f43c04b0c993ca19
   const prompt = aiPrompt.value.trim();
   if (!prompt) return;
   aiError.value = "";

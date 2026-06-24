@@ -2,14 +2,6 @@
   <section class="equipment-detail-page">
     <RouterLink class="detail-back" to="/equipment">← 목록으로 돌아가기</RouterLink>
 
-<<<<<<< HEAD
-    <div class="equipment-detail-shell">
-      <main class="equipment-detail-main">
-        <section class="equipment-summary-row">
-          <div class="equipment-hero-image" :style="{ backgroundImage: `linear-gradient(120deg, rgba(12, 18, 28, 0.08), rgba(12, 18, 28, 0.62)), url(${equipmentImage})` }">
-            <span>{{ item.type || "장비" }}</span>
-          </div>
-=======
     <header class="detail-header">
       <div class="detail-art equipment-art" :style="imageBackground(item.image_url)">
         <span>{{ item.type }}</span>
@@ -29,7 +21,6 @@
         <p>{{ price }}원</p>
       </aside>
     </header>
->>>>>>> 1b33145453e61c91df1ebb21f43c04b0c993ca19
 
           <div class="equipment-title-block">
             <h1>{{ item.name || "장비 이름" }}</h1>

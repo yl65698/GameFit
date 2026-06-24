@@ -13,21 +13,6 @@
       <button class="session-logout" @click="handleLogout">로그아웃</button>
     </header>
 
-<<<<<<< HEAD
-    <div class="welcome-media">
-      <div class="media-grid">
-        <div class="media-card is-large">
-          <span>내 PC로 구동 가능</span>
-          <strong>RTX 3070 Ti</strong>
-        </div>
-        <div class="media-card">
-          <span>최대 할인</span>
-          <strong>75%</strong>
-        </div>
-        <div class="media-card">
-          <span>AI 취향 분석</span>
-          <strong>전략 · 협동</strong>
-=======
     <div class="welcome-hero">
       <div class="welcome-media">
         <div class="media-grid">
@@ -68,28 +53,10 @@
             <button class="primary-button" @click="openModal('login')">로그인</button>
             <button class="secondary-button" @click="openModal('signup')">회원가입</button>
           </template>
->>>>>>> 1b33145453e61c91df1ebb21f43c04b0c993ca19
         </div>
       </div>
     </div>
 
-<<<<<<< HEAD
-    <div class="welcome-copy">
-      <p class="eyebrow">GameFit — AI 게임 플랫폼</p>
-      <h1>내 PC와 취향에 딱 맞는 게임을 찾아드립니다</h1>
-      <p>
-        PC 사양 기반 구동 가능 여부, 할인 타이밍 알림, AI 맞춤 추천까지 — 게임 구매 결정을 한 번에.
-      </p>
-      <div class="welcome-actions">
-        <template v-if="auth.isAuthenticated">
-          <RouterLink class="primary-button" to="/profile">찾아보러가기</RouterLink>
-        </template>
-        <template v-else>
-          <button class="primary-button" @click="openModal('login')">로그인</button>
-          <button class="secondary-button" @click="openModal('signup')">회원가입</button>
-        </template>
-      </div>
-=======
     <div v-if="featuredGames.length > 1" class="slideshow-dots">
       <button
         v-for="(g, i) in featuredGames"
@@ -98,7 +65,6 @@
         :class="{ active: i === currentIndex }"
         @click="goTo(i)"
       />
->>>>>>> 1b33145453e61c91df1ebb21f43c04b0c993ca19
     </div>
 
     <div v-if="mode" class="modal-backdrop" @click.self="closeModal">
