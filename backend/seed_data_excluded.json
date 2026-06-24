@@ -3728,7 +3728,7 @@
   "model": "games.game",
   "pk": 324,
   "fields": {
-    "title": "Deus Ex: Human Revolution™  Director's Cut",
+    "title": "Deus Ex: Human Revolution™ - Director's Cut",
     "itad_id": "018d937f-037c-7124-93f1-26fa15dfbad9",
     "description": "2027년 미래를 배경으로 한 사이버펑크 액션 RPG입니다. 사이보그 증강 인간 아담 젠슨이 음모를 파헤치는 스텔스 중심의 디렉터스컷 버전입니다.",
     "genre": "rpg",

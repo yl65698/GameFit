@@ -123,6 +123,30 @@ def my_games(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_reviews(request):
+    reviews = (
+        GameReview.objects
+        .filter(user=request.user)
+        .select_related('game')
+        .order_by('-created_at')
+    )
+    data = [
+        {
+            'id': r.id,
+            'game_id': r.game.id,
+            'game_title': r.game.title,
+            'game_image_url': r.game.image_url,
+            'recommend': r.recommend,
+            'content': r.content,
+            'created_at': r.created_at,
+        }
+        for r in reviews
+    ]
+    return Response(data)
+
+
+@api_view(['GET'])
 @permission_classes([AllowAny])
 def game_reviews(request, game_id):
     try:
@@ -165,6 +189,17 @@ def game_my_review(request, game_id):
         return Response(GameReviewSerializer(review).data)
     except GameReview.DoesNotExist:
         return Response(None)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def game_review_delete(request, game_id):
+    try:
+        review = GameReview.objects.get(game_id=game_id, user=request.user)
+        review.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except GameReview.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['PUT'])

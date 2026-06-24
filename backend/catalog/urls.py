@@ -6,10 +6,11 @@ from .analysis_views import RecommendationsView
 from .calendar_views import CalendarView
 from .community_views import CommunityPostListView
 from .equipment_views import EquipmentDetailView, EquipmentListView
-from .game_views import FilteredGamesView, GameDetailView, GameListView, GameLivePricesView
+from .game_views import FilteredGamesView, GameAutocompleteView, GameDetailView, GameListView, GameLivePricesView
 
 urlpatterns = [
     path("games/", GameListView.as_view(), name="games"),
+    path("games/autocomplete/", GameAutocompleteView.as_view(), name="games-autocomplete"),
     path("games/filter/", FilteredGamesView.as_view(), name="games-filter"),
     path("ai-search/", AISearchView.as_view(), name="ai-search"),
     path("games/<int:game_id>/", GameDetailView.as_view(), name="game-detail"),

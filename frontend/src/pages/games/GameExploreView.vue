@@ -182,10 +182,12 @@ const pageNumbers = computed(() => {
   return result;
 });
 
-onMounted(async () => {
-  const [gamesRes] = await Promise.all([api.get("/catalog/games/")]);
-  games.value = gamesRes.data;
-  await loadFilterGames("top-discount", 1);
+onMounted(() => {
+  // 필터 그리드와 자동완성 목록을 병렬로 로드
+  loadFilterGames("top-discount", 1);
+  api.get("/catalog/games/autocomplete/").then(res => {
+    games.value = res.data;
+  });
 });
 
 async function loadFilterGames(filterType, page = 1) {
