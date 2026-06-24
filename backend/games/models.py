@@ -61,6 +61,7 @@ class Game(models.Model):
     min_cpu = models.CharField(max_length=100, blank=True, default='')
     min_gpu = models.CharField(max_length=100, blank=True, default='')
     min_ram = models.CharField(max_length=50, blank=True, default='4GB')
+    min_storage = models.CharField(max_length=50, blank=True, default='')
     rec_cpu = models.CharField(max_length=100, blank=True, default='')
     rec_gpu = models.CharField(max_length=100, blank=True, default='')
     rec_ram = models.CharField(max_length=50, blank=True, default='8GB')

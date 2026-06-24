@@ -11,7 +11,7 @@ class GameSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'description', 'genre', 'platform',
             'price', 'original_price', 'discount_percent', 'image_url',
-            'min_cpu', 'min_gpu', 'min_ram', 'rec_cpu', 'rec_gpu', 'rec_ram',
+            'min_cpu', 'min_gpu', 'min_ram', 'min_storage', 'rec_cpu', 'rec_gpu', 'rec_ram',
             'created_at', 'is_owned', 'is_interested',
         ]
 

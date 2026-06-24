@@ -287,7 +287,7 @@ const gameImage = computed(() => {
 // ── 사양 정보 ──
 const requirements = computed(() => {
   const g = game.value;
-  const minParts = [g.min_cpu, g.min_gpu, g.min_ram].filter(Boolean);
+  const minParts = [g.min_cpu, g.min_gpu, g.min_ram, g.min_storage].filter(Boolean);
   const recParts = [g.rec_cpu, g.rec_gpu, g.rec_ram].filter(Boolean);
   return {
     minimum: minParts.length ? minParts.join(" / ") : "정보 없음",

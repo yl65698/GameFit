@@ -5,8 +5,14 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import PCSpec
-from .serializers import PCSpecSerializer, ProfileUpdateSerializer, RegisterSerializer, UserSerializer
+from .models import PCSpec, TasteMiniGameResult
+from .serializers import (
+    PCSpecSerializer,
+    ProfileUpdateSerializer,
+    RegisterSerializer,
+    TasteMiniGameResultSerializer,
+    UserSerializer,
+)
 
 User = get_user_model()
 
@@ -77,6 +83,21 @@ def update_pc_spec(request):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def taste_minigame_results(request):
+    if request.method == "GET":
+        results = TasteMiniGameResult.objects.filter(user=request.user)
+        serializer = TasteMiniGameResultSerializer(results, many=True)
+        return Response(serializer.data)
+
+    serializer = TasteMiniGameResultSerializer(data=request.data)
+    if serializer.is_valid():
+        result = serializer.save(user=request.user)
+        return Response(TasteMiniGameResultSerializer(result).data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

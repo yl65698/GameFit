@@ -7,6 +7,40 @@ from hardware.models import Hardware
 from catalog.currency import normalize_price
 
 
+TASTE_AXES = [
+    ("competitive", "랭커형", "competitive_score"),
+    ("strategy", "공략가형", "strategy_score"),
+    ("exploration", "탐험가형", "exploration_score"),
+    ("social", "파티형", "social_score"),
+    ("story", "서사형", "story_score"),
+    ("action", "액션형", "action_score"),
+    ("challenge", "하드코어형", "challenge_score"),
+    ("cozy", "힐링형", "cozy_score"),
+]
+
+GENRE_AXIS_MAP = {
+    "strategy": "strategy",
+    "simulation": "strategy",
+    "fps": "action",
+    "sports": "competitive",
+    "horror": "challenge",
+    "adventure": "exploration",
+    "rpg": "story",
+    "indie": "cozy",
+}
+
+AXIS_GENRE_MAP = {
+    "competitive": ["sports", "fps"],
+    "strategy": ["strategy", "simulation"],
+    "exploration": ["adventure", "rpg"],
+    "social": ["rpg", "adventure", "strategy"],
+    "story": ["rpg", "adventure", "indie"],
+    "action": ["fps", "sports"],
+    "challenge": ["horror", "fps"],
+    "cozy": ["indie", "simulation", "adventure"],
+}
+
+
 def _build_price_history(price_history_qs, max_points=20):
     """
     모든 배포사 포함 → 원화 정규화 → 날짜별 최저가 → 균등 샘플링(첫/끝 필수, 최대 max_points).
@@ -41,6 +75,155 @@ def _build_price_history(price_history_qs, max_points=20):
     # 첫·끝 필수 포함, 나머지는 균등 분배
     indices = sorted({round(i * (n - 1) / (max_points - 1)) for i in range(max_points)})
     return [entries[i] for i in indices]
+
+
+def _axis_for_genre(value):
+    raw = (value or "").strip().lower()
+    if raw in GENRE_AXIS_MAP:
+        return GENRE_AXIS_MAP[raw]
+    if "strategy" in raw or "전략" in raw or "simulation" in raw:
+        return "strategy"
+    if "fps" in raw or "shooter" in raw or "액션" in raw:
+        return "action"
+    if "sports" in raw or "racing" in raw or "대전" in raw:
+        return "competitive"
+    if "horror" in raw or "공포" in raw or "souls" in raw:
+        return "challenge"
+    if "adventure" in raw or "open" in raw or "탐험" in raw:
+        return "exploration"
+    if "rpg" in raw or "story" in raw or "스토리" in raw:
+        return "story"
+    if "indie" in raw or "casual" in raw or "힐링" in raw:
+        return "cozy"
+    if "coop" in raw or "multi" in raw or "협동" in raw:
+        return "social"
+    return None
+
+
+def _normalize_scores(scores):
+    total = sum(max(0, float(value or 0)) for value in scores.values())
+    if total <= 0:
+        return {key: 0 for key in scores}
+    return {key: (max(0, float(value or 0)) / total) * 100 for key, value in scores.items()}
+
+
+def _game_axis_distribution(user_games):
+    scores = {key: 0 for key, _, _ in TASTE_AXES}
+    for user_game in user_games:
+        game = user_game.game
+        axis = _axis_for_genre(game.genre)
+        if axis:
+            scores[axis] += 1
+            continue
+        for game_genre in game.game_genres.all():
+            axis = _axis_for_genre(game_genre.genre.key or game_genre.genre.name)
+            if axis:
+                scores[axis] += 1
+                break
+    return _normalize_scores(scores)
+
+
+def _latest_minigame_distribution(user):
+    from accounts.models import TasteMiniGameResult
+
+    latest = TasteMiniGameResult.objects.filter(user=user).first()
+    scores = {
+        key: getattr(latest, field, 0) if latest else 0
+        for key, _, field in TASTE_AXES
+    }
+    return latest, _normalize_scores(scores)
+
+
+def _combined_taste_axes(user, user_games):
+    latest_result, minigame = _latest_minigame_distribution(user)
+    owned_games = [item for item in user_games if item.status == "owned"]
+    interested_games = [item for item in user_games if item.status == "interested"]
+    owned = _game_axis_distribution(owned_games)
+    interested = _game_axis_distribution(interested_games)
+
+    combined = {}
+    for key, _, _ in TASTE_AXES:
+        combined[key] = minigame[key] * 0.60 + owned[key] * 0.25 + interested[key] * 0.15
+    combined = _normalize_scores(combined)
+
+    axes = [
+        {
+            "id": key,
+            "label": label,
+            "score": round(combined[key]),
+            "sources": {
+                "minigame": round(minigame[key]),
+                "owned": round(owned[key]),
+                "interested": round(interested[key]),
+            },
+        }
+        for key, label, _ in TASTE_AXES
+    ]
+    return latest_result, axes
+
+
+def _build_taste_analysis(axes, owned_games, interested_games):
+    top_axes = sorted(axes, key=lambda item: item["score"], reverse=True)[:4]
+    if not top_axes or not top_axes[0]["score"]:
+        return "아직 분석할 성향 데이터가 부족해요. 도트 원정대를 완료하고 보유/관심 게임을 등록하면 플레이 스타일을 더 선명하게 해석할 수 있어요."
+
+    primary = top_axes[0]
+    secondary = next((axis for axis in top_axes[1:] if axis["score"] > 0), None)
+    owned_count = len(owned_games)
+    interested_count = len(interested_games)
+
+    if secondary:
+        return (
+            f"당신은 {primary['label']} 성향이 {primary['score']}%로 가장 강하고, "
+            f"{secondary['label']} 성향도 {secondary['score']}%로 함께 드러나는 플레이어예요. "
+            f"직접 선택한 도트 원정대 결과에 보유 게임 {owned_count}개와 관심 게임 {interested_count}개의 장르 흐름을 더해 보면, "
+            "즉흥적으로 고르기보다 취향에 맞는 조건을 확인하고 몰입하는 쪽에 가깝습니다."
+        )
+    return (
+        f"당신은 {primary['label']} 성향이 {primary['score']}%로 뚜렷한 플레이어예요. "
+        f"보유 게임 {owned_count}개와 관심 게임 {interested_count}개의 장르 흐름까지 함께 보면, "
+        "한 가지 플레이 방식에 비교적 선명하게 반응하는 타입으로 해석됩니다."
+    )
+
+
+def _recommended_games_for_axes(axes, user_games):
+    owned_or_interested_ids = {item.game_id for item in user_games}
+    picked = []
+    picked_ids = set()
+    top_axes = [axis for axis in sorted(axes, key=lambda item: item["score"], reverse=True) if axis["score"] > 0]
+
+    for axis in top_axes:
+        genres = AXIS_GENRE_MAP.get(axis["id"], [])
+        if not genres:
+            continue
+        candidates = (
+            Game.objects.filter(genre__in=genres)
+            .exclude(id__in=owned_or_interested_ids)
+            .prefetch_related("game_genres__genre", "price_history", "user_games")
+            .order_by("-discount_percent", "price", "-created_at")
+        )
+        for game in candidates[:6]:
+            if game.id in picked_ids:
+                continue
+            picked.append(game)
+            picked_ids.add(game.id)
+            break
+        if len(picked) >= 3:
+            return picked
+
+    if len(picked) < 3:
+        fallback = (
+            Game.objects.exclude(id__in=owned_or_interested_ids | picked_ids)
+            .prefetch_related("game_genres__genre", "price_history", "user_games")
+            .order_by("-discount_percent", "price", "-created_at")
+        )
+        for game in fallback:
+            picked.append(game)
+            picked_ids.add(game.id)
+            if len(picked) >= 3:
+                break
+
+    return picked[:3]
 
 
 def game_to_catalog(game, request=None):
@@ -79,6 +262,7 @@ def game_to_catalog(game, request=None):
         "min_cpu": game.min_cpu,
         "min_gpu": game.min_gpu,
         "min_ram": game.min_ram,
+        "min_storage": game.min_storage,
         "rec_cpu": game.rec_cpu,
         "rec_gpu": game.rec_gpu,
         "rec_ram": game.rec_ram,
@@ -131,7 +315,7 @@ def hardware_to_catalog(item, request=None):
 
 
 def recommendation_payload(user, request=None):
-    user_games = user.user_games.select_related("game").all()
+    user_games = list(user.user_games.select_related("game").prefetch_related("game__game_genres__genre").all())
     genres = [user_game.game.genre for user_game in user_games if user_game.game.genre]
     genre_counts = Counter(genres)
     taste_tags = [label_genre(genre) for genre, _ in genre_counts.most_common(4)]
@@ -152,17 +336,21 @@ def recommendation_payload(user, request=None):
             {"genre": "Indie", "score": 61},
         ]
 
-    preferred_genres = list(genre_counts.keys())
-    games = Game.objects.all()
-    if preferred_genres:
-        games = games.filter(genre__in=preferred_genres)
-    games = games.order_by("-discount_percent", "price")[:8]
+    owned = [item for item in user_games if item.status == "owned"]
+    interested = [item for item in user_games if item.status == "interested"]
+    latest_result, taste_axes = _combined_taste_axes(user, user_games)
+    analysis = _build_taste_analysis(taste_axes, owned, interested)
+    recommended_games = _recommended_games_for_axes(taste_axes, user_games)
 
     return {
         "taste_tags": taste_tags,
-        "report": "보유 및 관심 게임과 현재 할인율을 기준으로 추천을 계산했습니다.",
+        "report": analysis,
+        "taste_axes": taste_axes,
+        "latest_minigame_result_id": latest_result.id if latest_result else None,
         "vector_map": vector_map,
-        "games": [game_to_catalog(game, request) for game in games],
+        "games": [game_to_catalog(game, request) for game in recommended_games],
+        "owned_games": [game_to_catalog(item.game, request) for item in owned],
+        "interested_games": [game_to_catalog(item.game, request) for item in interested],
     }
 
 

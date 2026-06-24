@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from games.models import Game, UserGame
-from .models import PCSpec
+from .models import PCSpec, TasteMiniGameResult
 
 User = get_user_model()
 
@@ -11,6 +11,33 @@ class PCSpecSerializer(serializers.ModelSerializer):
     class Meta:
         model = PCSpec
         fields = ["id", "cpu", "gpu", "ram", "storage", "has_vr", "has_console", "console_type"]
+
+
+class TasteMiniGameResultSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = TasteMiniGameResult
+        fields = [
+            "id",
+            "user_id",
+            "result_key",
+            "result_title",
+            "result_summary",
+            "competitive_score",
+            "strategy_score",
+            "exploration_score",
+            "social_score",
+            "story_score",
+            "action_score",
+            "challenge_score",
+            "cozy_score",
+            "tags",
+            "recommended_games",
+            "answers",
+            "created_at",
+        ]
+        read_only_fields = ["id", "user_id", "created_at"]
 
 
 class UserSerializer(serializers.ModelSerializer):
