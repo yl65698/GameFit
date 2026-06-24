@@ -2,25 +2,15 @@
   <section class="equipment-detail-page">
     <RouterLink class="detail-back" to="/equipment">← 목록으로 돌아가기</RouterLink>
 
-    <header class="detail-header">
-      <div class="detail-art equipment-art" :style="imageBackground(item.image_url)">
-        <span>{{ item.type }}</span>
-      </div>
-      <div>
-        <p class="eyebrow">장비 상세</p>
-        <h1>{{ item.name }}</h1>
-        <p>{{ item.fit }}</p>
-        <div class="button-row">
-          <button class="primary-button">내 장비 추가</button>
-          <button class="secondary-button">관심장비 등록</button>
-        </div>
-      </div>
-      <aside class="buy-signal">
-        <span>내 장비랑 비교</span>
-        <strong>추천</strong>
-        <p>{{ price }}원</p>
-      </aside>
-    </header>
+    <div class="equipment-detail-shell">
+      <main class="equipment-detail-main">
+        <section class="equipment-summary-row">
+          <div
+            class="equipment-hero-image"
+            :style="{ backgroundImage: `linear-gradient(120deg, rgba(12, 18, 28, 0.08), rgba(12, 18, 28, 0.62)), url(${equipmentImage})` }"
+          >
+            <span>{{ item.type || "장비" }}</span>
+          </div>
 
           <div class="equipment-title-block">
             <h1>{{ item.name || "장비 이름" }}</h1>
@@ -59,7 +49,14 @@
             <polyline class="line-chart-grid" points="0,90 600,90" />
             <polyline class="line-chart-grid" points="0,144 600,144" />
             <polyline class="line-chart-line equipment-line" :points="priceChartPoints" />
-            <circle v-for="point in priceHistoryPoints" :key="point.label" class="line-chart-dot equipment-dot" :cx="point.x" :cy="point.y" r="5" />
+            <circle
+              v-for="point in priceHistoryPoints"
+              :key="point.label"
+              class="line-chart-dot equipment-dot"
+              :cx="point.x"
+              :cy="point.y"
+              r="5"
+            />
           </svg>
           <div class="chart-labels">
             <span v-for="point in priceHistoryPoints" :key="point.label">{{ point.label }}</span>
@@ -146,29 +143,37 @@ const auth = useAuthStore();
 const item = ref({});
 const ownedEquipment = ref(JSON.parse(localStorage.getItem("ownedEquipment") || "[]"));
 const actionMessage = ref("");
+
 const price = computed(() => Number(item.value.price || 0).toLocaleString("ko-KR"));
 const detail = computed(() => equipmentDetails[item.value.type] || equipmentDetails.default);
 const maker = computed(() => detail.value.maker(item.value.name || ""));
-const equipmentImage = computed(() => createEquipmentArtwork(item.value.name || "GameFit Gear", item.value.type || "GEAR", detail.value.colors));
+const equipmentImage = computed(() =>
+  createEquipmentArtwork(item.value.name || "GameFit Gear", item.value.type || "GEAR", detail.value.colors),
+);
 const isOwned = computed(() => ownedEquipment.value.includes(item.value.name));
+
 const recommendation = computed(() => {
   if (item.value.type === "VR" && (auth.user?.pc_specs?.vr || "없음") !== "없음") return "비추천";
   return "추천";
 });
+
 const comparisonMessage = computed(() => {
   if (item.value.type === "GPU") return "현재 GPU보다 QHD/AAA 게임 여유가 커져서 업그레이드 체감이 큽니다.";
   if (item.value.type === "CPU") return "전략, 시뮬레이션, 대규모 연산 게임에서 프레임 안정성이 좋아집니다.";
   if (item.value.type === "VR") return "VR 게임을 새로 시작하려는 경우에만 우선순위가 높습니다.";
   return "현재 플레이 스타일에 맞춰 선택할 만한 장비입니다.";
 });
+
 const timingHeadline = computed(() => {
   if ((item.value.price || 0) > 700000) return "할인 알림 후 구매 추천";
   return "가격 안정권, 필요하면 구매";
 });
+
 const timingMessage = computed(() => {
-  if ((item.value.price || 0) > 700000) return "고가 장비라 바로 구매보다 카드/특가 할인 시점을 기다리는 편이 좋아요.";
-  return "최근 가격이 크게 흔들리지 않아서 필요성이 명확하면 지금 구매해도 무난합니다.";
+  if ((item.value.price || 0) > 700000) return "고가 장비는 바로 구매보다 카드/행사 할인 시점을 기다리는 편이 좋습니다.";
+  return "최근 가격 변동이 크지 않아 필요성이 명확하다면 지금 구매해도 무난합니다.";
 });
+
 const markets = computed(() => {
   const base = Number(item.value.price || 0) || 100000;
   return [
@@ -177,10 +182,12 @@ const markets = computed(() => {
     { store: "중고/리퍼", price: Math.floor(base * 0.82), badge: "-18%", url: "https://www.google.com/search?q=" + encodeURIComponent(`${item.value.name || ""} 중고`) },
   ].sort((a, b) => a.price - b.price);
 });
+
 const priceHistory = computed(() => {
   const base = Number(item.value.price || 0) || 100000;
   return [1.08, 1.03, 1.0, 0.96, 0.98, 0.94].map((ratio) => Math.floor(base * ratio));
 });
+
 const priceHistoryPoints = computed(() => {
   const values = priceHistory.value;
   const min = Math.min(...values);
@@ -194,14 +201,17 @@ const priceHistoryPoints = computed(() => {
     };
   });
 });
+
 const priceChartPoints = computed(() => priceHistoryPoints.value.map((point) => `${point.x},${point.y}`).join(" "));
+
 const currentSpecs = computed(() => [
   { label: "CPU", value: auth.user?.pc_specs?.cpu || "AMD 5800X", note: item.value.type === "CPU" ? "비교 대상" : "충분함", highlighted: item.value.type === "CPU" },
   { label: "메모리", value: auth.user?.pc_specs?.memory || "64GB", note: "충분함" },
   { label: "GPU", value: auth.user?.pc_specs?.gpu || "NVIDIA 3070Ti", note: item.value.type === "GPU" ? "업그레이드 후보" : "현재 장비", highlighted: item.value.type === "GPU" },
-  { label: "VR", value: auth.user?.pc_specs?.vr || "없음", note: item.value.type === "VR" ? "새 장비 후보" : "필수 아님", highlighted: item.value.type === "VR" },
+  { label: "VR", value: auth.user?.pc_specs?.vr || "없음", note: item.value.type === "VR" ? "내 장비 후보" : "필수 아님", highlighted: item.value.type === "VR" },
   { label: "콘솔", value: auth.user?.pc_specs?.console || "없음", note: "PC 기준 비교" },
 ]);
+
 const ownedGameMatches = computed(() => {
   const games = auth.user?.owned_games?.length ? auth.user.owned_games : ["Civilization VI", "Dead by Daylight"];
   return games.slice(0, 3).map((title) => ({
@@ -209,6 +219,7 @@ const ownedGameMatches = computed(() => {
     reason: item.value.type === "CPU" ? "시뮬레이션/전략 처리 안정화" : item.value.type === "GPU" ? "그래픽 옵션 여유 확보" : "플레이 경험 확장",
   }));
 });
+
 const interestedGameMatches = computed(() => {
   const games = auth.user?.interested_games?.length ? auth.user.interested_games : ["It Takes Two", "Hades II"];
   return games.slice(0, 3).map((title) => ({
@@ -235,13 +246,6 @@ const equipmentDetails = {
     maker: () => "장비 제조사",
   },
 };
-
-function imageBackground(url) {
-  if (!url) return {};
-  return {
-    backgroundImage: `linear-gradient(180deg, rgba(20, 30, 46, 0.08), rgba(20, 30, 46, 0.72)), url("${url}")`,
-  };
-}
 
 onMounted(async () => {
   const { data } = await api.get(`/catalog/equipment/${route.params.id}/`);

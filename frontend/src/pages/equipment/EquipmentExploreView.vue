@@ -107,7 +107,7 @@ function imageBackground(url) {
   };
 }
 
-function runAiRecommendation() {
+async function runAiRecommendation() {
   const prompt = aiPrompt.value.trim();
   if (!prompt) return;
   aiError.value = "";
