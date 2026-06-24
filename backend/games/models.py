@@ -2,6 +2,30 @@ from django.db import models
 from accounts.models import User
 
 
+class GameShop(models.Model):
+    """ITAD 기반 게임 판매 샵 정보"""
+    itad_id = models.IntegerField(unique=True)
+    name = models.CharField(max_length=100)
+    url = models.URLField(max_length=200, blank=True, default='')
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class Genre(models.Model):
+    key = models.CharField(max_length=50, unique=True)   # 'rpg', 'fps', ...
+    name = models.CharField(max_length=100, unique=True) # 'RPG', 'FPS', ...
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
 class Game(models.Model):
     PLATFORM_CHOICES = [
         ('steam', 'Steam'),
@@ -30,6 +54,10 @@ class Game(models.Model):
     original_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     discount_percent = models.IntegerField(default=0)
     image_url = models.URLField(blank=True, default='')
+    release_date = models.DateField(null=True, blank=True)
+    publisher = models.CharField(max_length=200, blank=True, default='')
+    developer = models.CharField(max_length=200, blank=True, default='')
+    age_rating = models.CharField(max_length=50, blank=True, default='')
     min_cpu = models.CharField(max_length=100, blank=True, default='')
     min_gpu = models.CharField(max_length=100, blank=True, default='')
     min_ram = models.CharField(max_length=50, blank=True, default='4GB')
@@ -42,14 +70,35 @@ class Game(models.Model):
         return self.title
 
 
+class GameGenre(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_genres')
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE, related_name='game_genres')
+
+    class Meta:
+        unique_together = ('game', 'genre')
+
+    def __str__(self):
+        return f"{self.game.title} - {self.genre.name}"
+
+
 class UserGame(models.Model):
     STATUS_CHOICES = [
         ('owned', '보유'),
         ('interested', '관심'),
     ]
+    PLATFORM_CHOICES = [
+        ('steam', 'Steam'),
+        ('epic', 'Epic Games'),
+        ('ubisoft', 'Ubisoft'),
+        ('gog', 'GOG'),
+        ('origin', 'EA/Origin'),
+        ('battlenet', 'Battle.net'),
+        ('other', '기타'),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_games')
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='user_games')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='owned')
+    platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES, blank=True, default='')
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -64,6 +113,7 @@ class GameReview(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     content = models.TextField()
     rating = models.IntegerField(default=5)
+    recommend = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

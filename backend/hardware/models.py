@@ -28,6 +28,7 @@ class Hardware(models.Model):
     original_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     discount_percent = models.IntegerField(default=0)
     image_url = models.URLField(blank=True, default='')
+    description = models.TextField(blank=True, default='')
     specs = models.TextField(blank=True, default='')
     benchmark_score = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)

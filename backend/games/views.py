@@ -84,6 +84,7 @@ def game_detail(request, game_id):
 def add_user_game(request):
     game_id = request.data.get('game_id')
     status_val = request.data.get('status', 'owned')
+    platform_val = request.data.get('platform', '')
     try:
         game = Game.objects.get(pk=game_id)
     except Game.DoesNotExist:
@@ -91,10 +92,12 @@ def add_user_game(request):
 
     user_game, created = UserGame.objects.get_or_create(
         user=request.user, game=game,
-        defaults={'status': status_val}
+        defaults={'status': status_val, 'platform': platform_val}
     )
     if not created:
         user_game.status = status_val
+        if platform_val:
+            user_game.platform = platform_val
         user_game.save()
 
     return Response(UserGameSerializer(user_game).data)
@@ -119,20 +122,61 @@ def my_games(request):
     return Response(serializer.data)
 
 
-@api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+@api_view(['GET'])
+@permission_classes([AllowAny])
 def game_reviews(request, game_id):
     try:
         game = Game.objects.get(pk=game_id)
     except Game.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'GET':
-        reviews = GameReview.objects.filter(game=game).order_by('-created_at')
-        return Response(GameReviewSerializer(reviews, many=True).data)
+    page = max(1, int(request.query_params.get('page', 1)))
+    qs = GameReview.objects.filter(game=game).order_by('-created_at')
+    paginator = Paginator(qs, 10)
+    page_obj = paginator.get_page(page)
+    return Response({
+        'results': GameReviewSerializer(page_obj, many=True).data,
+        'total': paginator.count,
+        'total_pages': paginator.num_pages,
+        'page': page_obj.number,
+    })
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def game_review_create(request, game_id):
+    try:
+        game = Game.objects.get(pk=game_id)
+    except Game.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     serializer = GameReviewSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save(game=game, user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def game_my_review(request, game_id):
+    try:
+        review = GameReview.objects.get(game_id=game_id, user=request.user)
+        return Response(GameReviewSerializer(review).data)
+    except GameReview.DoesNotExist:
+        return Response(None)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def game_review_update(request, game_id):
+    try:
+        review = GameReview.objects.get(game_id=game_id, user=request.user)
+    except GameReview.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = GameReviewSerializer(review, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

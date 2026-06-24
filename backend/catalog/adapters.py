@@ -4,6 +4,43 @@ from django.db.models import Count, Min, Max
 
 from games.models import Game
 from hardware.models import Hardware
+from catalog.currency import normalize_price
+
+
+def _build_price_history(price_history_qs, max_points=20):
+    """
+    모든 배포사 포함 → 원화 정규화 → 날짜별 최저가 → 균등 샘플링(첫/끝 필수, 최대 max_points).
+    """
+    all_items = list(price_history_qs)
+
+    date_min = {}
+    for item in all_items:
+        raw_price = float(item.price or 0)
+        if raw_price <= 0:
+            continue
+        krw_price, krw_orig = normalize_price(item.price, item.original_price, item.shop_name)
+        if krw_price <= 0:
+            continue
+        d = item.recorded_at.date()
+        if d not in date_min or krw_price < date_min[d]["price"]:
+            date_min[d] = {
+                "shop_name": item.shop_name,
+                "price": krw_price,
+                "original_price": krw_orig,
+                "discount": item.discount_percent,
+                "recorded_at": item.recorded_at.isoformat(),
+            }
+
+    entries = [date_min[d] for d in sorted(date_min)]
+    n = len(entries)
+    if n == 0:
+        return []
+    if n <= max_points:
+        return entries
+
+    # 첫·끝 필수 포함, 나머지는 균등 분배
+    indices = sorted({round(i * (n - 1) / (max_points - 1)) for i in range(max_points)})
+    return [entries[i] for i in indices]
 
 
 def game_to_catalog(game, request=None):
@@ -11,16 +48,26 @@ def game_to_catalog(game, request=None):
     is_authenticated = bool(user and user.is_authenticated)
     is_owned = game.user_games.filter(user=user, status="owned").exists() if is_authenticated else False
     is_interested = game.user_games.filter(user=user, status="interested").exists() if is_authenticated else False
-    price_history = list(game.price_history.order_by("-recorded_at")[:6])
+
+    price_history = _build_price_history(game.price_history.order_by("recorded_at"), max_points=100)
+
+    # GameGenre 기반 다중 장르 (prefetch_related 활용)
+    genres = [
+        {"key": gg.genre.key, "name": gg.genre.name}
+        for gg in game.game_genres.select_related("genre").all()
+    ]
+
+    krw_price, krw_orig = normalize_price(game.price, game.original_price)
 
     return {
         "id": game.id,
         "title": game.title,
         "genre": game.get_genre_display() or game.genre,
         "genre_key": game.genre,
+        "genres": genres,
         "platform": game.get_platform_display() or game.platform,
-        "price": int(game.price or 0),
-        "original_price": int(game.original_price or 0),
+        "price": krw_price,
+        "original_price": krw_orig,
         "discount": game.discount_percent,
         "discount_percent": game.discount_percent,
         "compatibility": compatibility_label(game),
@@ -35,16 +82,11 @@ def game_to_catalog(game, request=None):
         "rec_cpu": game.rec_cpu,
         "rec_gpu": game.rec_gpu,
         "rec_ram": game.rec_ram,
-        "price_history": [
-            {
-                "shop_name": item.shop_name,
-                "price": int(item.price or 0),
-                "original_price": int(item.original_price or 0),
-                "discount": item.discount_percent,
-                "recorded_at": item.recorded_at,
-            }
-            for item in reversed(price_history)
-        ],
+        "price_history": price_history,
+        "release_date": game.release_date.isoformat() if game.release_date else None,
+        "publisher": game.publisher,
+        "developer": game.developer,
+        "age_rating": game.age_rating,
         "is_owned": is_owned,
         "is_interested": is_interested,
     }
@@ -56,6 +98,8 @@ def hardware_to_catalog(item, request=None):
     is_owned = item.user_hardware.filter(user=user, status="owned").exists() if is_authenticated else False
     is_interested = item.user_hardware.filter(user=user, status="interested").exists() if is_authenticated else False
 
+    price_history_qs = list(item.price_history.order_by("-recorded_at")[:12])
+
     return {
         "id": item.id,
         "name": item.name,
@@ -66,12 +110,23 @@ def hardware_to_catalog(item, request=None):
         "original_price": int(item.original_price or 0),
         "discount": item.discount_percent,
         "discount_percent": item.discount_percent,
+        "description": item.description,
         "fit": item.specs or hardware_fit_label(item),
         "specs": item.specs,
         "benchmark_score": item.benchmark_score,
         "image_url": item.image_url,
         "is_owned": is_owned,
         "is_interested": is_interested,
+        "price_history": [
+            {
+                "shop_name": h.shop_name,
+                "price": int(h.price or 0),
+                "original_price": int(h.original_price or 0),
+                "discount": h.discount_percent,
+                "recorded_at": h.recorded_at.isoformat() if h.recorded_at else None,
+            }
+            for h in reversed(price_history_qs)
+        ],
     }
 
 

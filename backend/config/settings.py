@@ -1,7 +1,14 @@
+import os
 from datetime import timedelta
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv(BASE_DIR.parent / ".env")
+except ImportError:
+    pass
 FRONTEND_DIST_DIR = BASE_DIR.parent / "frontend" / "dist"
 
 SECRET_KEY = "dev-only-change-me"

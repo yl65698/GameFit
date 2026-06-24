@@ -36,13 +36,18 @@ class UserGameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserGame
-        fields = ['id', 'game', 'game_id', 'status', 'added_at']
+        fields = ['id', 'game', 'game_id', 'status', 'platform', 'added_at']
 
 
 class GameReviewSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.nickname', read_only=True)
+    avatar = serializers.SerializerMethodField()
 
     class Meta:
         model = GameReview
-        fields = ['id', 'username', 'content', 'rating', 'created_at']
-        read_only_fields = ['id', 'username', 'created_at']
+        fields = ['id', 'username', 'avatar', 'content', 'rating', 'recommend', 'created_at']
+        read_only_fields = ['id', 'username', 'avatar', 'created_at']
+
+    def get_avatar(self, obj):
+        name = obj.user.nickname or obj.user.username or "?"
+        return name[:1].upper()

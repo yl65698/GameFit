@@ -5,15 +5,15 @@
     <div class="game-detail-shell">
       <main class="game-detail-main">
         <section class="game-hero-image" :style="{ backgroundImage: `linear-gradient(120deg, rgba(12, 18, 28, 0.2), rgba(12, 18, 28, 0.72)), url(${gameImage})` }">
-          <span>{{ game.title || "게임 이미지" }}</span>
+          <RouterLink class="hero-community-btn" :to="`/games/${game.id}/community`">커뮤니티 →</RouterLink>
         </section>
 
         <section class="game-title-row">
           <div>
             <h1>{{ game.title || "게임이름" }}</h1>
             <p>{{ game.summary || "간단한 게임 설명" }}</p>
-            <div class="tag-pill-row">
-              <span v-for="keyword in gameKeywords" :key="keyword">{{ keyword }}</span>
+            <div class="genre-tag-row">
+              <span v-for="g in gameGenres" :key="g.key" class="genre-tag">{{ g.name }}</span>
             </div>
           </div>
           <div class="detail-action-stack">
@@ -48,50 +48,51 @@
         <section class="detail-panel price-trend-panel">
           <div class="panel-heading compact">
             <h2>가격 변동 추이</h2>
-            <span>최근 6개월</span>
+            <span>최근 기록</span>
           </div>
-          <svg class="line-chart" viewBox="0 0 600 180" role="img" aria-label="가격 변동 선 그래프">
-            <polyline class="line-chart-grid" points="0,36 600,36" />
-            <polyline class="line-chart-grid" points="0,90 600,90" />
-            <polyline class="line-chart-grid" points="0,144 600,144" />
-            <polyline class="line-chart-line" :points="priceChartPoints" />
-            <circle v-for="point in priceHistoryPoints" :key="point.label" class="line-chart-dot" :cx="point.x" :cy="point.y" r="5" />
-          </svg>
-          <div class="chart-labels">
-            <span v-for="point in priceHistoryPoints" :key="point.label">{{ point.label }}</span>
+          <div v-if="!chartHistory.length" class="empty-state" style="padding: 20px 0;">
+            <p>가격 변동 데이터가 없습니다.</p>
           </div>
+          <template v-else>
+            <svg class="line-chart" viewBox="0 0 660 180" role="img" aria-label="가격 변동 선 그래프">
+              <text
+                v-for="tick in yAxisLabels"
+                :key="tick.y"
+                :x="62"
+                :y="tick.y + 4"
+                class="chart-y-label"
+                text-anchor="end"
+              >{{ tick.label }}</text>
+              <line
+                v-for="tick in yAxisLabels"
+                :key="'grid-' + tick.y"
+                class="line-chart-grid"
+                :x1="68"
+                :y1="tick.y"
+                :x2="648"
+                :y2="tick.y"
+              />
+              <polyline
+                class="line-chart-line"
+                :points="priceChartPoints"
+                :style="chartHistory.length >= 20 ? { strokeWidth: '2.5' } : {}"
+              />
+              <template v-if="chartHistory.length < 20">
+                <circle v-for="point in priceHistoryPoints" :key="point.label" class="line-chart-dot" :cx="point.x" :cy="point.y" r="5" />
+              </template>
+            </svg>
+            <div class="chart-labels">
+              <span>{{ chartEdgeLabels[0] }}</span>
+              <span>{{ chartEdgeLabels[1] }}</span>
+            </div>
+          </template>
         </section>
 
-        <div class="detail-info-grid">
-          <section class="detail-panel">
-            <h2>가격 비교</h2>
-            <div class="price-market-list">
-              <article v-for="market in priceMarkets" :key="market.platform">
-                <strong>{{ market.platform }}</strong>
-                <span>{{ market.price.toLocaleString("ko-KR") }}원</span>
-                <em>{{ market.discount }}%</em>
-                <a class="price-link-button" :href="market.url" target="_blank" rel="noreferrer">이동</a>
-              </article>
-            </div>
-          </section>
-
+        <div class="detail-info-grid-2col">
           <section class="detail-panel">
             <h2>구매 추천 시점</h2>
             <strong class="buy-timing">{{ timingHeadline }}</strong>
             <p>{{ timingMessage }}</p>
-          </section>
-
-          <section class="detail-panel">
-            <div class="panel-heading compact">
-              <h2>게임 정보</h2>
-              <a :href="infoUrl" target="_blank" rel="noreferrer">정보 사이트</a>
-            </div>
-            <dl class="game-info-list">
-              <div v-for="item in gameInfo" :key="item.label">
-                <dt>{{ item.label }}</dt>
-                <dd>{{ item.value }}</dd>
-              </div>
-            </dl>
           </section>
 
           <section class="detail-panel">
@@ -109,38 +110,87 @@
           </section>
         </div>
 
+        <section class="detail-panel live-prices-panel">
+          <div class="panel-heading compact">
+            <h2>실시간 가격 비교</h2>
+            <span v-if="game.original_price" class="lp-original-price">
+              정가 {{ game.original_price.toLocaleString('ko-KR') }}원
+            </span>
+          </div>
+
+          <div v-if="livePricesLoading" class="loading-state" style="padding:16px 0">불러오는 중...</div>
+
+          <template v-else-if="filteredDeals.length">
+            <div class="live-price-list">
+              <div
+                v-for="deal in filteredDeals"
+                :key="deal.shop + deal.price"
+                class="live-price-row"
+                :class="{ 'is-deal': deal.cut > 0, 'is-history-low': deal.is_history_low }"
+              >
+                <span class="lp-shop">{{ deal.shop }}</span>
+                <div class="lp-price-group">
+                  <span class="lp-cut" v-if="deal.cut > 0">-{{ deal.cut }}%</span>
+                  <strong class="lp-price">{{ deal.price.toLocaleString('ko-KR') }}원</strong>
+                </div>
+                <a class="lp-goto" :href="deal.url" target="_blank" rel="noreferrer">샵으로 이동</a>
+              </div>
+            </div>
+          </template>
+
+          <div v-else-if="livePricesLoaded" class="empty-state" style="padding:16px 0">
+            <p>현재 판매 중인 샵 정보가 없습니다.</p>
+          </div>
+        </section>
+
         <section class="review-section">
           <div class="review-heading">
             <h2>게임 의견 및 평가</h2>
             <RouterLink class="secondary-button" :to="`/games/${game.id}/community`">게임 커뮤니티</RouterLink>
           </div>
 
-          <form class="review-form" @submit.prevent="submitReview">
-            <div class="recommend-toggle">
-              <button type="button" :class="{ active: reviewForm.recommend === true }" @click="reviewForm.recommend = true">
-                추천
-              </button>
-              <button type="button" :class="{ active: reviewForm.recommend === false }" @click="reviewForm.recommend = false">
-                비추천
-              </button>
-            </div>
-            <textarea v-model="reviewForm.body" placeholder="이 게임에 대한 의견을 남겨주세요." />
-            <button class="primary-button">댓글 남기기</button>
-          </form>
-
+          <div v-if="reviews.length === 0" class="empty-state" style="padding: 20px 0;">
+            <p>아직 작성된 리뷰가 없습니다. 첫 번째 리뷰를 남겨보세요.</p>
+          </div>
           <article v-for="review in reviews" :key="review.id" class="review-card">
-            <RouterLink class="review-avatar" :to="`/players/${review.username}`">{{ review.avatar }}</RouterLink>
+            <span class="review-avatar">{{ review.avatar }}</span>
             <div>
               <div class="review-meta">
-                <RouterLink :to="`/players/${review.username}`">{{ review.username }}</RouterLink>
+                <span>{{ review.username }}</span>
                 <span :class="['review-vote', review.recommend ? 'good' : 'bad']">
                   {{ review.recommend ? "추천" : "비추천" }}
                 </span>
               </div>
-              <strong>{{ review.title }}</strong>
               <p>{{ review.body }}</p>
             </div>
           </article>
+
+          <div v-if="reviewTotalPages > 1" class="pagination" style="margin-top: 12px;">
+            <button class="page-btn" :disabled="reviewPage === 1" @click="loadReviews(reviewPage - 1)">‹</button>
+            <button
+              v-for="p in reviewTotalPages"
+              :key="p"
+              class="page-btn"
+              :class="{ active: p === reviewPage }"
+              @click="loadReviews(p)"
+            >{{ p }}</button>
+            <button class="page-btn" :disabled="reviewPage === reviewTotalPages" @click="loadReviews(reviewPage + 1)">›</button>
+          </div>
+
+          <form v-if="auth.isAuthenticated" class="review-form" style="margin-top: 24px;" @submit.prevent="submitReview">
+            <div class="recommend-toggle">
+              <button type="button" :class="{ active: reviewForm.recommend === true }" @click="reviewForm.recommend = true">추천</button>
+              <button type="button" :class="{ active: reviewForm.recommend === false }" @click="reviewForm.recommend = false">비추천</button>
+            </div>
+            <div class="review-form-right">
+              <textarea v-model="reviewForm.body" placeholder="이 게임에 대한 의견을 남겨주세요." />
+              <div class="review-form-footer">
+                <p v-if="reviewError" class="error-text" style="margin:0;">{{ reviewError }}</p>
+                <button class="primary-button">{{ myReview ? "의견 수정하기" : "의견 남기기" }}</button>
+              </div>
+            </div>
+          </form>
+          <p v-else class="empty-state" style="margin-top: 20px; text-align: center;">로그인 후 의견을 남길 수 있습니다.</p>
         </section>
       </main>
 
@@ -167,17 +217,13 @@
           </div>
           <span :class="['spec-badge', storageSpec.status]">{{ storageSpec.icon }}</span>
         </div>
-        <div class="storage-meter">
-          <span :style="{ width: `${storageUsage}%` }"></span>
-        </div>
-        <p class="storage-caption">C 드라이브 200GB / 2 TB</p>
 
         <div class="compat-actions">
           <RouterLink class="primary-button" to="/equipment">필요한 장비 구매하기</RouterLink>
           <RouterLink class="secondary-button" to="/profile/edit?tab=pc">내 장비 업데이트</RouterLink>
         </div>
 
-        <section class="upgrade-section">
+        <section v-if="upgrades.length" class="upgrade-section">
           <h3>추천 업그레이드</h3>
           <RouterLink v-for="item in upgrades" :key="item.id" class="upgrade-card" :to="`/equipment/${item.id}`">
             <span>{{ item.type }}</span>
@@ -202,234 +248,234 @@ const auth = useAuthStore();
 const game = ref({});
 const actionMessage = ref("");
 const showPlatformPicker = ref(false);
-const selectedPlatform = ref("Steam");
-const reviewForm = reactive({
-  recommend: true,
-  body: "",
-});
-const localReviews = ref([]);
+const selectedPlatform = ref("steam");
+const reviewForm = reactive({ recommend: true, body: "" });
+const reviews = ref([]);
+const reviewError = ref("");
+const reviewPage = ref(1);
+const reviewTotalPages = ref(1);
+const myReview = ref(null);
+const upgrades = ref([]);
 
 const platforms = [
-  { label: "Steam", value: "Steam" },
-  { label: "Epic games", value: "Epic games" },
-  { label: "Ubisoft", value: "Ubisoft" },
-  { label: "그 외", value: "Other" },
+  { label: "Steam", value: "steam" },
+  { label: "Epic Games", value: "epic" },
+  { label: "Ubisoft", value: "ubisoft" },
+  { label: "그 외", value: "other" },
 ];
 
-const detailByTitle = {
-  "Civilization VII": {
-    keywords: ["전략", "4X", "턴제", "시뮬레이션"],
-    colors: ["#1d3557", "#2a9d8f", "#e9c46a"],
-    publisher: "Firaxis Games",
-    releaseDate: "2025년 예정",
-    ageRating: "12세 이용가",
-    developer: "Firaxis Games",
-    officialUrl: "https://civilization.2k.com/",
-    minimum: "Intel i5급 CPU, GTX 1060, 8GB RAM, 저장공간 50GB",
-    recommended: "Ryzen 7 5800X, RTX 2060 이상, 16GB RAM, 저장공간 80GB",
-    priceHistory: [62000, 59800, 56000, 54800, 49800, 42300],
-  },
-  "It Takes Two": {
-    keywords: ["협동", "퍼즐", "액션", "어드벤처"],
-    colors: ["#5f4bb6", "#86a8e7", "#f9c74f"],
-    publisher: "Electronic Arts",
-    releaseDate: "2021년 3월",
-    ageRating: "12세 이용가",
-    developer: "Hazelight Studios",
-    officialUrl: "https://www.ea.com/games/it-takes-two",
-    minimum: "Intel i3급 CPU, GTX 660, 8GB RAM, 저장공간 50GB",
-    recommended: "Ryzen 5급 CPU, GTX 980 이상, 16GB RAM, 저장공간 50GB",
-    priceHistory: [44000, 33000, 26000, 22000, 19800, 17600],
-  },
-  "Hades II": {
-    keywords: ["액션", "로그라이트", "인디", "싱글플레이"],
-    colors: ["#3a0ca3", "#f72585", "#ffb703"],
-    publisher: "Supergiant Games",
-    releaseDate: "얼리 액세스",
-    ageRating: "15세 이용가",
-    developer: "Supergiant Games",
-    officialUrl: "https://www.supergiantgames.com/games/hades-ii/",
-    minimum: "Dual Core CPU, GTX 950, 8GB RAM, 저장공간 10GB",
-    recommended: "Quad Core CPU, GTX 1060 이상, 16GB RAM, 저장공간 10GB",
-    priceHistory: [32000, 32000, 30400, 28800, 28800, 27200],
-  },
-};
-
-const defaultDetail = {
-  keywords: ["액션", "퍼즐", "인디"],
-  colors: ["#14213d", "#17637d", "#8ad0c2"],
-  publisher: "Game Studio",
-  releaseDate: "출시일 미정",
-  ageRating: "전체 이용가",
-  developer: "Game Studio",
-  officialUrl: "https://store.steampowered.com/",
-  minimum: "GTX 1060, 8GB RAM, 저장공간 50GB",
-  recommended: "RTX 2060, 16GB RAM, 저장공간 80GB",
-  priceHistory: [48000, 46000, 43000, 41000, 39000, 36000],
-};
-
-const detail = computed(() => detailByTitle[game.value.title] || defaultDetail);
-const gameKeywords = computed(() => detail.value.keywords);
-const gameImage = computed(() => game.value.image_url || createGameArtwork(game.value.title || "GameFit", detail.value.keywords, detail.value.colors));
-const isOwned = computed(() => Boolean(game.value.title && (auth.user?.owned_games || []).includes(game.value.title)));
-const isInterested = computed(() => Boolean(game.value.title && (auth.user?.interested_games || []).includes(game.value.title)));
+// ── 보유/관심 상태 (API 응답 기준) ──
+const isOwned = computed(() => game.value.is_owned ?? false);
+const isInterested = computed(() => game.value.is_interested ?? false);
 const isAlertEnabled = computed(() => {
   if (!game.value.title) return false;
-  const alerts = auth.user?.interest_alerts || {};
-  return alerts[game.value.title] ?? true;
+  return (auth.user?.interest_alerts || {})[game.value.title] ?? true;
 });
-const infoUrl = computed(() => detail.value.officialUrl);
-const requirements = computed(() => ({
-  minimum: detail.value.minimum,
-  recommended: detail.value.recommended,
-}));
-const priceMarkets = computed(() => {
-  const base = Number(game.value.price || 0) || 30000;
-  return [
-    {
-      platform: "Steam",
-      price: base,
-      discount: Number(game.value.discount || 0),
-      url: `https://store.steampowered.com/search/?term=${encodeURIComponent(game.value.title || "")}`,
-    },
-    {
-      platform: "Epic games",
-      price: Math.max(0, Math.floor(base * 0.92)),
-      discount: Math.min(80, Number(game.value.discount || 0) + 8),
-      url: `https://store.epicgames.com/ko/browse?q=${encodeURIComponent(game.value.title || "")}`,
-    },
-    {
-      platform: "Ubisoft",
-      price: Math.max(0, Math.floor(base * 0.98)),
-      discount: Math.max(0, Number(game.value.discount || 0) - 5),
-      url: "https://store.ubisoft.com/kr/home",
-    },
-  ].sort((a, b) => a.price - b.price);
+
+// ── 장르 태그 (GameGenre 기반) ──
+const gameGenres = computed(() => game.value.genres || []);
+
+// ── 이미지 (장르명을 SVG 서브타이틀로 활용) ──
+const gameImage = computed(() => {
+  const genreNames = gameGenres.value.slice(0, 3).map((g) => g.name);
+  return (
+    game.value.image_url ||
+    createGameArtwork(game.value.title || "GameFit", genreNames, ["#14213d", "#17637d", "#8ad0c2"])
+  );
 });
+
+// ── 사양 정보 ──
+const requirements = computed(() => {
+  const g = game.value;
+  const minParts = [g.min_cpu, g.min_gpu, g.min_ram].filter(Boolean);
+  const recParts = [g.rec_cpu, g.rec_gpu, g.rec_ram].filter(Boolean);
+  return {
+    minimum: minParts.length ? minParts.join(" / ") : "정보 없음",
+    recommended: recParts.length ? recParts.join(" / ") : "정보 없음",
+  };
+});
+
+// ── 게임 정보 ──
+const gameInfo = computed(() => [
+  { label: "제조사", value: game.value.publisher || "—" },
+  { label: "개발사", value: game.value.developer || "—" },
+  { label: "출시일", value: game.value.release_date || "—" },
+  { label: "권장연령", value: game.value.age_rating || "—" },
+]);
+
+const infoUrl = computed(() =>
+  `https://store.steampowered.com/search/?term=${encodeURIComponent(game.value.title || "")}`
+);
+
+// ── 가격 그래프: 백엔드 price_history + 현재 딜 최저가를 마지막 포인트로 주입 ──
+const chartHistory = computed(() => {
+  const history = [...(game.value.price_history || [])];
+  if (livePricesLoaded.value && livePrices.value.deals?.length) {
+    const bestDeal = livePrices.value.deals[0]; // 가격 오름차순 정렬된 첫 번째 = 최저가
+    const todayIso = new Date().toISOString();
+    if (history.length > 0) {
+      const last = { ...history[history.length - 1] };
+      last.price = bestDeal.price;
+      last.shop_name = bestDeal.shop;
+      last.recorded_at = todayIso;
+      history[history.length - 1] = last;
+    } else {
+      history.push({ price: bestDeal.price, shop_name: bestDeal.shop, recorded_at: todayIso });
+    }
+  }
+  return history;
+});
+
+const priceHistoryPoints = computed(() => {
+  const entries = chartHistory.value;
+  if (!entries.length) return [];
+  const values = entries.map((e) => e.price);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const xStep = entries.length === 1 ? 0 : 580 / (entries.length - 1);
+  return entries.map((entry, i) => ({
+    label: new Date(entry.recorded_at).toLocaleDateString("ko-KR", { year: "numeric", month: "short", day: "numeric" }),
+    x: entries.length === 1 ? 358 : 68 + i * xStep,
+    y: 150 - (max === min ? 0.5 : (entry.price - min) / (max - min)) * 118,
+  }));
+});
+
+function formatYTick(price) {
+  if (price % 10000 === 0) return `${price / 10000}만`;
+  if (price >= 10000) return `${(price / 10000).toFixed(1)}만`;
+  return price.toLocaleString();
+}
+
+const TICK_COUNT = 5;
+
+const yAxisLabels = computed(() => {
+  const entries = chartHistory.value;
+  if (!entries.length) return [];
+  const values = entries.map((e) => e.price);
+  const minVal = Math.min(...values);
+  const maxVal = Math.max(...values);
+
+  if (maxVal === minVal) {
+    return [{ label: formatYTick(minVal), y: 91 }];
+  }
+
+  return Array.from({ length: TICK_COUNT }, (_, i) => {
+    const price = minVal + (i / (TICK_COUNT - 1)) * (maxVal - minVal);
+    const y = 150 - (i / (TICK_COUNT - 1)) * 118;
+    return { label: formatYTick(Math.round(price)), y };
+  });
+});
+
+const chartEdgeLabels = computed(() => {
+  const pts = priceHistoryPoints.value;
+  if (!pts.length) return ["", ""];
+  return [pts[0].label, pts[pts.length - 1].label];
+});
+
+const priceChartPoints = computed(() =>
+  priceHistoryPoints.value.map((p) => `${p.x},${p.y}`).join(" ")
+);
+
+// ── 실시간 가격 비교 (ITAD API) ──
+const livePrices = ref({ deals: [], history_low_all: null, history_low_1y: null, history_low_3m: null });
+const livePricesLoading = ref(false);
+const livePricesLoaded = ref(false);
+
+const filteredDeals = computed(() => {
+  const deals = livePrices.value.deals || [];
+  const basePrice = game.value.original_price || Infinity;
+  return deals.filter((d) => d.cut > 0 && d.price < basePrice);
+});
+
+async function loadLivePrices(gameId) {
+  livePricesLoading.value = true;
+  try {
+    const { data } = await api.get(`/catalog/games/${gameId}/live-prices/`);
+    livePrices.value = data;
+  } catch {
+    livePrices.value = { deals: [], history_low_all: null, history_low_1y: null, history_low_3m: null };
+  } finally {
+    livePricesLoading.value = false;
+    livePricesLoaded.value = true;
+  }
+}
+
+// ── 구매 추천 시점 ──
 const timingHeadline = computed(() => {
-  if ((game.value.discount || 0) >= 50) return "지금 구매 추천";
-  if ((game.value.discount || 0) >= 25) return "관심 등록 후 한 번 더 확인";
+  const d = game.value.discount || 0;
+  if (d >= 50) return "지금 구매 추천";
+  if (d >= 25) return "관심 등록 후 한 번 더 확인";
   return "다음 대형 세일까지 대기";
 });
 const timingMessage = computed(() => {
-  if ((game.value.discount || 0) >= 50) return "최근 가격 흐름상 할인 폭이 충분히 커서 바로 구매해도 괜찮아요.";
-  if ((game.value.discount || 0) >= 25) return "현재도 나쁘지 않지만 이전 최저가보다 높아서 관심게임에 넣고 알림을 보는 쪽이 좋아요.";
+  const d = game.value.discount || 0;
+  if (d >= 50) return "최근 가격 흐름상 할인 폭이 충분히 커서 바로 구매해도 괜찮아요.";
+  if (d >= 25) return "현재도 나쁘지 않지만 이전 최저가보다 높아서 관심게임에 넣고 알림을 보는 쪽이 좋아요.";
   return "할인율이 낮아서 여름/연말 세일 때 다시 확인하는 걸 추천해요.";
 });
-const gameInfo = computed(() => [
-  { label: "제조사", value: detail.value.publisher },
-  { label: "개발사", value: detail.value.developer },
-  { label: "출시일", value: detail.value.releaseDate },
-  { label: "권장연령", value: detail.value.ageRating },
-]);
-const priceHistoryPoints = computed(() => {
-  const values = detail.value.priceHistory;
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  return values.map((value, index) => {
-    const ratio = max === min ? 0.5 : (value - min) / (max - min);
-    return {
-      label: `${index + 1}월`,
-      x: 34 + index * 106,
-      y: 150 - ratio * 118,
-    };
-  });
-});
-const priceChartPoints = computed(() => priceHistoryPoints.value.map((point) => `${point.x},${point.y}`).join(" "));
 
-const specChecks = computed(() => [
-  {
-    label: "CPU",
-    current: auth.user?.pc_specs?.cpu || "AMD Ryzen 7 5800X",
-    message: "권장 사양 충족",
-    status: "pass",
-    icon: "v",
-  },
-  {
-    label: "메모리",
-    current: auth.user?.pc_specs?.memory || "64GB",
-    message: "충분함",
-    status: "pass",
-    icon: "v",
-  },
-  {
-    label: "GPU",
-    current: auth.user?.pc_specs?.gpu || "NVIDIA RTX 3070 Ti",
-    message: (game.value.title || "").includes("Civilization") ? "중상옵 안정권" : "쾌적",
-    status: (game.value.title || "").includes("Civilization") ? "warn" : "pass",
-    icon: (game.value.title || "").includes("Civilization") ? "△" : "v",
-  },
-  {
-    label: "VR",
-    current: auth.user?.pc_specs?.vr || "없음",
-    message: "필수 아님",
-    status: "empty",
-    icon: "x",
-  },
-  {
-    label: "콘솔",
-    current: auth.user?.pc_specs?.console || "없음",
-    message: "PC 플레이 가능",
-    status: "empty",
-    icon: "x",
-  },
-]);
-const storageSpec = computed(() => ({
-  current: auth.user?.pc_specs?.storage || "C: 200GB / 2TB",
-  message: "설치 가능",
-  status: "pass",
-  icon: "v",
-}));
-const compatibilitySummary = computed(() =>
-  specChecks.value.some((item) => item.status === "fail")
-    ? "일부 핵심 부품 업그레이드가 필요해요."
-    : "현재 장비로 플레이 가능해 보여요.",
-);
-const storageUsage = 72;
-const upgrades = computed(() => [
-  { id: 2, type: "GPU", name: "RTX 4070 SUPER", reason: "QHD 옵션 여유 확보" },
-  { id: 1, type: "CPU", name: "Ryzen 7 7800X3D", reason: "전략/시뮬레이션 프레임 안정" },
-  { id: 3, type: "VR", name: "Meta Quest 3", reason: "VR 지원 게임 대비" },
-]);
-const reviews = computed(() => [
-  ...localReviews.value,
-  {
-    id: 1,
-    username: "strategy_admin",
-    avatar: "S",
-    recommend: true,
-    title: game.value.reviews || "최근 평가 매우 긍정적",
-    body: "내 PC 기준으로 옵션만 조금 조절하면 충분히 플레이할 수 있어요.",
-  },
-  {
-    id: 2,
-    username: "sale_watcher",
-    avatar: "W",
-    recommend: false,
-    title: "할인 타이밍은 조금 애매",
-    body: "관심 등록해두면 다음 세일 때 비교하기 좋을 것 같아요.",
-  },
-  {
-    id: 3,
-    username: "coop_player",
-    avatar: "C",
-    recommend: true,
-    title: "취향이 맞으면 추천",
-    body: "협동이나 전략 태그가 맞는 유저에게 특히 잘 맞습니다.",
-  },
-]);
+// ── PC 호환성 체크 ──
+function parseGB(str) {
+  const m = String(str || "").match(/(\d+)/);
+  return m ? parseInt(m[1]) : 0;
+}
 
-onMounted(async () => {
-  const { data } = await api.get(`/catalog/games/${route.params.id}/`);
-  game.value = data;
+function ramStatus(userRam, minRam, recRam) {
+  const userGB = parseGB(userRam);
+  const minGB = parseGB(minRam);
+  const recGB = parseGB(recRam);
+  if (!userGB) return { status: "none", message: "정보 없음" };
+  if (!minGB) return { status: "pass", message: "요구사양 없음" };
+  if (recGB && userGB >= recGB) return { status: "pass", message: "권장 사양 충족" };
+  if (userGB >= minGB) return { status: "pass", message: "최소 사양 충족" };
+  return { status: "fail", message: `최소 ${minGB}GB 필요` };
+}
+
+function cpuGpuStatus(userVal, minVal) {
+  if (!userVal) return { status: "none", message: "정보 없음" };
+  if (!minVal) return { status: "pass", message: "요구사양 없음" };
+  return { status: "pass", message: `최소: ${minVal}` };
+}
+
+function iconFor(status) {
+  return status === "pass" ? "v" : status === "fail" ? "✕" : "—";
+}
+
+const specChecks = computed(() => {
+  const specs = auth.user?.pc_specs || {};
+  const g = game.value;
+  const ramRes = ramStatus(specs.memory || specs.ram, g.min_ram, g.rec_ram);
+  const cpuRes = cpuGpuStatus(specs.cpu, g.min_cpu);
+  const gpuRes = cpuGpuStatus(specs.gpu, g.min_gpu);
+  return [
+    { label: "CPU", current: specs.cpu || "정보 없음", message: cpuRes.message, status: cpuRes.status, icon: iconFor(cpuRes.status) },
+    { label: "메모리", current: specs.memory || specs.ram || "정보 없음", message: ramRes.message, status: ramRes.status, icon: iconFor(ramRes.status) },
+    { label: "GPU", current: specs.gpu || "정보 없음", message: gpuRes.message, status: gpuRes.status, icon: iconFor(gpuRes.status) },
+    { label: "VR", current: specs.vr || "없음", message: "게임 지원 여부 확인", status: "empty", icon: "—" },
+    { label: "콘솔", current: specs.console || "없음", message: "PC 플레이 가능", status: "empty", icon: "—" },
+  ];
 });
 
+const storageSpec = computed(() => {
+  const storage = auth.user?.pc_specs?.storage || "";
+  return {
+    current: storage || "정보 없음",
+    message: storage ? "설치 가능 여부 확인" : "장비를 등록해주세요",
+    status: storage ? "pass" : "none",
+    icon: storage ? "v" : "—",
+  };
+});
+
+const compatibilitySummary = computed(() => {
+  const specs = auth.user?.pc_specs || {};
+  if (!specs.cpu && !specs.gpu) return "내 장비 정보를 먼저 등록해주세요.";
+  if (specChecks.value.some((s) => s.status === "fail")) return "일부 핵심 부품 업그레이드가 필요해요.";
+  return "현재 장비로 플레이 가능해 보여요.";
+});
+
+// ── 액션: 내 게임 추가/삭제 (UserGame API 사용) ──
 function handleOwnedClick() {
-  if (isOwned.value) {
-    removeOwned();
-    return;
-  }
-  openPlatformPicker();
+  isOwned.value ? removeUserGame() : openPlatformPicker();
 }
 
 function openPlatformPicker() {
@@ -438,70 +484,41 @@ function openPlatformPicker() {
 }
 
 async function confirmOwnedAdd() {
-  await patchGameList("owned_games", selectedPlatform.value);
-  showPlatformPicker.value = false;
+  try {
+    await api.post("/games/add/", { game_id: game.value.id, status: "owned", platform: selectedPlatform.value });
+    game.value = { ...game.value, is_owned: true };
+    actionMessage.value = `${game.value.title}을(를) 내 게임에 추가했어요.`;
+    showPlatformPicker.value = false;
+    await auth.fetchProfile();
+  } catch {
+    actionMessage.value = "추가 중 오류가 발생했습니다.";
+  }
 }
 
 async function handleInterestedClick() {
   if (isInterested.value) {
-    await removeInterested();
-    return;
+    await removeUserGame();
+    actionMessage.value = `${game.value.title}을(를) 관심게임에서 삭제했어요.`;
+  } else {
+    try {
+      await api.post("/games/add/", { game_id: game.value.id, status: "interested" });
+      game.value = { ...game.value, is_interested: true };
+      actionMessage.value = `${game.value.title}을(를) 관심게임에 등록했어요.`;
+      await auth.fetchProfile();
+    } catch {
+      actionMessage.value = "등록 중 오류가 발생했습니다.";
+    }
   }
-  await patchGameList("interested_games");
 }
 
-async function patchGameList(key, platform = null) {
-  const title = game.value.title;
-  if (!title) return;
-
-  const current = auth.user?.[key] || [];
-  const nextProfile = {
-    ...auth.user,
-    [key]: current.includes(title) ? current : [...current, title],
-  };
-
-  if (platform) {
-    nextProfile.game_platforms = {
-      ...(auth.user?.game_platforms || {}),
-      [title]: platform,
-    };
+async function removeUserGame() {
+  try {
+    await api.delete(`/games/${game.value.id}/remove/`);
+    game.value = { ...game.value, is_owned: false, is_interested: false };
+    await auth.fetchProfile();
+  } catch {
+    actionMessage.value = "삭제 중 오류가 발생했습니다.";
   }
-
-  if (key === "interested_games") {
-    nextProfile.interest_alerts = {
-      ...(auth.user?.interest_alerts || {}),
-      [title]: true,
-    };
-  }
-
-  await auth.updateProfile(nextProfile);
-  actionMessage.value = key === "owned_games" ? `${title}을(를) 내 게임에 추가했어요.` : `${title}을(를) 관심게임에 등록했어요.`;
-}
-
-async function removeOwned() {
-  const title = game.value.title;
-  if (!title) return;
-  const nextPlatforms = { ...(auth.user?.game_platforms || {}) };
-  delete nextPlatforms[title];
-  await auth.updateProfile({
-    ...auth.user,
-    owned_games: (auth.user?.owned_games || []).filter((item) => item !== title),
-    game_platforms: nextPlatforms,
-  });
-  actionMessage.value = `${title}을(를) 내 게임에서 제거했어요.`;
-}
-
-async function removeInterested() {
-  const title = game.value.title;
-  if (!title) return;
-  const nextAlerts = { ...(auth.user?.interest_alerts || {}) };
-  delete nextAlerts[title];
-  await auth.updateProfile({
-    ...auth.user,
-    interested_games: (auth.user?.interested_games || []).filter((item) => item !== title),
-    interest_alerts: nextAlerts,
-  });
-  actionMessage.value = `${title}을(를) 관심게임에서 삭제했어요.`;
 }
 
 async function toggleInterestAlert() {
@@ -510,30 +527,79 @@ async function toggleInterestAlert() {
   const nextValue = !isAlertEnabled.value;
   await auth.updateProfile({
     ...auth.user,
-    interest_alerts: {
-      ...(auth.user?.interest_alerts || {}),
-      [title]: nextValue,
-    },
+    interest_alerts: { ...(auth.user?.interest_alerts || {}), [title]: nextValue },
   });
   actionMessage.value = nextValue ? `${title} 할인 알림을 켰어요.` : `${title} 할인 알림을 껐어요.`;
 }
 
-function submitReview() {
-  const body = reviewForm.body.trim();
-  if (!body) return;
-
-  localReviews.value.unshift({
-    id: Date.now(),
-    username: auth.user?.nickname || auth.user?.username || "me",
-    avatar: (auth.user?.nickname || auth.user?.username || "M").slice(0, 1).toUpperCase(),
-    recommend: reviewForm.recommend,
-    title: reviewForm.recommend ? "내 추천 의견" : "내 비추천 의견",
-    body,
-  });
-  reviewForm.body = "";
-  reviewForm.recommend = true;
+// ── 리뷰: API 연동 ──
+async function loadReviews(page = 1) {
+  try {
+    const { data } = await api.get(`/games/${game.value.id}/reviews/?page=${page}`);
+    reviews.value = data.results.map((r) => ({
+      id: r.id,
+      username: r.username,
+      avatar: r.avatar,
+      recommend: r.recommend ?? r.rating >= 4,
+      body: r.content,
+    }));
+    reviewPage.value = data.page;
+    reviewTotalPages.value = data.total_pages;
+  } catch {
+    reviews.value = [];
+  }
 }
 
+async function loadMyReview(gameId) {
+  if (!auth.isAuthenticated) return;
+  try {
+    const { data } = await api.get(`/games/${gameId}/reviews/my/`);
+    if (data) {
+      myReview.value = data;
+      reviewForm.body = data.content;
+      reviewForm.recommend = data.recommend;
+    }
+  } catch {
+    myReview.value = null;
+  }
+}
+
+async function submitReview() {
+  const body = reviewForm.body.trim();
+  if (!body) return;
+  reviewError.value = "";
+  try {
+    if (myReview.value) {
+      await api.put(`/games/${game.value.id}/reviews/update/`, {
+        content: body,
+        rating: reviewForm.recommend ? 5 : 1,
+        recommend: reviewForm.recommend,
+      });
+    } else {
+      await api.post(`/games/${game.value.id}/reviews/create/`, {
+        content: body,
+        rating: reviewForm.recommend ? 5 : 1,
+        recommend: reviewForm.recommend,
+      });
+    }
+    await loadMyReview(game.value.id);
+    await loadReviews(reviewPage.value);
+  } catch (err) {
+    reviewError.value = err.response?.data?.non_field_errors?.[0] || "오류가 발생했습니다.";
+  }
+}
+
+onMounted(async () => {
+  const id = route.params.id;
+  const { data } = await api.get(`/catalog/games/${id}/`);
+  game.value = data;
+
+  loadLivePrices(id);
+  loadReviews(1);
+  loadMyReview(id);
+});
+
+// ── SVG 아트워크 폴백 ──
 function createGameArtwork(title, keywords, colors) {
   const [start, middle, end] = colors;
   const subtitle = keywords.slice(0, 3).join(" · ");
