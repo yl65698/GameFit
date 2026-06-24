@@ -47,7 +47,7 @@
       </div>
       <div class="game-grid">
         <RouterLink v-for="game in discountedGames" :key="game.id" class="game-card" :to="`/games/${game.id}`">
-          <div class="game-art">
+          <div class="game-art" :style="imageBackground(game.image_url)">
             <span>{{ game.discount }}%</span>
           </div>
           <div>
@@ -110,6 +110,13 @@ const titleSuggestions = computed(() => {
   return games.value.filter((game) => game.title.toLowerCase().includes(keyword)).slice(0, 8);
 });
 const showSuggestions = computed(() => titleSuggestions.value.length > 0);
+
+function imageBackground(url) {
+  if (!url) return {};
+  return {
+    backgroundImage: `linear-gradient(180deg, rgba(12, 18, 28, 0.05), rgba(12, 18, 28, 0.72)), url("${url}")`,
+  };
+}
 
 async function runSearch() {
   aiError.value = "";

@@ -270,7 +270,7 @@ const defaultDetail = {
 
 const detail = computed(() => detailByTitle[game.value.title] || defaultDetail);
 const gameKeywords = computed(() => detail.value.keywords);
-const gameImage = computed(() => createGameArtwork(game.value.title || "GameFit", detail.value.keywords, detail.value.colors));
+const gameImage = computed(() => game.value.image_url || createGameArtwork(game.value.title || "GameFit", detail.value.keywords, detail.value.colors));
 const isOwned = computed(() => Boolean(game.value.title && (auth.user?.owned_games || []).includes(game.value.title)));
 const isInterested = computed(() => Boolean(game.value.title && (auth.user?.interested_games || []).includes(game.value.title)));
 const isAlertEnabled = computed(() => {

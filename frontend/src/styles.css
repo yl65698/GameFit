@@ -424,25 +424,69 @@ label {
 
 .welcome-screen {
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: minmax(360px, 1fr) minmax(360px, 520px);
+  display: flex;
   align-items: center;
-  gap: 54px;
+  justify-content: center;
   padding: 60px;
-  background:
-    linear-gradient(135deg, rgba(8, 16, 28, 0.92) 0%, rgba(15, 56, 80, 0.82) 50%, rgba(8, 16, 28, 0.94) 100%),
-    radial-gradient(circle at 15% 15%, #1a8aaa 0%, transparent 30%),
-    radial-gradient(circle at 80% 70%, #0c4a62 0%, transparent 30%),
-    #0a121e;
+  background: #142131;
   color: #fff;
   position: relative;
+  overflow: hidden;
+}
+
+.welcome-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.welcome-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, rgba(14, 25, 38, 0.90), rgba(22, 99, 125, 0.40)),
+    radial-gradient(circle at 20% 20%, rgba(138, 208, 194, 0.23), transparent 26%);
+  z-index: 1;
+}
+
+.welcome-hero {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 54px;
+  align-items: center;
+  justify-content: center;
+  max-width: 1100px;
+  width: 100%;
+}
+
+.bg-fade-enter-active,
+.bg-fade-leave-active {
+  transition: opacity 1s ease;
+}
+
+.bg-fade-enter-from,
+.bg-fade-leave-to {
+  opacity: 0;
+}
+
+.card-fade-enter-active,
+.card-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.card-fade-enter-from,
+.card-fade-leave-to {
+  opacity: 0;
 }
 
 .welcome-session {
   position: absolute;
   top: 24px;
   right: 28px;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -486,6 +530,8 @@ label {
 
 .welcome-media {
   min-height: 520px;
+  width: min(100%, 560px);
+  flex-shrink: 0;
   display: grid;
   place-items: center;
 }
@@ -542,15 +588,76 @@ label {
   letter-spacing: -0.02em;
 }
 
-.welcome-copy {
-  display: grid;
-  gap: 20px;
+.media-card:not(.is-large) {
+  text-align: center;
+  justify-items: center;
+  align-content: center;
+  gap: 10px;
 }
 
-.welcome-copy h1 {
-  font-size: 38px;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+.media-card:not(.is-large) span {
+  font-size: 18px;
+}
+
+.media-card--info {
+  align-content: center;
+  gap: 12px;
+}
+
+.media-card-content {
+  display: grid;
+  gap: 10px;
+}
+
+.media-game-title {
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.3;
+  color: #c9e9ef;
+}
+
+.media-game-desc {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 15px;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  overflow: hidden;
+}
+
+.slideshow-dots {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.35);
+  padding: 0;
+  min-height: auto;
+  transition: background 0.3s, transform 0.3s;
+}
+
+.dot.active {
+  background: #fff;
+  transform: scale(1.4);
+}
+
+.welcome-copy {
+  display: grid;
+  gap: 18px;
+  width: min(100%, 440px);
+  flex-shrink: 0;
 }
 
 .welcome-copy p {
@@ -1099,7 +1206,9 @@ label {
 
 .game-art,
 .detail-art {
-  background: linear-gradient(145deg, #0f2035, #17637d 55%, #6dbfb2);
+  background: linear-gradient(145deg, #23314a, #17637d 55%, #8dc6b9);
+  background-position: center;
+  background-size: cover;
   color: #fff;
   display: grid;
   align-items: end;
@@ -1237,14 +1346,47 @@ label {
 }
 
 .equipment-card {
-  border: 1px solid #d4dde8;
-  border-radius: var(--radius);
-  background: #fff;
-  padding: 18px;
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+  background: #f8fafc;
+  overflow: hidden;
   display: grid;
-  gap: 7px;
-  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
-  box-shadow: var(--shadow-sm);
+  grid-template-rows: 130px auto auto 1fr auto;
+}
+
+.equipment-card > span,
+.equipment-card > strong,
+.equipment-card > p,
+.equipment-card > em {
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+.equipment-card > span {
+  margin-top: 16px;
+}
+
+.equipment-card > em {
+  margin-bottom: 16px;
+}
+
+.equipment-thumb {
+  background: linear-gradient(145deg, #2b3340, #596a82);
+  background-position: center;
+  background-size: cover;
+  color: #fff;
+  display: grid;
+  align-items: end;
+  padding: 12px;
+}
+
+.equipment-thumb span {
+  width: fit-content;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  padding: 7px 10px;
+  font-weight: 900;
 }
 
 .equipment-card:hover {
@@ -4480,7 +4622,6 @@ select {
 
 @media (max-width: 860px) {
   .topbar,
-  .welcome-screen,
   .profile-layout,
   .public-profile-grid,
   .settings-layout,
@@ -4502,6 +4643,10 @@ select {
 
   .welcome-screen {
     padding: 32px 20px;
+  }
+
+  .welcome-hero {
+    flex-direction: column;
   }
 
   .welcome-media {

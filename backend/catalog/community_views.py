@@ -1,10 +1,16 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .data import COMMUNITY_POSTS
+from games.models import Post
+from .adapters import community_post_to_catalog
 
 
 class CommunityPostListView(APIView):
     def get(self, request, game_id):
-        posts = [post for post in COMMUNITY_POSTS if post["game_id"] == game_id]
-        return Response(posts)
+        posts = (
+            Post.objects.filter(game_id=game_id)
+            .select_related("user", "game")
+            .prefetch_related("likes", "comments__user")
+            .order_by("-created_at")
+        )
+        return Response([community_post_to_catalog(post) for post in posts])
