@@ -21,5 +21,8 @@ urlpatterns = [
     path("api/catalog/", include("catalog.urls")),
     re_path(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
     re_path(r"^assets/(?P<path>.*)$", serve_frontend_asset),
+    re_path(r"^(?P<path>videos/.*)$", serve, {"document_root": settings.FRONTEND_DIST_DIR}),
+    re_path(r"^(?P<path>pixel-day/.*)$", serve, {"document_root": settings.FRONTEND_DIST_DIR}),
+    re_path(r"^(?P<path>cursor\.png)$", serve, {"document_root": settings.FRONTEND_DIST_DIR}),
     re_path(r"^(?!api/|admin/|assets/|media/).*", TemplateView.as_view(template_name="index.html")),
 ]
