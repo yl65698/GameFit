@@ -1,16 +1,31 @@
 <template>
-  <div class="theme-selector" role="group" aria-label="화면 스타일 모드 선택">
-    <button
-      v-for="mode in theme.modes"
-      :key="mode.value"
-      type="button"
-      :class="{ active: theme.mode === mode.value }"
-      :aria-pressed="theme.mode === mode.value"
-      @click="theme.setMode(mode.value)"
-    >
-      <span class="theme-selector-dot" :class="`theme-selector-dot--${mode.value}`"></span>
-      {{ mode.label }}
-    </button>
+  <div class="theme-selector" role="group" aria-label="Theme mode selector">
+    <div class="theme-selector-segment" aria-label="Theme style">
+      <button
+        v-for="family in theme.families"
+        :key="family.value"
+        type="button"
+        :class="{ active: theme.family === family.value }"
+        :aria-pressed="theme.family === family.value"
+        @click="theme.setFamily(family.value)"
+      >
+        <span class="theme-selector-dot" :class="`theme-selector-dot--${family.value}`"></span>
+        {{ family.label }}
+      </button>
+    </div>
+    <span class="theme-selector-divider" aria-hidden="true"></span>
+    <div class="theme-selector-segment" aria-label="Theme brightness">
+      <button
+        v-for="tone in theme.tones"
+        :key="tone.value"
+        type="button"
+        :class="{ active: theme.tone === tone.value }"
+        :aria-pressed="theme.tone === tone.value"
+        @click="theme.setTone(tone.value)"
+      >
+        {{ tone.label }}
+      </button>
+    </div>
   </div>
 </template>
 

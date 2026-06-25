@@ -27,6 +27,7 @@ const saveMessage = ref("");
 const resultSaving = ref(false);
 const resultSaved = ref(false);
 const selectedChoiceIndex = ref(0);
+const gameOver = ref(false);
 const playerX = ref(60);
 const gameHp = ref(MAX_HP);
 const gameCoins = ref(0);
@@ -170,6 +171,23 @@ const gameHint = computed(() => {
   return "→ A·D 이동  |  W 점프  |  NPC에 가까이 가면 상호작용 가능";
 });
 
+// ── Merchant shop (stage 5) ────────────────────────────────
+const merchantPrice   = computed(() => gameCoins.value === 0 ? 10 : Math.max(1, Math.round(gameCoins.value * 0.9)));
+const isCreditOffer   = computed(() => gameCoins.value === 0);
+const merchantText    = computed(() =>
+  isCreditOffer.value
+    ? "이거 10 골드인데... 외상으로 살래?"
+    : `이 희귀 보드게임, ${merchantPrice.value} 골드인데... 살래?`
+);
+const merchantChoices = computed(() => {
+  const buyText = isCreditOffer.value ? "외상으로 살게!" : "살게!";
+  return [
+    { text: buyText,          tone: "꽂히면 일단 지르고 봐",    scores:{action:2,story:2},           tags:["직감형","몰입형"],   coinDelta: -merchantPrice.value },
+    { text: "흥정 좀 해볼게", tone: "가격 타이밍이 제일 중요해", scores:{strategy:2,competitive:1},  tags:["할인헌터","가성비"],  coinDelta: 0 },
+    { text: "안 살래",         tone: "신중하게 판단한다",         scores:{cozy:2,challenge:1},        tags:["신중형","힐링형"],   coinDelta: 0 },
+  ];
+});
+
 // ── Stage init ─────────────────────────────────────────────
 function initStage(sceneId) {
   stageProjectiles = [];
@@ -207,12 +225,17 @@ function initStage(sceneId) {
 function hitPlayer() {
   if (invincible > 0) return;
   gameHp.value = Math.max(0, gameHp.value - 1);
+  if (gameHp.value === 0) {
+    gameOver.value = true;
+    [220, 180, 140, 110].forEach((f, i) => setTimeout(() => beep(f, 0.22, "sawtooth", 0.13), i * 90));
+    return;
+  }
   invincible = 1500;
   sndHit();
 }
 
 function updateStage(dt) {
-  if (interactionOpen.value || isComplete.value) return;
+  if (interactionOpen.value || isComplete.value || gameOver.value) return;
   if (invincible > 0) invincible = Math.max(0, invincible - dt);
   if (attackAnim > 0) attackAnim = Math.max(0, attackAnim - dt);
   const id = currentScene.value.id;
@@ -534,8 +557,37 @@ function drawStageBackground(t) {
     }
   }
 
-  // Stage 5: coins
+  // Stage 5: merchant stall + coins
   if (id === 'market') {
+    // ── Merchant stall (world coords, behind NPC) ──────────
+    const sx = NPC_X - 82;
+    // Back wall
+    r(sx,   FLOOR-104, 126, 104, "#7a5020");
+    r(sx+4, FLOOR-100, 118,  96, "#9a6828");
+    // Top shelf items (board game boxes)
+    r(sx+2,  FLOOR-90, 116, 6, "#5a3810");
+    r(sx+8,  FLOOR-100, 16, 12, "#3060d8"); r(sx+30, FLOOR-100, 16, 12, "#cc3030");
+    r(sx+52, FLOOR-100, 16, 12, "#309050"); r(sx+74, FLOOR-100, 16, 12, "#cc8800");
+    r(sx+96, FLOOR-100, 16, 12, "#9030cc");
+    // Middle shelf items
+    r(sx+2,  FLOOR-62, 116, 6, "#5a3810");
+    r(sx+6,  FLOOR-72, 18, 10, "#cc6030"); r(sx+30, FLOOR-72, 16, 10, "#3090cc");
+    r(sx+54, FLOOR-72, 16, 10, "#cc3080"); r(sx+80, FLOOR-72, 18, 10, "#608030");
+    // Counter
+    r(sx,   FLOOR-28, 126, 8, "#c89848");
+    r(sx+4, FLOOR-20, 118, 20, "#8b6018");
+    // Awning
+    r(sx-8,  FLOOR-112, 142, 10, "#cc3030");
+    r(sx-10, FLOOR-102, 146,  6, "#dd5050");
+    // Sale sign (animated glow)
+    const sg = Math.sin(t*0.005) * 0.5 + 0.5;
+    ctx.fillStyle=`rgba(255,220,50,${0.30+sg*0.55})`; ctx.fillRect(sx+28, FLOOR-88, 70, 22);
+    r(sx+30, FLOOR-86, 66, 18, "#fffde0");
+    // Pixel lettering strips
+    r(sx+34, FLOOR-84, 10,14,"#cc2020"); r(sx+48, FLOOR-84, 10,14,"#cc2020");
+    r(sx+62, FLOOR-84, 10,14,"#cc2020"); r(sx+76, FLOOR-84, 10,14,"#cc2020");
+
+    // Coins
     for (const coin of stageCoins) {
       if (coin.collected) continue;
       const bob = Math.sin(t*0.004 + coin.x*0.018) * 3;
@@ -733,6 +785,147 @@ function draw(t) {
 
   drawStageForeground(t);
   ctx.restore();
+
+  if (isComplete.value) drawResultEmblem(t);
+}
+
+// ── Result emblems ─────────────────────────────────────────
+function drawResultEmblem(t) {
+  const ex = 456, ey = 132, er = 76;
+  const key = topKey.value;
+  const p = Math.sin(t * 0.0025) * 0.5 + 0.5;
+
+  const ED = {
+    competitive: ["255,60,60",   "#420808","#801818","#ff5050"],
+    strategy:    ["60,180,255",  "#082038","#103868","#40aaff"],
+    exploration: ["60,220,130",  "#083820","#106840","#30dd80"],
+    social:      ["255,200,60",  "#382808","#604810","#ffcc30"],
+    story:       ["160,80,255",  "#140830","#281268","#9050ff"],
+    action:      ["255,140,30",  "#382008","#603008","#ff8820"],
+    challenge:   ["200,50,255",  "#200830","#3a0860","#cc30ff"],
+    cozy:        ["80,220,200",  "#082830","#105868","#30ddcc"],
+  };
+  const [gc, bg1, bg2, bc] = ED[key] || ED.cozy;
+
+  // Outer glow layers
+  for (let i = 4; i >= 0; i--) {
+    ctx.beginPath(); ctx.arc(ex, ey, er + i*7 + p*5, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(${gc},${(0.025 + p*0.04) * (5-i)/5})`; ctx.fill();
+  }
+  // Main circle
+  const gr = ctx.createRadialGradient(ex-22, ey-22, 0, ex, ey, er);
+  gr.addColorStop(0, bg2); gr.addColorStop(1, bg1);
+  ctx.beginPath(); ctx.arc(ex, ey, er, 0, Math.PI*2); ctx.fillStyle = gr; ctx.fill();
+  // Border
+  ctx.beginPath(); ctx.arc(ex, ey, er, 0, Math.PI*2);
+  ctx.strokeStyle = bc; ctx.lineWidth = 2.5 + p; ctx.stroke();
+  // Inner ring
+  ctx.beginPath(); ctx.arc(ex, ey, er - 8, 0, Math.PI*2);
+  ctx.strokeStyle = "rgba(255,255,255,0.10)"; ctx.lineWidth = 1; ctx.stroke();
+
+  if (key === 'competitive') {
+    // Gold crown + gems
+    r(ex-28,ey+14,56,18,"#ffd700"); r(ex-24,ey+10,48,6,"#ffd700");
+    r(ex-26,ey-16,10,28,"#ffd700"); r(ex-24,ey-28,6,14,"#ffd700");
+    r(ex-5, ey-26,10,36,"#ffd700"); r(ex-3, ey-40,6,16,"#ffd700");
+    r(ex+16,ey-16,10,28,"#ffd700"); r(ex+18,ey-28,6,14,"#ffd700");
+    r(ex-18,ey+12,8,8,"#ff2828"); r(ex-4,ey+12,8,8,"#4488ff"); r(ex+10,ey+12,8,8,"#ff2828");
+    r(ex-24,ey+16,48,2,"#b8860b"); r(ex-20,ey+10,14,3,"rgba(255,255,200,0.55)");
+  }
+  else if (key === 'strategy') {
+    // Chess knight
+    r(ex-8, ey-42,22, 8,"#d0d0e0"); r(ex-14,ey-34,24,26,"#d0d0e0");
+    r(ex-18,ey-38, 8,18,"#d0d0e0"); r(ex-12,ey-10,20,36,"#b0b8d0");
+    r(ex-16,ey+26,32, 8,"#d0d0e0");
+    r(ex-8, ey-28, 6, 8,"#101020"); r(ex-6,ey-26,3,3,"rgba(255,255,255,0.7)");
+    r(ex-12,ey-10,20, 2,"#80889a"); r(ex-14,ey+2,20,2,"#80889a"); r(ex-12,ey+14,20,2,"#80889a");
+    r(ex-10,ey-34, 6, 6,"rgba(255,255,255,0.22)");
+  }
+  else if (key === 'exploration') {
+    // Compass rose
+    const R = 60;
+    ctx.beginPath(); ctx.arc(ex,ey,R,0,Math.PI*2);
+    ctx.strokeStyle="#c89a38"; ctx.lineWidth=4; ctx.stroke();
+    ctx.beginPath(); ctx.arc(ex,ey,R-7,0,Math.PI*2);
+    ctx.strokeStyle="#1a1000"; ctx.lineWidth=2; ctx.stroke();
+    [0,1,2,3].forEach(i=>{
+      const a=i*Math.PI/2, mx=ex+Math.cos(a-Math.PI/2)*(R-13), my=ey+Math.sin(a-Math.PI/2)*(R-13);
+      r(Math.round(mx)-4,Math.round(my)-4,8,8,i===0?"#ff4040":"#cccccc");
+    });
+    const na = -Math.PI/2;
+    ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(ex+Math.cos(na)*42,ey+Math.sin(na)*42);
+    ctx.strokeStyle="#ff4040"; ctx.lineWidth=4; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(ex+Math.cos(na+Math.PI)*30,ey+Math.sin(na+Math.PI)*30);
+    ctx.strokeStyle="#e8e8e8"; ctx.lineWidth=4; ctx.stroke();
+    ctx.beginPath(); ctx.arc(ex,ey,5,0,Math.PI*2); ctx.fillStyle="#ffd700"; ctx.fill();
+  }
+  else if (key === 'social') {
+    // Three colorful figures
+    const figs=[[-26,6],[0,-6],[26,6]], cols=["#ff7040","#40c0ff","#40dd80"];
+    figs.forEach(([dx,dy],i)=>{
+      const fx=ex+dx, fy=ey+dy;
+      ctx.beginPath(); ctx.arc(fx,fy-28,9,0,Math.PI*2); ctx.fillStyle="#f5c890"; ctx.fill();
+      r(fx-8,fy-18,16,18,cols[i]);
+      r(fx-11,fy-15,4,10,"#f5c890"); r(fx+7,fy-15,4,10,"#f5c890");
+      r(fx-5,fy,5,14,cols[i]); r(fx+1,fy,5,14,cols[i]);
+    });
+    r(ex-19,ey-8,8,3,"rgba(255,255,200,0.5)"); r(ex+11,ey-4,8,3,"rgba(255,255,200,0.5)");
+    [-18,0,18].forEach((dx,i)=>{
+      ctx.fillStyle=`rgba(255,80,120,${0.3+p*0.7})`;
+      ctx.fillRect(ex+dx-3,ey-54+i*2,4,4); ctx.fillRect(ex+dx-5,ey-56+i*2,4,4);
+      ctx.fillRect(ex+dx-1,ey-56+i*2,4,4); ctx.fillRect(ex+dx-4,ey-58+i*2,6,2);
+    });
+  }
+  else if (key === 'story') {
+    // Open magical book
+    r(ex-40,ey-26,34,48,"#c8a050"); r(ex+6,ey-26,34,48,"#e8d080");
+    r(ex-5, ey-28,10,52,"#5a3810"); r(ex-2,ey-24,4,44,"#704a20");
+    for(let i=0;i<5;i++){r(ex-36,ey-14+i*8,22,2,"rgba(90,50,10,0.35)");r(ex+10,ey-14+i*8,22,2,"rgba(90,50,10,0.25)");}
+    [[ex-30,ey-8,"120,80,255"],[ex-20,ey+4,"80,160,255"],[ex+14,ey-10,"255,160,80"],[ex+22,ey+6,"80,255,160"]].forEach(([bx,by,c],i)=>{
+      const bg=Math.sin(t*0.004+i*1.4)*0.5+0.5;
+      ctx.fillStyle=`rgba(${c},${0.35+bg*0.65})`; ctx.fillRect(bx,by,7,7);
+    });
+    ctx.fillStyle=`rgba(255,240,120,${p})`; ctx.fillRect(ex+2,ey-40,4,4);
+    ctx.fillStyle=`rgba(200,160,255,${1-p})`; ctx.fillRect(ex-10,ey-44,3,3);
+  }
+  else if (key === 'action') {
+    // Lightning bolt
+    r(ex+6, ey-44,18,32,"#ffe040"); r(ex-14,ey-14,28,10,"#ffe040"); r(ex-14,ey-4,18,36,"#ffe040");
+    r(ex+8, ey-42, 7,14,"rgba(255,255,200,0.7)"); r(ex-12,ey-12,10, 5,"rgba(255,255,200,0.5)");
+    ctx.fillStyle=`rgba(255,200,0,${0.10+p*0.18})`; ctx.fillRect(ex-22,ey-52,48,80);
+    ctx.fillStyle=`rgba(255,255,100,${p})`;   ctx.fillRect(ex+4,ey-46,4,4);
+    ctx.fillStyle=`rgba(255,255,100,${1-p})`; ctx.fillRect(ex-12,ey-2,4,4);
+  }
+  else if (key === 'challenge') {
+    // Skull
+    r(ex-20,ey-34,40,34,"#e0e0e0"); r(ex-14,ey-38,28,6,"#e0e0e0");
+    r(ex-12,ey,    8,16,"#e0e0e0"); r(ex+4,ey,8,16,"#e0e0e0"); r(ex-14,ey,28,8,"#e0e0e0");
+    for(let i=0;i<4;i++) r(ex-12+i*8,ey+10,6,6,"#ffffff");
+    r(ex-14,ey-24,12,14,"#101010"); r(ex+2,ey-24,12,14,"#101010");
+    r(ex-12,ey-22, 8, 6,"#252525"); r(ex+4,ey-22, 8, 6,"#252525");
+    ctx.save(); ctx.translate(ex,ey+30); ctx.rotate(Math.PI*0.22);
+    r(-3,-30,6,48,"#a0a8c0"); r(-5,-6,10,6,"#d4a820"); r(-4,-28,4,6,"rgba(255,255,255,0.3)");
+    ctx.restore();
+    ctx.save(); ctx.translate(ex,ey+30); ctx.rotate(-Math.PI*0.22);
+    r(-3,-30,6,48,"#a0a8c0"); r(-5,-6,10,6,"#d4a820"); r(-4,-28,4,6,"rgba(255,255,255,0.3)");
+    ctx.restore();
+  }
+  else {
+    // cozy: crescent moon + stars
+    ctx.beginPath(); ctx.arc(ex+8,ey,50,0,Math.PI*2); ctx.fillStyle="#ffe880"; ctx.fill();
+    ctx.beginPath(); ctx.arc(ex+30,ey-10,38,0,Math.PI*2); ctx.fillStyle=bg1; ctx.fill();
+    ctx.beginPath(); ctx.arc(ex+6,ey,58,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,240,160,${0.05+p*0.08})`; ctx.fill();
+    [[-38,-28],[28,-34],[40,8],[-40,18],[10,36],[-14,-40]].forEach(([dx,dy],i)=>{
+      const sa=Math.sin(t*0.003+i*1.3)*0.5+0.5;
+      r(ex+dx-1,ey+dy-3,2,6,`rgba(255,255,200,${0.4+sa*0.6})`);
+      r(ex+dx-3,ey+dy-1,6,2,`rgba(255,255,200,${0.4+sa*0.6})`);
+    });
+    [[-28,24],[20,-18],[-8,30]].forEach(([dx,dy],i)=>{
+      const da=Math.sin(t*0.004+i*2)*0.5+0.5;
+      r(ex+dx,ey+dy,2,2,`rgba(255,255,180,${0.4+da*0.6})`);
+    });
+  }
 }
 
 function getCameraX() {
@@ -745,7 +938,7 @@ function loop(t) {
   const dt = Math.min(t - prev, 32);
   prev = t;
 
-  if (!interactionOpen.value && !isComplete.value) {
+  if (!gameOver.value && !interactionOpen.value && !isComplete.value) {
     let moving = false;
     if (keys["ArrowLeft"]||keys["a"]||keys["A"])  { pl.x=Math.max(18,pl.x-SPD*dt/16); pl.dir=-1; moving=true; introSpeechDismissed.value=true; }
     if (keys["ArrowRight"]||keys["d"]||keys["D"]) { pl.x=Math.min(WORLD_W-70,pl.x+SPD*dt/16); pl.dir=1; moving=true; introSpeechDismissed.value=true; }
@@ -810,12 +1003,14 @@ function pickChoice(index) {
   if (!count || index < 0 || index >= count) return;
   selectedChoiceIndex.value = index;
   if (currentScene.value.type === "intro") { sndChoose(); advance(1); return; }
+  if (currentScene.value.id === 'market') { choose(merchantChoices.value[index]); return; }
   const choice = currentScene.value.choices?.[index];
   if (choice) choose(choice);
 }
 
 function choose(choice) {
   sndChoose();
+  if (typeof choice.coinDelta === 'number') gameCoins.value += choice.coinDelta;
   answers.value.push({ sceneId:currentScene.value.id, label:choice.text, scores:choice.scores, tags:choice.tags, tone:choice.tone });
   advance(sceneIndex.value + 1);
 }
@@ -836,9 +1031,18 @@ function reset() {
   sceneIndex.value=0; pl.x=60; pl.y=FLOOR; pl.dir=1; pl.frame=0; pl.grounded=true;
   playerX.value=60; interactionOpen.value=false; introSpeechDismissed.value=false; selectedChoiceIndex.value=0;
   answers.value=[]; saveMessage.value=""; resultSaving.value=false; resultSaved.value=false;
-  gameHp.value=MAX_HP; gameCoins.value=0;
+  gameHp.value=MAX_HP; gameCoins.value=0; gameOver.value=false;
   stageProjectiles=[]; stageObstacles=[]; stageItems=[]; stageMonsters=[]; stageCoins=[];
   invincible=0; attackAnim=0; spawnTimer=0;
+}
+
+function restartStage() {
+  gameOver.value = false;
+  gameHp.value = MAX_HP;
+  pl.x=60; pl.y=FLOOR; pl.dir=1; pl.frame=0; pl.grounded=true;
+  playerX.value=60; invincible=0; attackAnim=0;
+  interactionOpen.value=false; introSpeechDismissed.value=false;
+  initStage(currentScene.value.id);
 }
 
 async function saveTags() {
@@ -941,7 +1145,7 @@ onBeforeUnmount(() => {
             <div v-if="interactionOpen && !isComplete" class="bit-overlay">
               <div class="bit-dlg-box">
                 <span class="bit-dlg-name">{{ currentScene.npcName }}</span>
-                <p>{{ currentScene.text }}</p>
+                <p>{{ currentScene.id === 'market' ? merchantText : currentScene.text }}</p>
               </div>
               <div v-if="currentScene.type==='intro'" class="bit-choices bit-choices--single">
                 <button
@@ -949,6 +1153,17 @@ onBeforeUnmount(() => {
                   :class="{ selected: selectedChoiceIndex === 0 }"
                   @click="advance(1)"
                 >▶ 길을 나선다!</button>
+              </div>
+              <div v-else-if="currentScene.id === 'market'" class="bit-choices">
+                <button
+                  v-for="(c, i) in merchantChoices" :key="c.text"
+                  class="bit-choice" :class="[`bit-choice--${i+1}`, { selected: selectedChoiceIndex === i }]"
+                  @click="choose(c)"
+                >
+                  <span class="bit-choice-num">{{ i+1 }}</span>
+                  <span class="bit-choice-main">{{ c.text }}</span>
+                  <span class="bit-choice-sub">{{ c.tone }}</span>
+                </button>
               </div>
               <div v-else-if="currentScene.choices" class="bit-choices">
                 <button
@@ -960,6 +1175,17 @@ onBeforeUnmount(() => {
                   <span class="bit-choice-main">{{ c.text }}</span>
                   <span class="bit-choice-sub">{{ c.tone }}</span>
                 </button>
+              </div>
+            </div>
+          </Transition>
+
+          <!-- Game Over overlay -->
+          <Transition name="bit-slide">
+            <div v-if="gameOver" class="bit-gameover">
+              <div class="bit-gameover-box">
+                <div class="bit-gameover-title">GAME OVER</div>
+                <p class="bit-gameover-sub">체력이 다 떨어졌어...</p>
+                <button class="bit-btn-primary bit-gameover-btn" @click="restartStage">↺ 이 스테이지 다시 시작</button>
               </div>
             </div>
           </Transition>

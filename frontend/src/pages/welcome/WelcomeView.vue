@@ -16,7 +16,7 @@
       </template>
     </header>
 
-    <div class="welcome-hero">
+    <div class="welcome-hero" :class="{ 'welcome-hero--pixel': theme.family === 'pixel' }">
       <div class="welcome-media">
         <div class="media-grid">
           <div class="media-card is-large media-card--info">
@@ -113,8 +113,10 @@ import { useRoute, useRouter } from "vue-router";
 import ThemeSelector from "../../components/ThemeSelector.vue";
 import api from "../../services/api";
 import { useAuthStore } from "../../stores/auth";
+import { useThemeStore } from "../../stores/theme";
 
 const auth = useAuthStore();
+const theme = useThemeStore();
 const route = useRoute();
 const router = useRouter();
 const mode = ref("");
@@ -156,11 +158,18 @@ const currentGenreLabel = computed(() =>
   currentGame.value ? (genreMap[currentGame.value.genre] || currentGame.value.genre) : "—"
 );
 
-const currentBgStyle = computed(() =>
-  currentGame.value?.image_url
+const PIXEL_BG = {
+  "pixel-day":   "/pixel-day.png",
+  "pixel-night": "/pixel-night.png",
+};
+
+const currentBgStyle = computed(() => {
+  const pixelSrc = PIXEL_BG[theme.mode];
+  if (pixelSrc) return { backgroundImage: `url(${pixelSrc})`, backgroundSize: "cover", backgroundPosition: "center" };
+  return currentGame.value?.image_url
     ? { backgroundImage: `url(${currentGame.value.image_url})` }
-    : {}
-);
+    : {};
+});
 
 function startTimer() {
   clearInterval(timer);
