@@ -12,7 +12,7 @@
    - `NAVER_CLIENT_ID`
    - `NAVER_CLIENT_SECRET`
 
-## Build, Pre-Deploy, and Start
+## Build and Start
 
 Render builds with:
 
@@ -20,15 +20,7 @@ Render builds with:
 bash build.sh
 ```
 
-The build script installs Python dependencies, builds the Vue frontend, and collects static files.
-
-Before each deploy, Render runs:
-
-```bash
-bash predeploy.sh
-```
-
-The pre-deploy script runs migrations and optionally loads fixture data.
+The build script installs Python dependencies, builds the Vue frontend, collects static files, runs migrations, and optionally loads fixture data.
 
 The service starts with:
 
