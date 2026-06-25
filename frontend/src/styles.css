@@ -997,10 +997,11 @@ label {
 }
 
 .avatar--small {
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  font-size: 14px;
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  flex: 0 0 46px;
+  font-size: 17px;
 }
 
 .avatar img,
