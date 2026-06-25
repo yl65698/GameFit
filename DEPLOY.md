@@ -44,6 +44,13 @@ LOAD_FIXTURES_ON_DEPLOY=false
 
 This prevents fixture data from being refreshed on every deploy.
 
+During deploy, check the Render logs for:
+
+```bash
+Loading fixture data from backend/fixtures/db_fixture.json
+Installed 70395 object(s) from 1 fixture(s)
+```
+
 ## Local Production Check
 
 ```bash
