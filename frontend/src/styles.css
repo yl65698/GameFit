@@ -1893,9 +1893,13 @@ label {
   border-radius: 999px;
   background: #ffffff;
   color: #68778d;
-  padding: 7px 10px;
+  padding: 0 10px;
+  height: 20px;
   font-size: 12px;
   font-weight: 900;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
 }
 
 .vector-node-detail {
@@ -1953,6 +1957,7 @@ label {
 .vector-summary-box {
   border-top: 1px solid #dbe3ee;
   padding-top: 14px;
+  background: transparent;
 }
 
 .vector-summary-box strong {
@@ -6245,11 +6250,15 @@ select {
 
 :root[data-theme="neon"] .vector3d-legend span,
 :root[data-theme="neon"] .vector3d-help span,
-:root[data-theme="neon"] .vector-summary-box,
 :root[data-theme="neon"] .vector-detail-switch button {
   border-color: var(--clr-border);
   background: var(--clr-surface);
   color: var(--clr-text-muted);
+}
+
+:root[data-theme="neon"] .vector-summary-box {
+  border-color: var(--clr-border);
+  background: transparent;
 }
 
 :root[data-theme="neon"] .month-header,
