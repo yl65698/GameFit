@@ -5,12 +5,15 @@
     </Transition>
     <div class="welcome-overlay" />
 
-    <header v-if="auth.isAuthenticated" class="welcome-session">
-      <RouterLink class="session-profile" to="/profile">
-        <span class="session-avatar">{{ initial }}</span>
-        <span>{{ auth.user?.nickname || auth.user?.username }}</span>
-      </RouterLink>
-      <button class="session-logout" @click="handleLogout">로그아웃</button>
+    <header class="welcome-session">
+      <ThemeSelector />
+      <template v-if="auth.isAuthenticated">
+        <RouterLink class="session-profile" to="/profile">
+          <span class="session-avatar">{{ initial }}</span>
+          <span>{{ auth.user?.nickname || auth.user?.username }}</span>
+        </RouterLink>
+        <button class="session-logout" @click="handleLogout">로그아웃</button>
+      </template>
     </header>
 
     <div class="welcome-hero">
@@ -107,6 +110,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import ThemeSelector from "../../components/ThemeSelector.vue";
 import api from "../../services/api";
 import { useAuthStore } from "../../stores/auth";
 

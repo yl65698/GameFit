@@ -46,7 +46,9 @@
             <dt>{{ specLabel(key) }}</dt>
             <dd>
               <template v-if="Array.isArray(value) && value.length">
-                <span v-for="(m, i) in value" :key="i" class="spec-chip">{{ m }}</span>
+                <span class="spec-chip-list">
+                  <span v-for="(m, i) in value" :key="i" class="spec-chip">{{ m }}</span>
+                </span>
               </template>
               <template v-else-if="!Array.isArray(value) && value && value !== '없음'">
                 <span class="spec-chip">{{ value }}</span>
@@ -544,6 +546,18 @@ async function toggleSearchFollow(user) {
   font-size: 0.82rem;
   font-weight: 600;
   margin: 0.1rem 0.2rem 0.1rem 0;
+}
+
+.spec-chip-list {
+  display: grid;
+  gap: 0.35rem;
+  align-items: start;
+}
+
+.spec-chip-list .spec-chip {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
 }
 
 .spec-empty {

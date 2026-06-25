@@ -7,8 +7,8 @@
       </div>
       <div class="panel-actions">
         <div class="segmented-control">
-          <button :class="{ active: viewMode === 'schedule' }" @click="viewMode = 'schedule'">일정버전으로 보기</button>
           <button :class="{ active: viewMode === 'calendar' }" @click="viewMode = 'calendar'">캘린더로 보기</button>
+          <button :class="{ active: viewMode === 'schedule' }" @click="viewMode = 'schedule'">일정버전으로 보기</button>
         </div>
       </div>
     </header>
@@ -70,7 +70,7 @@ import { computed, onMounted, ref } from "vue";
 import api from "../../services/api";
 
 const events = ref([]);
-const viewMode = ref("schedule");
+const viewMode = ref("calendar");
 const activeFilter = ref("all");
 const searchQuery = ref("");
 const currentYear = ref(new Date().getFullYear());

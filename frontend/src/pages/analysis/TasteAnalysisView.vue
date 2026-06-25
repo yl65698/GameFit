@@ -43,11 +43,20 @@ const gameGenreAxisMap = {
   strategy: "strategy",
   simulation: "strategy",
   fps: "action",
+  shooter: "action",
+  action: "action",
   sports: "competitive",
+  racing: "competitive",
   horror: "challenge",
+  souls: "challenge",
   adventure: "exploration",
+  openworld: "exploration",
   rpg: "story",
+  story: "story",
   indie: "cozy",
+  casual: "cozy",
+  coop: "social",
+  multiplayer: "social",
 };
 
 const miniGameResultPalettes = {
@@ -116,38 +125,47 @@ const baseAxisStats = computed(() => {
   });
 });
 const userGameNodes = computed(() => {
-  const activeAxisIds = new Set(baseAxisStats.value.filter((axis) => axis.score > 0).map((axis) => axis.id));
   const games = [
     ...(report.value.owned_games || []).map((game) => ({ ...game, userStatus: "보유" })),
     ...(report.value.interested_games || []).map((game) => ({ ...game, userStatus: "관심" })),
   ];
   return games
     .map((game, index) => {
-      const axisId = axisIdForGame(game);
-      const axis = baseAxisStats.value.find((item) => item.id === axisId);
-      if (!axis || !activeAxisIds.has(axis.id)) return null;
+      const axisIds = axisIdsForGame(game);
+      const axes = axisIds
+        .map((axisId) => baseAxisStats.value.find((item) => item.id === axisId))
+        .filter(Boolean);
+      const axis = axes[0];
+      const secondaryAxis = axes[1];
+      if (!axis) return null;
       const offset = gameNodeOffset(index);
+      const anchor = secondaryAxis
+        ? weightedPosition(axis.position, secondaryAxis.position, 0.68)
+        : axis.position;
       return {
         id: `game-${game.id}`,
         type: "game",
         axisId: axis.id,
+        axisIds: axes.map((item) => item.id),
+        secondaryAxisId: secondaryAxis?.id || null,
         label: game.title,
         genre: game.genre,
         userStatus: game.userStatus,
         platform: game.platform,
         position: [
-          axis.position[0] + offset[0],
-          axis.position[1] + offset[1],
-          axis.position[2] + offset[2],
+          anchor[0] + offset[0],
+          anchor[1] + offset[1],
+          anchor[2] + offset[2],
         ],
         color: axis.color,
+        secondaryColor: secondaryAxis?.color || null,
         tags: uniqueGameTags(game).slice(0, 4),
         summary: game.summary || game.description || `${axis.label} 축에 가까운 ${game.userStatus} 게임이에요.`,
       };
     })
     .filter(Boolean);
 });
-const connectedAxisIds = computed(() => new Set(userGameNodes.value.map((node) => node.axisId)));
+const connectedAxisIds = computed(() => new Set(userGameNodes.value.flatMap((node) => node.axisIds || [node.axisId])));
 const genreAxes = computed(() => {
   return baseAxisStats.value.filter((axis) => axis.score > 0 || connectedAxisIds.value.has(axis.id));
 });
@@ -289,16 +307,22 @@ function createNodes() {
 
 function connectInterestedGames() {
   userGameNodes.value.forEach((gameNode) => {
-    const axis = genreAxes.value.find((item) => item.id === gameNode.axisId);
-    if (!axis) return;
-    const geometry = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(...axis.position),
-      new THREE.Vector3(...gameNode.position),
-    ]);
-    const material = new THREE.LineBasicMaterial({ color: gameNode.color, transparent: true, opacity: 0.5 });
-    const line = new THREE.Line(geometry, material);
-    linkLines.push(line);
-    scene.add(line);
+    (gameNode.axisIds || [gameNode.axisId]).forEach((axisId, index) => {
+      const axis = genreAxes.value.find((item) => item.id === axisId);
+      if (!axis) return;
+      const geometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(...axis.position),
+        new THREE.Vector3(...gameNode.position),
+      ]);
+      const material = new THREE.LineBasicMaterial({
+        color: index === 0 ? gameNode.color : gameNode.secondaryColor || axis.color,
+        transparent: true,
+        opacity: index === 0 ? 0.62 : 0.34,
+      });
+      const line = new THREE.Line(geometry, material);
+      linkLines.push(line);
+      scene.add(line);
+    });
   });
 }
 
@@ -381,27 +405,52 @@ function uniqueGameTags(game) {
     });
 }
 
-function axisIdForGame(game) {
+function axisIdsForGame(game) {
   const candidates = [
     game.genre_key,
     game.genre,
     ...(game.genres || []).flatMap((genre) => [genre.key, genre.name]),
   ]
     .filter(Boolean)
-    .map((value) => String(value).toLowerCase());
+    .flatMap(splitGenreValue);
 
+  const axisIds = [];
   for (const value of candidates) {
-    if (gameGenreAxisMap[value]) return gameGenreAxisMap[value];
-    if (value.includes("strategy") || value.includes("전략") || value.includes("simulation")) return "strategy";
-    if (value.includes("fps") || value.includes("shooter") || value.includes("액션")) return "action";
-    if (value.includes("sports") || value.includes("racing") || value.includes("대전")) return "competitive";
-    if (value.includes("horror") || value.includes("공포") || value.includes("souls")) return "challenge";
-    if (value.includes("adventure") || value.includes("open") || value.includes("탐험")) return "exploration";
-    if (value.includes("rpg") || value.includes("story") || value.includes("스토리")) return "story";
-    if (value.includes("indie") || value.includes("casual") || value.includes("힐링")) return "cozy";
-    if (value.includes("coop") || value.includes("multi") || value.includes("협동")) return "social";
+    const axisId = axisIdForGenreValue(value);
+    if (axisId && !axisIds.includes(axisId)) axisIds.push(axisId);
+    if (axisIds.length >= 2) break;
   }
+  return axisIds;
+}
+
+function splitGenreValue(value) {
+  return String(value)
+    .toLowerCase()
+    .split(/[,/|·ㆍ>]+|\s*&\s*|\s+and\s+/)
+    .map((item) => item.trim().replace(/[\s_-]+/g, ""))
+    .filter(Boolean);
+}
+
+function axisIdForGenreValue(value) {
+  if (gameGenreAxisMap[value]) return gameGenreAxisMap[value];
+  if (value.includes("strategy") || value.includes("전략") || value.includes("simulation")) return "strategy";
+  if (value.includes("fps") || value.includes("shooter") || value.includes("액션")) return "action";
+  if (value.includes("sports") || value.includes("racing") || value.includes("대전")) return "competitive";
+  if (value.includes("horror") || value.includes("공포") || value.includes("souls")) return "challenge";
+  if (value.includes("adventure") || value.includes("open") || value.includes("탐험")) return "exploration";
+  if (value.includes("rpg") || value.includes("story") || value.includes("스토리")) return "story";
+  if (value.includes("indie") || value.includes("casual") || value.includes("힐링")) return "cozy";
+  if (value.includes("coop") || value.includes("multi") || value.includes("협동")) return "social";
   return null;
+}
+
+function weightedPosition(primary, secondary, primaryWeight = 0.68) {
+  const secondaryWeight = 1 - primaryWeight;
+  return [
+    primary[0] * primaryWeight + secondary[0] * secondaryWeight,
+    primary[1] * primaryWeight + secondary[1] * secondaryWeight,
+    primary[2] * primaryWeight + secondary[2] * secondaryWeight,
+  ];
 }
 
 function gameNodeOffset(index) {
@@ -457,7 +506,8 @@ function normalizeText(value, fallback) {
 }
 
 function looksBroken(value = "") {
-  return /[�]|[蹂댁쑀愿痍⑦뼢꾨왂묐룞]/.test(String(value));
+  const text = String(value);
+  return text.includes("\uFFFD") || /(?:\u5bc3\ub6af\uc5eb|\u6028\ub4ec\uc642|\u8e42\ub301\uc440|\u613f\u0080|\u75cd\u2466|\uae4a\ubf22|\uafa8\uc642|\ubb10\ub8de)/.test(text);
 }
 </script>
 

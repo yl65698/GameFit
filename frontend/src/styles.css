@@ -1,19 +1,77 @@
 :root {
   color: #1c2430;
   background: #eef2f8;
-  font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+  font-family: var(--theme-font-body, Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif);
   font-size: 15px;
+  --theme-font-body: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+  --theme-font-display: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+  --theme-font-ui: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+  --theme-card-radius: 10px;
+  --theme-control-radius: 8px;
+  --theme-pill-radius: 999px;
+  --theme-border-width: 1px;
   --clr-primary: #17637d;
   --clr-primary-dark: #0f4a5e;
   --clr-accent: #f8d66d;
   --clr-surface: #ffffff;
+  --clr-surface-soft: #f8fafc;
+  --clr-page: #eef2f8;
   --clr-border: #d4dde8;
+  --clr-text: #1c2430;
+  --clr-heading: #0f1923;
   --clr-text-muted: #5a6b7e;
+  --clr-control: #e4eaf3;
+  --clr-control-hover: #d7e0ec;
+  --topbar-bg: rgba(10, 18, 30, 0.97);
+  --topbar-border: rgba(255, 255, 255, 0.06);
+  --topbar-text: #7fa8be;
+  --topbar-text-strong: #e8f4fa;
   --shadow-sm: 0 1px 4px rgba(20, 40, 70, 0.07), 0 2px 10px rgba(20, 40, 70, 0.04);
   --shadow-md: 0 4px 16px rgba(20, 40, 70, 0.10), 0 1px 4px rgba(20, 40, 70, 0.06);
   --shadow-lg: 0 12px 40px rgba(20, 40, 70, 0.14), 0 4px 12px rgba(20, 40, 70, 0.08);
-  --radius: 10px;
+  --radius: var(--theme-card-radius);
   --transition: 0.15s ease;
+}
+
+:root[data-theme="pixel"] {
+  --theme-font-body: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+  --theme-font-display: "Courier New", Inter, Pretendard, "Noto Sans KR", monospace;
+  --theme-font-ui: "Courier New", Inter, Pretendard, "Noto Sans KR", monospace;
+  --theme-card-radius: 8px;
+  --theme-control-radius: 6px;
+  --theme-pill-radius: 4px;
+  --theme-border-width: 2px;
+}
+
+:root[data-theme="neon"] {
+  color: #e5edf7;
+  background: #0b1120;
+  --theme-font-body: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+  --theme-font-display: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+  --theme-font-ui: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+  --theme-card-radius: 14px;
+  --theme-control-radius: 999px;
+  --theme-pill-radius: 999px;
+  --theme-border-width: 1px;
+  --clr-primary: #5ecff0;
+  --clr-primary-dark: #38a9c8;
+  --clr-accent: #f8d66d;
+  --clr-surface: #111a2b;
+  --clr-surface-soft: #172235;
+  --clr-page: #0b1120;
+  --clr-border: #26364d;
+  --clr-text: #e5edf7;
+  --clr-heading: #f8fafc;
+  --clr-text-muted: #9aaabd;
+  --clr-control: #1d2b42;
+  --clr-control-hover: #263853;
+  --topbar-bg: rgba(6, 12, 23, 0.97);
+  --topbar-border: rgba(124, 154, 184, 0.18);
+  --topbar-text: #9db7ca;
+  --topbar-text-strong: #f8fafc;
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.28), 0 2px 10px rgba(0, 0, 0, 0.18);
+  --shadow-md: 0 4px 18px rgba(0, 0, 0, 0.34), 0 1px 5px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 14px 46px rgba(0, 0, 0, 0.42), 0 4px 14px rgba(0, 0, 0, 0.28);
 }
 
 * {
@@ -22,6 +80,8 @@
 
 body {
   margin: 0;
+  background: var(--clr-page);
+  color: var(--clr-text);
 }
 
 a {
@@ -41,6 +101,9 @@ button {
 
 .app-shell {
   min-height: 100vh;
+  background: var(--clr-page);
+  color: var(--clr-text);
+  transition: background var(--transition), color var(--transition);
 }
 
 .topbar {
@@ -53,8 +116,8 @@ button {
   align-items: center;
   padding: 0 28px;
   height: 58px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(10, 18, 30, 0.97);
+  border-bottom: 1px solid var(--topbar-border);
+  background: var(--topbar-bg);
   backdrop-filter: blur(20px);
   box-shadow: 0 2px 24px rgba(0, 0, 0, 0.28);
 }
@@ -65,6 +128,7 @@ button {
   font-weight: 900;
   color: #e8f4fa;
   letter-spacing: -0.02em;
+  font-family: var(--theme-font-display);
 }
 
 .brand span {
@@ -76,7 +140,7 @@ button {
 }
 
 .brand small {
-  color: #5a8299;
+  color: var(--topbar-text);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0;
@@ -90,11 +154,12 @@ button {
 }
 
 .topnav a {
-  border-radius: 7px;
-  color: #7fa8be;
+  border-radius: var(--theme-control-radius);
+  color: var(--topbar-text);
   padding: 7px 13px;
   font-size: 13.5px;
   font-weight: 700;
+  font-family: var(--theme-font-ui);
   transition: color var(--transition), background var(--transition);
 }
 
@@ -110,7 +175,7 @@ button {
 
 .topbar .icon-text-button {
   background: rgba(255, 255, 255, 0.08);
-  color: #7fa8be;
+  color: var(--topbar-text);
   border: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 13px;
 }
@@ -118,6 +183,64 @@ button {
 .topbar .icon-text-button:hover {
   background: rgba(255, 255, 255, 0.14);
   color: #d8edf6;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 10px;
+}
+
+.theme-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 3px;
+  backdrop-filter: blur(12px);
+}
+
+.theme-selector button {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--topbar-text);
+  padding: 5px 9px;
+  font-size: 12px;
+  font-weight: 900;
+  transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+}
+
+.theme-selector button:hover,
+.theme-selector button.active {
+  background: rgba(255, 255, 255, 0.16);
+  color: #f8fafc;
+}
+
+.theme-selector button.active {
+  box-shadow: inset 0 0 0 1px rgba(248, 214, 109, 0.38);
+}
+
+.theme-selector-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.26);
+}
+
+.theme-selector-dot--pixel {
+  background: linear-gradient(135deg, #ffffff, #f8d66d);
+}
+
+.theme-selector-dot--neon {
+  background: linear-gradient(135deg, #172235, #5ecff0);
 }
 
 .page {
@@ -156,7 +279,7 @@ button {
   font-size: 28px;
   line-height: 1.2;
   letter-spacing: -0.02em;
-  color: #0f1923;
+  color: var(--clr-heading);
 }
 
 .eyebrow {
@@ -170,14 +293,14 @@ button {
 
 .subtle,
 p {
-  color: #68778d;
+  color: var(--clr-text-muted);
   line-height: 1.5;
 }
 
 .panel {
-  border: 1px solid #d4dde8;
+  border: 1px solid var(--clr-border);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--clr-surface);
   padding: 20px;
   box-shadow: var(--shadow-sm);
 }
@@ -226,10 +349,11 @@ p {
 .icon-text-button,
 .filter-chip {
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--theme-control-radius);
   min-height: 40px;
   padding: 10px 14px;
   font-weight: 800;
+  font-family: var(--theme-font-ui);
   transition: background var(--transition), box-shadow var(--transition), transform 0.1s ease, color var(--transition);
 }
 
@@ -256,8 +380,8 @@ p {
 .secondary-button,
 .icon-text-button,
 .filter-chip {
-  background: #e4eaf3;
-  color: #243246;
+  background: var(--clr-control);
+  color: var(--clr-text);
 }
 
 .secondary-button:hover:not(:disabled),
@@ -288,23 +412,23 @@ p {
 }
 
 .filter-chip.active {
-  background: #d5f0ea;
-  color: #0f5446;
+  background: color-mix(in srgb, var(--clr-primary) 14%, var(--clr-surface));
+  color: var(--clr-primary-dark);
   border: 1px solid #a8ddd4;
 }
 
 .tag-row span {
-  background: #dff2ee;
-  color: #176457;
+  background: color-mix(in srgb, var(--clr-primary) 12%, var(--clr-surface));
+  color: var(--clr-primary-dark);
 }
 
 input,
 textarea {
   width: 100%;
-  border: 1px solid #c8d4e2;
+  border: 1px solid var(--clr-border);
   border-radius: 8px;
-  background: #fff;
-  color: #1c2430;
+  background: var(--clr-surface);
+  color: var(--clr-text);
   padding: 11px 12px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -324,7 +448,7 @@ textarea {
 label {
   display: grid;
   gap: 7px;
-  color: #4c5b70;
+  color: var(--clr-text-muted);
   font-weight: 800;
 }
 
@@ -918,7 +1042,7 @@ label {
 .segmented-control {
   display: inline-flex;
   border-radius: 8px;
-  background: #e9eef5;
+  background: var(--clr-control);
   padding: 3px;
 }
 
@@ -926,15 +1050,15 @@ label {
   border: 0;
   border-radius: 6px;
   background: transparent;
-  color: #4c5b70;
+  color: var(--clr-text-muted);
   padding: 6px 9px;
   font-size: 12px;
   font-weight: 800;
 }
 
 .segmented-control button.active {
-  background: #fff;
-  color: #17637d;
+  background: var(--clr-surface);
+  color: var(--clr-primary);
   box-shadow: 0 1px 4px rgba(44, 62, 88, 0.14);
 }
 
@@ -1102,7 +1226,7 @@ label {
 }
 
 .part-search::after {
-  content: "검색해서 선택";
+  content: "寃?됲빐???좏깮";
   color: #68778d;
   font-size: 12px;
 }
@@ -1474,9 +1598,9 @@ label {
 .ai-analysis-card,
 .recommendation-strip,
 .mini-game-cta {
-  border: 1px solid #dbe3ee;
+  border: 1px solid var(--clr-border);
   border-radius: 8px;
-  background: #f8fafc;
+  background: var(--clr-surface-soft);
   padding: 18px;
 }
 
@@ -2553,11 +2677,11 @@ label {
   display: grid;
   grid-template-columns: 150px 1fr;
   gap: 18px;
-  border: 1px solid #d4dde8;
+  border: 1px solid var(--clr-border);
   border-left: 4px solid #c0ccd8;
   border-radius: var(--radius);
   padding: 16px;
-  background: #f8fafc;
+  background: var(--clr-surface-soft);
   transition: box-shadow var(--transition), transform 0.14s ease;
 }
 
@@ -2574,7 +2698,7 @@ label {
 
 .calendar-card.event-discount {
   border-left-color: #f59e0b;
-  background: #fffbeb;
+  background: color-mix(in srgb, #f59e0b 14%, var(--clr-surface));
 }
 
 .calendar-card.event-discount time {
@@ -2583,12 +2707,12 @@ label {
 
 .calendar-card.event-game_release {
   border-left-color: #17637d;
-  background: #f0f9ff;
+  background: color-mix(in srgb, var(--clr-primary) 12%, var(--clr-surface));
 }
 
 .calendar-card.event-hardware_release {
   border-left-color: #7c3aed;
-  background: #faf5ff;
+  background: color-mix(in srgb, #7c3aed 12%, var(--clr-surface));
 }
 
 .calendar-card.event-hardware_release time {
@@ -3431,7 +3555,7 @@ select {
   font-size: 17px;
 }
 
-/* ── 구매 추천 시점 패널 ── */
+/* ?? 援щℓ 異붿쿇 ?쒖젏 ?⑤꼸 ?? */
 .buy-timing-panel {
   display: flex;
   flex-direction: column;
@@ -4498,7 +4622,7 @@ select {
   min-height: 76px;
 }
 
-/* ── 장비 탐색 페이지 ─────────────────────────── */
+/* ?? ?λ퉬 ?먯깋 ?섏씠吏 ??????????????????????????? */
 .equip-filter-bar {
   display: flex;
   flex-wrap: wrap;
@@ -4527,7 +4651,7 @@ select {
   border-color: #17637d;
 }
 
-/* 장비 상세 사이드바 벤치마크 스코어 텍스트 */
+/* ?λ퉬 ?곸꽭 ?ъ씠?쒕컮 踰ㅼ튂留덊겕 ?ㅼ퐫???띿뒪??*/
 .bench-score {
   color: #17637d;
   font-size: 11px;
@@ -4535,7 +4659,7 @@ select {
   white-space: nowrap;
 }
 
-/* ── 장비 상세 페이지 ─────────────────────────── */
+/* ?? ?λ퉬 ?곸꽭 ?섏씠吏 ??????????????????????????? */
 .equip-hero {
   border-radius: 14px;
   min-height: 280px;
@@ -4647,7 +4771,7 @@ select {
   margin: 0;
 }
 
-/* 벤치마크 비교 */
+/* 踰ㅼ튂留덊겕 鍮꾧탳 */
 .bench-comparison-row {
   display: grid;
   gap: 10px;
@@ -4758,7 +4882,7 @@ select {
   margin-right: 4px;
 }
 
-/* ── 도트 원정대 ─────────────────────────────────── */
+/* ?? ?꾪듃 ?먯젙? ??????????????????????????????????? */
 
 .bit-page {
   display: grid;
@@ -4836,9 +4960,18 @@ select {
   font-size: 12px;
 }
 
+.bit-hud-left  { display: flex; flex-direction: column; gap: 2px; }
+.bit-hud-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+
+.bit-hud-hp { display: flex; gap: 2px; }
+.hp-heart   { font-size: 13px; line-height: 1; transition: color 0.2s; }
+.hp-full    { color: #ff3a3a; text-shadow: 0 0 6px rgba(255,60,60,0.7); }
+.hp-empty   { color: #3a2a2a; }
+
+.bit-hud-coins { color: #ffd700; font-weight: 900; font-size: 12px; }
 .bit-hud-stage { color: #f8d66d; font-weight: 900; }
 .bit-hud-title { text-align: center; color: #e9f2ff; font-size: 14px; font-weight: 900; }
-.bit-hud-tags { text-align: right; color: #5a8090; font-size: 11px; }
+.bit-hud-tags  { text-align: right; color: #5a8090; font-size: 11px; }
 
 /* Screen / Canvas */
 .bit-screen-wrap {
@@ -5017,6 +5150,19 @@ select {
   background: linear-gradient(180deg, #22304a, #192638);
   transform: translateY(-2px);
   box-shadow: 0 5px 0 #0a0e18, 0 0 12px rgba(248,214,109,0.15);
+}
+
+.bit-choice.selected,
+.bit-choice:focus-visible {
+  outline: none;
+  border-color: #f8d66d;
+  background: linear-gradient(180deg, #243956, #17263d);
+  color: #fff8d8;
+  transform: translateY(-2px);
+  box-shadow:
+    0 5px 0 #0a0e18,
+    0 0 0 3px rgba(248,214,109,0.22),
+    0 0 18px rgba(248,214,109,0.22);
 }
 
 .bit-choice:active { transform: translateY(1px); box-shadow: 0 1px 0 #0a0e18; }
@@ -5296,7 +5442,7 @@ select {
   }
 }
 
-/* ── 페이지네이션 ── */
+/* ?? ?섏씠吏?ㅼ씠???? */
 .pagination {
   display: flex;
   justify-content: center;
@@ -5344,7 +5490,7 @@ select {
   line-height: 36px;
 }
 
-/* ── 필터 상태 ── */
+/* ?? ?꾪꽣 ?곹깭 ?? */
 .loading-state,
 .empty-state {
   padding: 40px 0;
@@ -5383,7 +5529,7 @@ select {
   letter-spacing: 0.04em;
 }
 
-/* ── AI 검색 결과 메타 ── */
+/* ?? AI 寃??寃곌낵 硫뷀? ?? */
 .ai-result-meta {
   display: flex;
   align-items: center;
@@ -5420,7 +5566,7 @@ select {
   line-height: 1.6;
 }
 
-/* ── 해시태그 칩 공통 ── */
+/* ?? ?댁떆?쒓렇 移?怨듯넻 ?? */
 .hashtag-chips {
   display: flex;
   flex-wrap: wrap;
@@ -5447,9 +5593,9 @@ select {
   margin: 0.3rem 0 0.5rem;
 }
 
-/* ══ 장비 상세 페이지 고도화 스타일 ══════════════════ */
+/* ?먥븧 ?λ퉬 ?곸꽭 ?섏씠吏 怨좊룄???ㅽ????먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧 */
 
-/* 가격 비교 패널 */
+/* 媛寃?鍮꾧탳 ?⑤꼸 */
 .equip-price-panel { display: grid; gap: 16px; }
 
 .price-stats-bar {
@@ -5527,7 +5673,7 @@ select {
   flex-wrap: wrap;
 }
 
-/* 게임 적합도 패널 그리드 */
+/* 寃뚯엫 ?곹빀???⑤꼸 洹몃━??*/
 .fit-panels-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5561,7 +5707,7 @@ select {
   line-height: 1.5;
 }
 
-/* 적합도 배지 */
+/* ?곹빀??諛곗? */
 .fit-badge {
   flex-shrink: 0;
   padding: 3px 9px;
@@ -5576,7 +5722,7 @@ select {
 .fit-unknown { background: #f1f5f9; color: #64748b; }
 .fit-info    { background: #dbeafe; color: #1d4ed8; }
 
-/* 로딩 상태 */
+/* 濡쒕뵫 ?곹깭 */
 .fit-loading {
   display: flex;
   align-items: center;
@@ -5586,7 +5732,7 @@ select {
   font-size: 13px;
 }
 
-/* PC 비교 카드 */
+/* PC 鍮꾧탳 移대뱶 */
 .compare-current-new {
   display: flex;
   align-items: center;
@@ -5645,7 +5791,7 @@ select {
   line-height: 1.5;
 }
 
-/* 업그레이드 추천 배지 */
+/* ?낃렇?덉씠??異붿쿇 諛곗? */
 .upgrade-verdict-badge {
   display: inline-block;
   padding: 6px 14px;
@@ -5659,7 +5805,7 @@ select {
 .upgrade-downgrade { background: #fee2e2; color: #b91c1c; }
 .upgrade-na        { background: #f1f5f9; color: #94a3b8; }
 
-/* ── Community: category filter chips ── */
+/* ?? Community: category filter chips ?? */
 .board-category-filter {
   display: flex;
   flex-wrap: wrap;
@@ -5690,7 +5836,7 @@ select {
   border-color: #176457;
 }
 
-/* ── Community: category badges ── */
+/* ?? Community: category badges ?? */
 .post-category-badge {
   display: inline-block;
   padding: 2px 8px;
@@ -5701,29 +5847,7 @@ select {
   color: #4c5b70;
 }
 
-/* Category-specific colors — high specificity to override .post-detail-heading span */
-.post-detail-heading .cat-공략,
-.post-category-badge.cat-공략 { background: #dbeafe; color: #1e40af; }
-
-.post-detail-heading .cat-질문,
-.post-category-badge.cat-질문 { background: #fef3c7; color: #92400e; }
-
-.post-detail-heading .cat-구매상담,
-.post-category-badge.cat-구매상담 { background: #dcfce7; color: #166534; }
-
-.post-detail-heading .cat-그룹모집,
-.post-category-badge.cat-그룹모집 { background: #ede9fe; color: #5b21b6; }
-
-.post-detail-heading .cat-후기,
-.post-category-badge.cat-후기 { background: #fce7f3; color: #9d174d; }
-
-.post-detail-heading .cat-잡담,
-.post-category-badge.cat-잡담 { background: #f1f5f9; color: #475569; }
-
-.post-detail-heading .cat-기타,
-.post-category-badge.cat-기타 { background: #e2e8f0; color: #64748b; }
-
-/* ── Community: vote button states ── */
+/* ?? Community: vote button states ?? */
 .vote-btn {
   border: 0;
   border-radius: 999px;
@@ -5746,7 +5870,7 @@ select {
   color: #e11d48;
 }
 
-/* ── Community: post detail actions row ── */
+/* ?? Community: post detail actions row ?? */
 .post-detail-actions {
   display: flex;
   gap: 10px;
@@ -5768,7 +5892,7 @@ select {
   background: #fee2e2;
 }
 
-/* ── Community: comment improvements ── */
+/* ?? Community: comment improvements ?? */
 .comment-header {
   display: flex;
   align-items: center;
@@ -5799,7 +5923,7 @@ select {
   background: #fee2e2;
 }
 
-/* ── User avatar circles ── */
+/* ?? User avatar circles ?? */
 .user-avatar-sm {
   width: 28px;
   height: 28px;
@@ -5837,7 +5961,7 @@ select {
   border-radius: 50%;
 }
 
-/* ── Review avatar image support ── */
+/* ?? Review avatar image support ?? */
 .review-avatar-link {
   display: contents;
 }
@@ -5856,7 +5980,7 @@ select {
   border-radius: 50%;
 }
 
-/* ── Post detail author row ── */
+/* ?? Post detail author row ?? */
 .post-author-row {
   display: flex;
   align-items: center;
@@ -5893,7 +6017,7 @@ select {
   font-size: 11px;
 }
 
-/* ── Group member chips as links ── */
+/* ?? Group member chips as links ?? */
 .group-member-chip-link {
   display: inline-flex;
   align-items: center;
@@ -5908,4 +6032,118 @@ select {
   color: #176457;
   border-color: #bce8d1;
 }
+
+:root[data-theme="neon"] .brand {
+  color: var(--topbar-text-strong);
+}
+
+:root[data-theme="neon"] .page-header,
+:root[data-theme="neon"] .detail-header,
+:root[data-theme="neon"] .panel,
+:root[data-theme="neon"] .profile-card,
+:root[data-theme="neon"] .auth-modal,
+:root[data-theme="neon"] .search-dropdown,
+:root[data-theme="neon"] .vector3d-card,
+:root[data-theme="neon"] .vector-node-detail,
+:root[data-theme="neon"] .calendar-filter-panel,
+:root[data-theme="neon"] .month-calendar,
+:root[data-theme="neon"] .review-section,
+:root[data-theme="neon"] .review-card,
+:root[data-theme="neon"] .community-card,
+:root[data-theme="neon"] .group-card,
+:root[data-theme="neon"] .post-card,
+:root[data-theme="neon"] .comment-card {
+  color: var(--clr-text);
+}
+
+:root[data-theme="neon"] .profile-card,
+:root[data-theme="neon"] .auth-modal,
+:root[data-theme="neon"] .search-dropdown,
+:root[data-theme="neon"] .vector3d-card,
+:root[data-theme="neon"] .vector-node-detail,
+:root[data-theme="neon"] .calendar-filter-panel,
+:root[data-theme="neon"] .month-calendar,
+:root[data-theme="neon"] .review-section,
+:root[data-theme="neon"] .review-card,
+:root[data-theme="neon"] .community-card,
+:root[data-theme="neon"] .group-card,
+:root[data-theme="neon"] .post-card,
+:root[data-theme="neon"] .comment-card,
+:root[data-theme="neon"] .bit-panel {
+  border-color: var(--clr-border);
+  background: var(--clr-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+:root[data-theme="neon"] .vector3d-card,
+:root[data-theme="neon"] .genre-vector-card,
+:root[data-theme="neon"] .ai-analysis-card,
+:root[data-theme="neon"] .recommendation-strip,
+:root[data-theme="neon"] .mini-game-cta {
+  background: var(--clr-surface-soft);
+}
+
+:root[data-theme="neon"] .vector3d-canvas,
+:root[data-theme="neon"] .vector3d-stage {
+  border-color: var(--clr-border);
+  background:
+    radial-gradient(circle at 30% 18%, rgba(94, 207, 240, 0.12), transparent 28%),
+    radial-gradient(circle at 74% 62%, rgba(248, 214, 109, 0.10), transparent 30%),
+    #0f172a;
+}
+
+:root[data-theme="neon"] .vector3d-legend span,
+:root[data-theme="neon"] .vector3d-help span,
+:root[data-theme="neon"] .vector-summary-box,
+:root[data-theme="neon"] .vector-detail-switch button {
+  border-color: var(--clr-border);
+  background: var(--clr-surface);
+  color: var(--clr-text-muted);
+}
+
+:root[data-theme="neon"] .month-header,
+:root[data-theme="neon"] .calendar-cell,
+:root[data-theme="neon"] .calendar-grid > strong,
+:root[data-theme="neon"] .achievement-list,
+:root[data-theme="neon"] .selected-game-meta,
+:root[data-theme="neon"] .vector-summary-box {
+  border-color: var(--clr-border);
+}
+
+:root[data-theme="neon"] .calendar-cell,
+:root[data-theme="neon"] .muted-cell {
+  background: var(--clr-surface-soft);
+}
+
+:root[data-theme="neon"] .welcome-overlay {
+  background:
+    linear-gradient(90deg, rgba(6, 12, 23, 0.84), rgba(6, 12, 23, 0.50) 55%, rgba(6, 12, 23, 0.78)),
+    radial-gradient(circle at 70% 20%, rgba(94, 207, 240, 0.16), transparent 36%);
+}
+
+:root[data-theme="neon"] .media-card,
+:root[data-theme="neon"] .session-profile,
+:root[data-theme="neon"] .session-logout {
+  border-color: rgba(148, 163, 184, 0.28);
+  background: rgba(15, 23, 42, 0.62);
+  color: #e5edf7;
+}
+
+:root[data-theme="neon"] .session-avatar {
+  background: #e5edf7;
+  color: #0f172a;
+}
+
+:root[data-theme="neon"] .post-author-name,
+:root[data-theme="neon"] .comment-author-link,
+:root[data-theme="neon"] .group-member-chip-link {
+  color: var(--clr-text);
+}
+
+:root[data-theme="neon"] .group-member-chip-link:hover {
+  background: var(--clr-control-hover);
+  color: var(--clr-primary);
+  border-color: var(--clr-border);
+}
+
 

@@ -12,7 +12,10 @@
         <RouterLink to="/equipment">장비 탐색</RouterLink>
         <RouterLink to="/calendar">할인 캘린더</RouterLink>
       </nav>
-      <button class="icon-text-button" @click="handleLogout">로그아웃</button>
+      <div class="topbar-actions">
+        <ThemeSelector />
+        <button class="icon-text-button" @click="handleLogout">로그아웃</button>
+      </div>
     </header>
 
     <main :class="['page', { 'page--guest': route.name === 'welcome' }]">
@@ -22,15 +25,22 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import ThemeSelector from "./components/ThemeSelector.vue";
 import { useAuthStore } from "./stores/auth";
+import { useThemeStore } from "./stores/theme";
 
 const auth = useAuthStore();
+const theme = useThemeStore();
 const router = useRouter();
 const route = useRoute();
 const showServiceNav = computed(() => auth.isAuthenticated && route.name !== "welcome");
+
+onMounted(() => {
+  theme.init();
+});
 
 async function handleLogout() {
   await auth.logout();

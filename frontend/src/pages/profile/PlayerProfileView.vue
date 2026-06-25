@@ -82,7 +82,16 @@
         <dl class="spec-grid">
           <template v-for="(value, key) in player.pc_specs" :key="key">
             <dt>{{ specLabel(key) }}</dt>
-            <dd>{{ value || "미등록" }}</dd>
+            <dd>
+              <template v-if="specDisplayItems(value, key).length">
+                <span class="spec-chip-list">
+                  <span v-for="(item, i) in specDisplayItems(value, key)" :key="i" class="spec-chip">{{ item }}</span>
+                </span>
+              </template>
+              <template v-else>
+                <span class="spec-empty">미등록</span>
+              </template>
+            </dd>
           </template>
         </dl>
       </section>
@@ -195,6 +204,75 @@ function specLabel(key) {
   }[key] || key;
 }
 
+function specDisplayItems(value, key) {
+  if (Array.isArray(value)) return value.map(normalizeSpecText).filter(Boolean);
+  const text = normalizeSpecText(value);
+  if (!text || text === "없음") return [];
+
+  const parsed = parseArrayText(text);
+  if (parsed.length) return parsed;
+
+  if (key === "memory") return splitMemoryText(text);
+  return [text];
+}
+
+function normalizeSpecText(value) {
+  return String(value ?? "")
+    .trim()
+    .replace(/^\[\s*/, "")
+    .replace(/\s*\]$/, "")
+    .replace(/^["']|["']$/g, "")
+    .trim();
+}
+
+function parseArrayText(text) {
+  try {
+    const parsed = JSON.parse(text);
+    if (Array.isArray(parsed)) return parsed.map(normalizeSpecText).filter(Boolean);
+  } catch {
+    // Some saved specs are already flattened strings, so fall back to heuristics.
+  }
+
+  const quotedItems = [...text.matchAll(/["']([^"']+)["']/g)].map((match) => normalizeSpecText(match[1]));
+  return quotedItems.filter(Boolean);
+}
+
+function splitMemoryText(text) {
+  const source = normalizeSpecText(text);
+  const items = source
+    .split(/(?=(?:G\s*\uD2B8\uB77C\uC774\uB358\uD2B8|G\.SKILL|CORSAIR|Samsung|SK\s*\uD558\uC774\uB2C9\uC2A4|Kingston|Crucial|TeamGroup|T-FORCE|ADATA|PNY|GeIL))/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  return items.length > 1 ? items : [source];
+}
+
 onMounted(loadPlayer);
 watch(username, loadPlayer);
 </script>
+
+<style scoped>
+.spec-chip-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.spec-chip {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(23, 99, 125, 0.1);
+  color: var(--clr-primary, #17637d);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.spec-empty {
+  font-size: 0.85rem;
+  color: var(--clr-text-muted, #5a6b7e);
+}
+</style>
