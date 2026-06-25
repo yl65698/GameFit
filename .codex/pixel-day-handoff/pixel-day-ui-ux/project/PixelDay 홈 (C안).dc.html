@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css" rel="stylesheet">
+<style>
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(72px)}}
+@keyframes drift2{from{transform:translateX(0)}to{transform:translateX(-58px)}}
+@keyframes twinkle{0%,100%{opacity:.1;transform:scale(.5) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(20deg)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes bob2{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes pressHint{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+html,body{margin:0;height:100%}
+body{font-family:'Noto Sans KR',system-ui,sans-serif}
+*{box-sizing:border-box}
+</style>
+</helmet>
+
+<div data-screen-label="픽셀데이 홈" style="position:relative;width:100%;min-height:100vh;overflow:hidden;background:#bdd8ef;image-rendering:pixelated;font-family:'Noto Sans KR',sans-serif">
+
+  <!-- background scene -->
+  <div style="position:absolute;inset:0;background:#bdd8ef url(assets/room_day.png) center/cover no-repeat;image-rendering:pixelated;z-index:0"></div>
+  <!-- soft daylight wash for legibility, very light -->
+  <div style="position:absolute;inset:0;z-index:1;background:{{ washStyle }}"></div>
+
+  <!-- clouds -->
+  <div style="position:absolute;left:13%;top:9%;width:15px;height:15px;background:#fff;opacity:.95;z-index:2;animation:drift 17s ease-in-out infinite alternate;box-shadow:15px 0 #fff,30px 0 #fff,45px 0 #fff,15px -15px #fff,30px -15px #fff,0 15px #fff,15px 15px #fff,30px 15px #fff,45px 15px #fff,60px 15px #fff,-15px 15px #fff"></div>
+  <div style="position:absolute;left:34%;top:6%;width:11px;height:11px;background:#fff;opacity:.9;z-index:2;animation:drift2 22s ease-in-out infinite alternate;box-shadow:11px 0 #fff,22px 0 #fff,33px 0 #fff,11px -11px #fff,22px -11px #fff,0 11px #fff,11px 11px #fff,22px 11px #fff,33px 11px #fff,44px 11px #fff,-11px 11px #fff"></div>
+  <div style="position:absolute;left:24%;top:15%;width:9px;height:9px;background:#fff;opacity:.82;z-index:2;animation:drift 27s ease-in-out infinite alternate;box-shadow:9px 0 #fff,18px 0 #fff,27px 0 #fff,9px -9px #fff,18px -9px #fff,0 9px #fff,9px 9px #fff,18px 9px #fff,27px 9px #fff,-9px 9px #fff"></div>
+
+  <!-- sparkles -->
+  <div style="position:absolute;left:22%;top:54%;width:16px;height:16px;background:#fff;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);z-index:3;animation:twinkle 2.5s ease-in-out infinite"></div>
+  <div style="position:absolute;left:40%;top:30%;width:12px;height:12px;background:#ffe07a;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);z-index:3;animation:twinkle 2.1s ease-in-out .4s infinite"></div>
+  <div style="position:absolute;left:66%;top:60%;width:13px;height:13px;background:#fff;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);z-index:3;animation:twinkle 3.1s ease-in-out .9s infinite"></div>
+  <div style="position:absolute;left:51%;top:44%;width:10px;height:10px;background:#ffe07a;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);z-index:3;animation:twinkle 2.7s ease-in-out 1.3s infinite"></div>
+  <div style="position:absolute;left:73%;top:24%;width:11px;height:11px;background:#fff;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);z-index:3;animation:twinkle 2.9s ease-in-out 1.8s infinite"></div>
+
+  <!-- bobbing pixel sprites pulled from the scene -->
+  <img src="sprites/trophy_c.png" alt="" style="display:{{ spriteDisplay }};position:absolute;left:33%;top:18%;width:52px;height:auto;image-rendering:pixelated;z-index:4;filter:drop-shadow(3px 4px 0 rgba(20,45,80,.3));animation:bob 4.2s ease-in-out infinite" />
+  <img src="sprites/gameboy.png" alt="" style="display:{{ spriteDisplay }};position:absolute;left:60%;top:30%;width:64px;height:auto;image-rendering:pixelated;z-index:4;filter:drop-shadow(3px 4px 0 rgba(20,45,80,.3));animation:bob2 4.8s ease-in-out .6s infinite" />
+  <img src="sprites/invader_c.png" alt="" style="display:{{ spriteDisplay }};position:absolute;left:69%;top:58%;width:56px;height:auto;image-rendering:pixelated;z-index:4;filter:drop-shadow(3px 4px 0 rgba(20,45,80,.3));animation:bob 5.2s ease-in-out 1s infinite" />
+
+  <!-- ░░ TOP BAR ░░ -->
+  <header style="position:fixed;top:0;left:0;right:0;height:60px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(237,245,255,.74);border-bottom:3px solid #6fa6cf;backdrop-filter:blur(6px)">
+    <div style="display:flex;align-items:center;gap:14px">
+      <span style="font-family:'Press Start 2P',monospace;font-size:15px;color:#1c3050">GAME<span style="color:#d99a1c">FIT</span></span>
+      <span style="width:3px;height:18px;background:#7aaed4"></span>
+      <span style="font-family:'Galmuri11',monospace;font-size:12px;color:#46586f">게임 구매 가이드</span>
+    </div>
+    <nav style="display:flex;gap:4px;font-family:'Galmuri11',monospace;font-size:13px">
+      <a href="#" onClick="{{ noop }}" style="color:#1c3050;text-decoration:none;padding:8px 12px;box-shadow:inset 0 -3px 0 #3872b8">탐색</a>
+      <a href="#" onClick="{{ noop }}" style="color:#52647b;text-decoration:none;padding:8px 12px;transition:color .12s" style-hover="color:#1c3050">게임</a>
+      <a href="#" onClick="{{ noop }}" style="color:#52647b;text-decoration:none;padding:8px 12px;transition:color .12s" style-hover="color:#1c3050">장비</a>
+      <a href="#" onClick="{{ noop }}" style="color:#52647b;text-decoration:none;padding:8px 12px;transition:color .12s" style-hover="color:#1c3050">커뮤니티</a>
+      <a href="#" onClick="{{ noop }}" style="color:#52647b;text-decoration:none;padding:8px 12px;transition:color .12s" style-hover="color:#1c3050">캘린더</a>
+    </nav>
+    <div style="display:flex;align-items:center;gap:4px;border:2px solid #6fa6cf;background:rgba(255,255,255,.62);padding:3px;font-family:'Galmuri11',monospace;font-size:11px">
+      <button onClick="{{ noop }}" style="border:none;cursor:pointer;padding:6px 9px;background:#3872b8;color:#fff;font-family:inherit;font-size:inherit">Pixel</button>
+      <button onClick="{{ noop }}" style="border:none;cursor:pointer;padding:6px 9px;background:transparent;color:#52647b;font-family:inherit;font-size:inherit">Neon</button>
+      <span style="width:2px;height:14px;background:#7aaed4;margin:0 3px"></span>
+      <button onClick="{{ noop }}" style="border:none;cursor:pointer;padding:6px 9px;background:#f5c933;color:#3a2c08;font-family:inherit;font-size:inherit">Day</button>
+      <button onClick="{{ noop }}" style="border:none;cursor:pointer;padding:6px 9px;background:transparent;color:#52647b;font-family:inherit;font-size:inherit">Night</button>
+    </div>
+  </header>
+
+  <!-- ░░ HERO (floating, no panel) ░░ -->
+  <main style="position:relative;z-index:10;max-width:620px;padding:148px 0 0 7vw">
+    <span style="display:inline-block;font-family:'Press Start 2P',monospace;font-size:11px;letter-spacing:.08em;color:#3a2c08;background:#f5c933;border:3px solid #b8881a;box-shadow:4px 4px 0 rgba(20,45,80,.3);padding:8px 13px">GAMEFIT</span>
+
+    <h1 style="font-family:'Galmuri11','Press Start 2P',monospace;font-size:38px;line-height:1.6;color:#14233b;margin:24px 0 0;text-shadow:2px 2px 0 rgba(255,255,255,.92),3px 3px 0 rgba(120,162,210,.5)">내 PC와 취향에 맞춘<br>게임을 골라보세요</h1>
+
+    <p style="font-size:16px;line-height:1.7;color:#27384f;max-width:470px;margin:20px 0 0;text-shadow:1px 1px 0 rgba(255,255,255,.85)">보유 게임과 PC 사양으로 구동 가능 여부, 할인 타이밍, 취향 추천까지 — 게이머의 방에서 한 번에 확인하세요.</p>
+
+    <div style="display:flex;gap:16px;margin-top:30px">
+      <button onClick="{{ noop }}" style="font-family:'Galmuri11','Noto Sans KR',monospace;font-size:16px;color:#fff;background:#3872b8;border:3px solid #245a9e;padding:15px 28px;cursor:pointer;box-shadow:5px 5px 0 rgba(20,45,80,.42),inset 2px 2px 0 rgba(255,255,255,.28),inset -2px -2px 0 rgba(0,0,0,.2);transition:transform .07s,box-shadow .07s" style-hover="transform:translate(-2px,-2px);box-shadow:7px 7px 0 rgba(20,45,80,.42),inset 2px 2px 0 rgba(255,255,255,.28),inset -2px -2px 0 rgba(0,0,0,.2)" style-active="transform:translate(3px,3px);box-shadow:2px 2px 0 rgba(20,45,80,.42),inset 2px 2px 0 rgba(0,0,0,.18)">로그인</button>
+      <button onClick="{{ noop }}" style="font-family:'Galmuri11','Noto Sans KR',monospace;font-size:16px;color:#1c3050;background:#fcf3da;border:3px solid #1c3050;padding:15px 28px;cursor:pointer;box-shadow:5px 5px 0 rgba(20,45,80,.3),inset 2px 2px 0 rgba(255,255,255,.55),inset -2px -2px 0 rgba(0,0,0,.1);transition:transform .07s,box-shadow .07s" style-hover="transform:translate(-2px,-2px);box-shadow:7px 7px 0 rgba(20,45,80,.3),inset 2px 2px 0 rgba(255,255,255,.55),inset -2px -2px 0 rgba(0,0,0,.1)" style-active="transform:translate(3px,3px);box-shadow:2px 2px 0 rgba(20,45,80,.3),inset 2px 2px 0 rgba(0,0,0,.12)">회원가입</button>
+    </div>
+
+    <!-- floating featured badges -->
+    <div style="display:flex;flex-wrap:wrap;gap:13px;margin-top:40px;font-family:'Galmuri11',monospace;font-size:13px">
+      <div style="display:flex;align-items:center;gap:9px;background:#fff;border:3px solid #1c3050;box-shadow:5px 5px 0 rgba(20,45,80,.26);padding:11px 15px;color:#1c3050"><span style="width:11px;height:11px;background:#3872b8;display:block"></span>오늘의 추천 · 픽셀 던전 크롤러</div>
+      <div style="background:#3872b8;border:3px solid #245a9e;box-shadow:5px 5px 0 rgba(20,45,80,.3);padding:11px 15px;color:#fff">할인 60%</div>
+      <div style="background:#fff;border:3px solid #1c3050;box-shadow:5px 5px 0 rgba(20,45,80,.26);padding:11px 15px;color:#1c3050">인디</div>
+    </div>
+  </main>
+
+  <!-- slideshow dots -->
+  <div style="position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:10px">
+    <span style="width:13px;height:13px;background:#f5c933;box-shadow:2px 2px 0 rgba(20,45,80,.35)"></span>
+    <span style="width:13px;height:13px;background:rgba(255,255,255,.82);box-shadow:2px 2px 0 rgba(20,45,80,.22)"></span>
+    <span style="width:13px;height:13px;background:rgba(255,255,255,.82);box-shadow:2px 2px 0 rgba(20,45,80,.22)"></span>
+  </div>
+
+  <!-- scroll / press hint -->
+  <div style="position:absolute;bottom:26px;right:34px;z-index:10;font-family:'Galmuri11',monospace;font-size:12px;color:#1c3050;text-shadow:1px 1px 0 rgba(255,255,255,.8);display:flex;align-items:center;gap:8px;animation:pressHint 1.6s ease-in-out infinite">
+    <span style="font-family:'Press Start 2P',monospace;font-size:9px;background:#1c3050;color:#f5c933;padding:5px 7px">▼</span>둘러보기
+  </div>
+
+  <!-- scanline overlay -->
+  <div style="display:{{ scanlineDisplay }};position:absolute;inset:0;pointer-events:none;z-index:15;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(10,30,60,.045) 2px,rgba(10,30,60,.045) 3px)"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;},&quot;showScanlines&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;showSprites&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;daylightWash&quot;:{&quot;editor&quot;:&quot;float&quot;,&quot;default&quot;:0.4,&quot;min&quot;:0,&quot;max&quot;:0.8,&quot;step&quot;:0.05,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const showScanlines = p.showScanlines ?? true;
+    const showSprites = p.showSprites ?? true;
+    const wash = p.daylightWash ?? 0.4;
+    return {
+      noop: (e) => { if (e && e.preventDefault) e.preventDefault(); },
+      scanlineDisplay: showScanlines ? "block" : "none",
+      spriteDisplay: showSprites ? "block" : "none",
+      washStyle: `linear-gradient(100deg,rgba(225,240,255,${wash}) 0%,rgba(225,240,255,${wash * 0.3}) 38%,rgba(255,255,255,0) 62%)`,
+    };
+  }
+}
+</script>
+</body>
+</html>

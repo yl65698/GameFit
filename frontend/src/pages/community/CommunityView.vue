@@ -17,12 +17,12 @@
         <section v-if="viewMode === 'list'" class="panel board-panel">
           <div class="board-controls">
             <div class="board-category-filter">
-              <button class="category-chip" :class="{ active: categoryFilter === '' }" @click="categoryFilter = ''">전체</button>
+              <button class="category-chip cat-all" :class="{ active: categoryFilter === '' }" @click="categoryFilter = ''">전체</button>
               <button
                 v-for="cat in CATEGORIES"
                 :key="cat"
                 class="category-chip"
-                :class="{ active: categoryFilter === cat }"
+                :class="[categoryToneClass(cat), { active: categoryFilter === cat }]"
                 @click="categoryFilter = cat"
               >{{ cat }}</button>
             </div>
@@ -50,7 +50,7 @@
               </div>
               <div class="post-card-body">
                 <div class="post-card-meta">
-                  <span :class="`category-badge cat-${post.category}`">{{ post.category }}</span>
+                  <span :class="['category-badge', categoryToneClass(post.category)]">{{ post.category }}</span>
                   <span class="post-author">{{ post.author }}</span>
                   <span class="post-dot">·</span>
                   <span class="post-time">{{ post.created_at }}</span>
@@ -122,7 +122,7 @@
           <div class="post-detail-head">
             <div class="post-title-row">
               <h2 class="post-detail-title">{{ selectedPost.title }}</h2>
-              <span :class="`category-badge cat-${selectedPost.category}`">{{ selectedPost.category }}</span>
+              <span :class="['category-badge', categoryToneClass(selectedPost.category)]">{{ selectedPost.category }}</span>
             </div>
             <div class="post-author-row">
               <RouterLink :to="`/players/${selectedPost.author_username}`" class="post-author-avatar">
@@ -323,6 +323,7 @@ const draft = reactive({ category: "질문", title: "", body: "" });
 const groupDraft = reactive({ name: "", schedule: "", style: "", role: "", capacity: 4, description: "" });
 
 const CATEGORIES = ["공략", "질문", "구매상담", "그룹모집", "후기", "잡담", "기타"];
+const CATEGORY_TONES = ["guide", "question", "purchase", "group", "review", "chat", "etc"];
 
 const PAGE_SIZE = 10;
 const currentPage = ref(1);
@@ -353,6 +354,11 @@ const commentTotalPages = computed(() =>
 );
 
 watch([categoryFilter, boardMode], () => { currentPage.value = 1; });
+
+function categoryToneClass(category) {
+  const index = CATEGORIES.indexOf(category);
+  return `cat-${CATEGORY_TONES[index] || "etc"}`;
+}
 
 const myGroups = computed(() => groups.value.filter((g) => g.joined).slice(0, 5));
 const filteredGroups = computed(() => {

@@ -1,7 +1,19 @@
 <template>
   <section class="welcome-screen">
     <Transition name="bg-fade">
-      <div class="welcome-bg" :key="currentIndex" :style="currentBgStyle" />
+      <video
+        v-if="currentBgVideo"
+        :key="currentBgVideo"
+        class="welcome-bg-video"
+        :src="currentBgVideo"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+        aria-hidden="true"
+      ></video>
+      <div v-else class="welcome-bg" :key="currentIndex" :style="currentBgStyle" />
     </Transition>
     <div class="welcome-overlay" />
 
@@ -22,15 +34,17 @@
           <div class="media-card is-large media-card--info">
             <Transition name="card-fade" mode="out-in">
               <div :key="currentIndex" class="media-card-content">
-                <strong class="media-game-title">{{ currentGame?.title || 'GameFit' }}</strong>
-                <p class="media-game-desc">{{ currentGame?.description || '지금 가장 인기 있는 할인 게임들을 소개합니다.' }}</p>
+                <strong class="media-game-title">{{ currentGame?.title || "GameFit" }}</strong>
+                <p class="media-game-desc">
+                  {{ currentGame?.description || "지금 가장 인기 있는 할인 게임들을 소개합니다." }}
+                </p>
               </div>
             </Transition>
           </div>
           <div class="media-card">
             <span>할인</span>
             <Transition name="card-fade" mode="out-in">
-              <strong :key="currentIndex">{{ currentGame ? currentGame.discount_percent + '%' : '—' }}</strong>
+              <strong :key="currentIndex">{{ currentGame ? currentGame.discount_percent + "%" : "--" }}</strong>
             </Transition>
           </div>
           <div class="media-card">
@@ -44,13 +58,14 @@
 
       <div class="welcome-copy">
         <p class="eyebrow">GameFit</p>
-        <h1>내 PC와 취향에 맞춰 게임 구매를 판단하세요</h1>
+        <h1>내 PC와 취향에 맞춘 게임을 골라보세요</h1>
         <p>
-          보유 게임과 PC 사양을 기준으로 구동 가능 여부, 할인 타이밍, 취향 추천을 한 번에 확인합니다.
+          보유 게임과 PC 사양으로 구동 가능 여부, 할인 타이밍, 취향 추천까지 게임의 맥락을 한 번에 확인하세요.
         </p>
         <div class="welcome-actions">
           <template v-if="auth.isAuthenticated">
-            <RouterLink class="primary-button" to="/profile">찾아보러가기</RouterLink>
+            <RouterLink class="primary-button" to="/games">게임 탐색</RouterLink>
+            <RouterLink class="secondary-button" to="/taste">취향 분석</RouterLink>
           </template>
           <template v-else>
             <button class="primary-button" @click="openModal('login')">로그인</button>
@@ -60,7 +75,7 @@
       </div>
     </div>
 
-    <div v-if="featuredGames.length > 1" class="slideshow-dots">
+    <div v-if="theme.family !== 'pixel' && featuredGames.length > 1" class="slideshow-dots">
       <button
         v-for="(g, i) in featuredGames"
         :key="g.id"
@@ -135,7 +150,6 @@ const submitLabel = computed(() => {
   return mode.value === "signup" ? "가입하고 시작" : "로그인";
 });
 
-// Slideshow
 const featuredGames = ref([]);
 const currentIndex = ref(0);
 let timer = null;
@@ -153,26 +167,24 @@ const genreMap = {
 };
 
 const currentGame = computed(() => featuredGames.value[currentIndex.value] || null);
-
 const currentGenreLabel = computed(() =>
-  currentGame.value ? (genreMap[currentGame.value.genre] || currentGame.value.genre) : "—"
+  currentGame.value ? genreMap[currentGame.value.genre] || currentGame.value.genre : "인디"
 );
 
-const PIXEL_BG = {
-  "pixel-day":   "/pixel-day.png",
-  "pixel-night": "/pixel-night.png",
+const PIXEL_BG_VIDEO = {
+  "pixel-day": "/videos/pixel_day_video.mp4",
+  "pixel-night": "/videos/pixel_night_video.mp4",
 };
 
-const currentBgStyle = computed(() => {
-  const pixelSrc = PIXEL_BG[theme.mode];
-  if (pixelSrc) return { backgroundImage: `url(${pixelSrc})`, backgroundSize: "cover", backgroundPosition: "center" };
-  return currentGame.value?.image_url
-    ? { backgroundImage: `url(${currentGame.value.image_url})` }
-    : {};
-});
+const currentBgVideo = computed(() => PIXEL_BG_VIDEO[theme.mode] || "");
+
+const currentBgStyle = computed(() =>
+  currentGame.value?.image_url ? { backgroundImage: `url(${currentGame.value.image_url})` } : {}
+);
 
 function startTimer() {
   clearInterval(timer);
+  if (featuredGames.value.length < 2) return;
   timer = setInterval(() => {
     currentIndex.value = (currentIndex.value + 1) % featuredGames.value.length;
   }, 5000);
@@ -187,9 +199,9 @@ onMounted(async () => {
   try {
     const { data } = await api.get("/games/featured/");
     featuredGames.value = data;
-    if (featuredGames.value.length > 1) startTimer();
+    startTimer();
   } catch {
-    // API 응답 없으면 기본 배경 유지
+    // API 응답이 없으면 기본 배경과 문구를 유지합니다.
   }
 });
 

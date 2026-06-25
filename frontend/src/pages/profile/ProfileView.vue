@@ -37,7 +37,7 @@
     <div class="profile-bottom-row">
 
       <!-- 내가 남긴 의견 -->
-      <div class="detail-panel">
+      <div class="detail-panel profile-detail-panel profile-review-panel">
         <div class="panel-heading">
           <h2>내가 남긴 의견</h2>
         </div>
@@ -62,7 +62,7 @@
       </div>
 
       <!-- 내 PC 정보 -->
-      <div class="detail-panel">
+      <div class="detail-panel profile-detail-panel profile-pc-panel">
         <h2>내 PC 정보</h2>
         <dl class="spec-grid">
           <template v-for="(value, key) in profile.pc_specs" :key="key">
@@ -86,9 +86,11 @@
     </div>
 
     <!-- 보유 게임 -->
-    <section class="panel">
+    <section class="panel profile-games-panel">
       <div class="panel-heading">
-        <h2>보유 게임 <span class="heading-count">{{ filteredOwnedGames.length }}</span></h2>
+        <div class="profile-heading-inline">
+          <h2>보유 게임 <span class="heading-count">{{ filteredOwnedGames.length }}</span></h2>
+        </div>
         <div class="panel-actions">
           <RouterLink to="/games">게임 찾아보기</RouterLink>
           <div class="segmented-control">
@@ -122,7 +124,7 @@
     </section>
 
     <!-- 관심 등록 게임 -->
-    <section class="panel">
+    <section class="panel profile-games-panel">
       <div class="panel-heading">
         <h2>관심 등록 게임 <span class="heading-count">{{ interestedGames.length }}</span></h2>
         <div class="panel-actions">
@@ -467,7 +469,8 @@ async function toggleSearchFollow(user) {
 
 .profile-util-btn {
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 800;
 }
 
 .taste-analysis-btn {

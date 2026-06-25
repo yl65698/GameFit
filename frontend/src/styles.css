@@ -34,9 +34,9 @@
 }
 
 :root[data-theme="pixel"] {
-  --theme-font-body: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
-  --theme-font-display: "Press Start 2P", "Courier New", monospace;
-  --theme-font-ui: "Press Start 2P", "Courier New", monospace;
+  --theme-font-body: "Noto Sans KR", Inter, Pretendard, system-ui, sans-serif;
+  --theme-font-display: "Galmuri11", "Press Start 2P", "Courier New", monospace;
+  --theme-font-ui: "Galmuri11", "Press Start 2P", "Courier New", monospace;
   --theme-card-radius: 0px;
   --theme-control-radius: 0px;
   --theme-pill-radius: 0px;
@@ -59,28 +59,28 @@
 
 /* ── pixel day ───────────────────────────────────────────── */
 :root[data-theme="pixel"][data-theme-tone="day"] {
-  color: #1a2840;
-  background: #bed8ef;
+  color: #15243c;
+  background: #c4dcf2;
   --clr-primary: #3872b8;
   --clr-primary-dark: #245a9e;
   --clr-accent: #f5c933;
-  --clr-surface: #edf5ff;
-  --clr-surface-soft: #dff0ff;
-  --clr-page: #bed8ef;
-  --clr-border: #7aaed4;
-  --clr-text: #1a2840;
-  --clr-heading: #0e1a2c;
-  --clr-text-muted: #456080;
-  --clr-control: #c4daf4;
-  --clr-control-hover: #a8cce8;
-  --topbar-bg: rgba(10, 22, 44, 0.97);
-  --topbar-border: rgba(120, 180, 240, 0.18);
-  --topbar-text: #90bcd8;
-  --topbar-text-strong: #e8f5ff;
-  --shadow-sm: 4px 4px 0 rgba(0, 60, 120, 0.20);
-  --shadow-md: 4px 4px 0 rgba(0, 60, 120, 0.32);
-  --shadow-lg: 6px 6px 0 rgba(0, 60, 120, 0.40);
-  --pixel-shadow-color: rgba(0, 60, 120, 0.55);
+  --clr-surface: #fcf3da;
+  --clr-surface-soft: #fffaf0;
+  --clr-page: #c4dcf2;
+  --clr-border: #7a4f28;
+  --clr-text: #15243c;
+  --clr-heading: #15243c;
+  --clr-text-muted: #54647c;
+  --clr-control: #ecd6a4;
+  --clr-control-hover: #d8bd8a;
+  --topbar-bg: rgba(237, 245, 255, 0.82);
+  --topbar-border: #6fa6cf;
+  --topbar-text: #52647b;
+  --topbar-text-strong: #1c3050;
+  --shadow-sm: 4px 4px 0 rgba(20, 45, 80, 0.18);
+  --shadow-md: 5px 5px 0 rgba(20, 45, 80, 0.22);
+  --shadow-lg: 6px 6px 0 rgba(20, 45, 80, 0.34);
+  --pixel-shadow-color: rgba(20, 45, 80, 0.40);
 }
 
 /* ── pixel night ─────────────────────────────────────────── */
@@ -670,6 +670,16 @@ label {
   inset: 0;
   background-size: cover;
   background-position: center;
+  z-index: 0;
+}
+
+.welcome-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   z-index: 0;
 }
 
@@ -6471,6 +6481,607 @@ select {
     linear-gradient(135deg, rgba(10, 30, 70, 0.52) 0%, rgba(20, 60, 120, 0.22) 50%, rgba(180, 220, 255, 0.10) 100%);
 }
 
+/* PixelDay screen kit implementation */
+:root[data-theme="pixel"][data-theme-tone="day"] body,
+:root[data-theme="pixel"][data-theme-tone="day"] .app-shell {
+  background:
+    linear-gradient(180deg, #bcdcf5 0%, #cfe7fa 50%, #d8eafb 100%);
+  image-rendering: pixelated;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .app-shell::before,
+:root[data-theme="pixel"][data-theme-tone="day"] .app-shell::after {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    12px 0 rgba(255,255,255,.92),
+    24px 0 rgba(255,255,255,.92),
+    36px 0 rgba(255,255,255,.92),
+    12px -12px rgba(255,255,255,.92),
+    24px -12px rgba(255,255,255,.92),
+    0 12px rgba(255,255,255,.92),
+    12px 12px rgba(255,255,255,.92),
+    24px 12px rgba(255,255,255,.92),
+    36px 12px rgba(255,255,255,.92),
+    48px 12px rgba(255,255,255,.92),
+    -12px 12px rgba(255,255,255,.92);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .app-shell::before {
+  top: 116px;
+  left: 62%;
+  animation: drift 19s ease-in-out infinite alternate;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .app-shell::after {
+  top: 188px;
+  left: 80%;
+  width: 9px;
+  height: 9px;
+  opacity: .85;
+  transform: scale(.8);
+  animation: drift2 24s ease-in-out infinite alternate;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] body,
+:root[data-theme="pixel"][data-theme-tone="night"] .app-shell {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(112, 96, 248, .16) 0 2px, transparent 3px),
+    linear-gradient(180deg, #070d20 0%, #0b1730 52%, #111f3d 100%);
+  image-rendering: pixelated;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .app-shell::before {
+  content: "";
+  position: fixed;
+  top: 96px;
+  left: 6%;
+  z-index: 0;
+  pointer-events: none;
+  width: 4px;
+  height: 4px;
+  background: #dfe9ff;
+  box-shadow:
+    0 -8px #dfe9ff,
+    0 8px #dfe9ff,
+    -8px 0 #dfe9ff,
+    8px 0 #dfe9ff,
+    28vw -56px #dfe9ff,
+    28vw -64px #dfe9ff,
+    28vw -48px #dfe9ff,
+    calc(28vw - 8px) -56px #dfe9ff,
+    calc(28vw + 8px) -56px #dfe9ff,
+    82vw 10px #dfe9ff,
+    82vw 2px #dfe9ff,
+    82vw 18px #dfe9ff,
+    calc(82vw - 8px) 10px #dfe9ff,
+    calc(82vw + 8px) 10px #dfe9ff;
+  opacity: .9;
+  filter: drop-shadow(0 0 6px rgba(190, 214, 255, .38));
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .app-shell::after {
+  content: "";
+  position: fixed;
+  top: 118px;
+  left: 9%;
+  z-index: 0;
+  pointer-events: none;
+  width: 4px;
+  height: 4px;
+  background: #f7df87;
+  box-shadow:
+    10vw 42px #f7df87,
+    22vw 206px #f7df87,
+    59vw 170px #f7df87,
+    72vw 64px #f7df87,
+    88vw 124px #f7df87,
+    30vw 250px #2b3484,
+    63vw 230px #f7df87,
+    63vw 222px #f7df87,
+    63vw 238px #f7df87,
+    calc(63vw - 8px) 230px #f7df87,
+    calc(63vw + 8px) 230px #f7df87,
+    2vw 520px #f7df87,
+    90vw 448px #f7df87;
+  opacity: .88;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .page,
+:root[data-theme="pixel"][data-theme-tone="night"] .topbar,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-session,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero {
+  position: relative;
+  z-index: 1;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .page,
+:root[data-theme="pixel"][data-theme-tone="day"] .topbar,
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-session,
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero {
+  position: relative;
+  z-index: 1;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .topbar {
+  height: 58px;
+  background: var(--topbar-bg);
+  border-bottom: 3px solid var(--topbar-border);
+  box-shadow: none;
+  backdrop-filter: blur(6px);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .brand {
+  color: #1c3050;
+  text-shadow: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .brand span {
+  color: #1c3050;
+  text-shadow: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .brand-accent {
+  color: #f0a51f;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .brand span .brand-accent {
+  color: #f0a51f;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .brand small {
+  color: #46586f;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .topnav a {
+  color: #52647b;
+  padding: 7px 11px;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .topnav a.router-link-active {
+  background: transparent;
+  color: #1c3050;
+  box-shadow: inset 0 -3px 0 #3872b8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .theme-selector {
+  border: 2px solid #6fa6cf;
+  background: rgba(255, 255, 255, .60);
+  box-shadow: none;
+  padding: 3px;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .theme-selector button {
+  color: #52647b;
+  min-height: 27px;
+  padding: 5px 7px;
+  font-size: 10px;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .theme-selector button.active {
+  background: #3872b8;
+  color: #fff;
+  box-shadow: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .theme-selector-segment:last-child button.active {
+  background: #f5c933;
+  color: #3a2c08;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .theme-selector-divider {
+  width: 2px;
+  height: 13px;
+  background: #7aaed4;
+  margin: 0 2px;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .page-header h1,
+:root[data-theme="pixel"][data-theme-tone="day"] .detail-header h1,
+:root[data-theme="pixel"][data-theme-tone="day"] .panel-heading h2,
+:root[data-theme="pixel"][data-theme-tone="day"] .section-title h2 {
+  font-family: var(--theme-font-display);
+  color: #15243c;
+  text-shadow: 2px 2px 0 rgba(255, 255, 255, .80);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .page-header h1,
+:root[data-theme="pixel"][data-theme-tone="night"] .detail-header h1,
+:root[data-theme="pixel"][data-theme-tone="night"] .panel-heading h2,
+:root[data-theme="pixel"][data-theme-tone="night"] .section-title h2 {
+  font-family: var(--theme-font-display);
+  color: #f2f7ff;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, .58);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .panel,
+:root[data-theme="pixel"][data-theme-tone="day"] .search-hero,
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-search-panel,
+:root[data-theme="pixel"][data-theme-tone="day"] .group-search-panel,
+:root[data-theme="pixel"][data-theme-tone="day"] .calendar-filter-panel,
+:root[data-theme="pixel"][data-theme-tone="day"] .vector3d-card,
+:root[data-theme="pixel"][data-theme-tone="day"] .genre-vector-card,
+:root[data-theme="pixel"][data-theme-tone="day"] .ai-analysis-card,
+:root[data-theme="pixel"][data-theme-tone="day"] .recommendation-strip,
+:root[data-theme="pixel"][data-theme-tone="day"] .mini-game-cta {
+  background: #fcf3da;
+  border: 3px solid #7a4f28;
+  box-shadow:
+    5px 5px 0 rgba(20, 45, 80, .20),
+    inset 0 0 0 2px #d8bd8a;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .vector3d-card,
+:root[data-theme="pixel"][data-theme-tone="day"] .ai-analysis-card,
+:root[data-theme="pixel"][data-theme-tone="day"] .recommendation-strip,
+:root[data-theme="pixel"][data-theme-tone="day"] .mini-game-cta {
+  background: #fff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .panel,
+:root[data-theme="pixel"][data-theme-tone="night"] .search-hero,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-search-panel,
+:root[data-theme="pixel"][data-theme-tone="night"] .group-search-panel,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-filter-panel,
+:root[data-theme="pixel"][data-theme-tone="night"] .vector3d-card,
+:root[data-theme="pixel"][data-theme-tone="night"] .genre-vector-card,
+:root[data-theme="pixel"][data-theme-tone="night"] .ai-analysis-card,
+:root[data-theme="pixel"][data-theme-tone="night"] .recommendation-strip,
+:root[data-theme="pixel"][data-theme-tone="night"] .mini-game-cta {
+  background: #101b2d;
+  border: 3px solid #2c416c;
+  color: #e7eef8;
+  box-shadow:
+    5px 5px 0 rgba(0, 0, 0, .48),
+    inset 0 0 0 2px rgba(124, 154, 210, .18);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .vector3d-card,
+:root[data-theme="pixel"][data-theme-tone="night"] .ai-analysis-card,
+:root[data-theme="pixel"][data-theme-tone="night"] .recommendation-strip,
+:root[data-theme="pixel"][data-theme-tone="night"] .mini-game-cta {
+  background: #17243a;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .taste-report-board .eyebrow,
+:root[data-theme="pixel"][data-theme-tone="night"] .mini-game-result-card span {
+  color: #f5c933;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .taste-report-board p,
+:root[data-theme="pixel"][data-theme-tone="night"] .taste-report-board small,
+:root[data-theme="pixel"][data-theme-tone="night"] .taste-report-board .vector-summary-box p,
+:root[data-theme="pixel"][data-theme-tone="night"] .taste-report-board .achievement-list span {
+  color: #b9c7d8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .vector3d-legend span,
+:root[data-theme="pixel"][data-theme-tone="night"] .vector3d-help span,
+:root[data-theme="pixel"][data-theme-tone="night"] .vector-summary-box,
+:root[data-theme="pixel"][data-theme-tone="night"] .achievement-list,
+:root[data-theme="pixel"][data-theme-tone="night"] .selected-game-meta {
+  border-color: rgba(190, 210, 232, .24);
+  background: transparent;
+  color: #dbe7f6;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .selected-game-meta div {
+  background: transparent;
+  border-color: rgba(190, 210, 232, .24);
+}
+
+:root[data-theme="pixel"] .taste-report-board .vector3d-header h3,
+:root[data-theme="pixel"] .taste-report-board .vector-node-detail h3,
+:root[data-theme="pixel"] .taste-report-board .recommendation-strip h2,
+:root[data-theme="pixel"] .taste-report-board .mini-game-cta strong {
+  font-family: var(--theme-font-ui);
+  letter-spacing: 0;
+  line-height: 1.55;
+}
+
+:root[data-theme="pixel"] .taste-report-board .vector3d-header h3,
+:root[data-theme="pixel"] .taste-report-board .vector-node-detail h3 {
+  font-size: 21px;
+}
+
+:root[data-theme="pixel"] .taste-report-board .mini-game-cta strong {
+  font-size: 22px;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .mini-game-cta {
+  background:
+    linear-gradient(135deg, rgba(56, 114, 184, .07) 25%, transparent 25%) 0 0 / 18px 18px,
+    #fff;
+  color: #15243c;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .mini-game-cta span {
+  color: #168a4e;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .mini-game-cta strong {
+  color: #15243c;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .mini-game-cta small {
+  color: #52647b;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .mini-game-cta {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .09) 25%, transparent 25%) 0 0 / 18px 18px,
+    #172235;
+  color: #e9f2ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .mini-game-cta span {
+  color: #8ff0a8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .mini-game-cta strong {
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .mini-game-cta small {
+  color: #cfe1f5;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .mini-game-result-card {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--mini-result-accent), #17243a 78%), #101b2d) !important;
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .mini-game-result-card strong {
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .mini-game-result-card p {
+  color: #c2d0e2;
+}
+
+:root[data-theme="pixel"] .bit-title {
+  font-family: var(--theme-font-ui);
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.45;
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"] .mini-game-result-card {
+  border: 3px solid color-mix(in srgb, var(--mini-result-accent), #ffffff 26%);
+  border-left: 6px solid var(--mini-result-accent);
+  border-radius: 0;
+  box-shadow:
+    4px 4px 0 rgba(20, 45, 80, .18),
+    inset 0 0 0 2px color-mix(in srgb, var(--mini-result-accent), #ffffff 72%);
+}
+
+:root[data-theme="pixel"] .mini-game-result-card span,
+:root[data-theme="pixel"] .mini-game-result-card strong {
+  font-family: var(--theme-font-ui);
+  letter-spacing: 0;
+  line-height: 1.55;
+}
+
+:root[data-theme="pixel"] .mini-game-result-card span {
+  font-size: 13px;
+}
+
+:root[data-theme="pixel"] .mini-game-result-card strong {
+  font-size: 20px;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .game-cover,
+:root[data-theme="pixel"][data-theme-tone="day"] .game-card,
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-card,
+:root[data-theme="pixel"][data-theme-tone="day"] .board-post-card,
+:root[data-theme="pixel"][data-theme-tone="day"] .profile-list-item,
+:root[data-theme="pixel"][data-theme-tone="day"] .calendar-card,
+:root[data-theme="pixel"][data-theme-tone="day"] .review-card,
+:root[data-theme="pixel"][data-theme-tone="day"] .my-review-card,
+:root[data-theme="pixel"][data-theme-tone="day"] .social-list a,
+:root[data-theme="pixel"][data-theme-tone="day"] .user-search-result-row {
+  background: #fff;
+  border: 3px solid #1c3050;
+  border-radius: 0;
+  box-shadow: 5px 5px 0 rgba(20, 45, 80, .22);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .game-card:hover,
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-card:hover,
+:root[data-theme="pixel"][data-theme-tone="day"] .board-post-card:hover,
+:root[data-theme="pixel"][data-theme-tone="day"] .profile-list-item:hover,
+:root[data-theme="pixel"][data-theme-tone="day"] .calendar-card:hover,
+:root[data-theme="pixel"][data-theme-tone="day"] .my-review-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 rgba(20, 45, 80, .24);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .primary-button,
+:root[data-theme="pixel"][data-theme-tone="day"] .topbar .icon-text-button {
+  color: #fff;
+  background: #3872b8;
+  border: 3px solid #245a9e;
+  box-shadow:
+    4px 4px 0 rgba(20, 45, 80, .40),
+    inset 2px 2px 0 rgba(255,255,255,.25),
+    inset -2px -2px 0 rgba(0,0,0,.18);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .secondary-button,
+:root[data-theme="pixel"][data-theme-tone="day"] .filter-chip,
+:root[data-theme="pixel"][data-theme-tone="day"] .page-btn,
+:root[data-theme="pixel"][data-theme-tone="day"] .category-chip {
+  color: #1c3050;
+  background: #fff;
+  border: 2px solid #1c3050;
+  box-shadow: 3px 3px 0 rgba(20, 45, 80, .18);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .filter-chip.active,
+:root[data-theme="pixel"][data-theme-tone="day"] .page-btn.active,
+:root[data-theme="pixel"][data-theme-tone="day"] .category-chip.active {
+  color: #fff;
+  background: #3872b8;
+  border-color: #245a9e;
+  box-shadow: 3px 3px 0 rgba(20, 45, 80, .25);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] input,
+:root[data-theme="pixel"][data-theme-tone="day"] textarea,
+:root[data-theme="pixel"][data-theme-tone="day"] select,
+:root[data-theme="pixel"][data-theme-tone="day"] .search-input,
+:root[data-theme="pixel"][data-theme-tone="day"] .large-search input {
+  background: #fff;
+  border: 3px solid #1c3050;
+  color: #15243c;
+  box-shadow: inset 2px 2px 0 rgba(0,0,0,.06);
+  font-family: "Noto Sans KR", system-ui, sans-serif;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .post-category-badge,
+:root[data-theme="pixel"][data-theme-tone="day"] .spec-chip,
+:root[data-theme="pixel"][data-theme-tone="day"] .hashtag-chip,
+:root[data-theme="pixel"][data-theme-tone="day"] .tag-row span {
+  border: 2px solid #3872b8;
+  background: #fff;
+  color: #3872b8;
+  border-radius: 0;
+  font-family: var(--theme-font-ui);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .hashtag-chip,
+:root[data-theme="pixel"][data-theme-tone="night"] .tag-row span {
+  border: 2px solid #7fb4e8;
+  background: #f8fafc;
+  color: #2d6fb5;
+  border-radius: 0;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, .26);
+  font-family: var(--theme-font-ui);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-card,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-card {
+  border: 3px solid #2c416c;
+  background: #17243a;
+  color: #e7eef8;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, .48);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-card:hover,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-card:hover {
+  border-color: #7fb4e8;
+  box-shadow: 7px 7px 0 rgba(0, 0, 0, .52);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-card h3,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-card strong,
+:root[data-theme="pixel"][data-theme-tone="night"] .panel-heading h2 {
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-card p,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-card p,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-card footer,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-card footer span,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-card span,
+:root[data-theme="pixel"][data-theme-tone="night"] .panel-heading span,
+:root[data-theme="pixel"][data-theme-tone="night"] .ai-summary,
+:root[data-theme="pixel"][data-theme-tone="night"] .ai-intent,
+:root[data-theme="pixel"][data-theme-tone="night"] .empty-state p {
+  color: #c2d0e2;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-card footer {
+  border-top-color: rgba(190, 210, 232, .22);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-card footer strong,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-card em {
+  color: #f5c933;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .search-mode-tabs button:not(.active),
+:root[data-theme="pixel"][data-theme-tone="night"] .filter-chip:not(.active),
+:root[data-theme="pixel"][data-theme-tone="night"] .page-btn:not(.active),
+:root[data-theme="pixel"][data-theme-tone="night"] .equip-sort-select {
+  border-color: #7fb4e8;
+  background: #f8fafc;
+  color: #17345f;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, .30);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .search-mode-tabs button.active,
+:root[data-theme="pixel"][data-theme-tone="night"] .filter-chip.active,
+:root[data-theme="pixel"][data-theme-tone="night"] .page-btn.active {
+  border-color: #7fb4e8;
+  background: #3872b8;
+  color: #fff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .large-search input,
+:root[data-theme="pixel"][data-theme-tone="night"] .search-input {
+  border-color: #7fb4e8;
+  background: #f8fafc;
+  color: #15243c;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .large-search input::placeholder {
+  color: #77889e;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .search-hero .search-mode-tabs button:not(.active),
+:root[data-theme="pixel"][data-theme-tone="night"] .content-stack > .filter-row .filter-chip:not(.active),
+:root[data-theme="pixel"][data-theme-tone="night"] .equip-filter-bar .filter-chip:not(.active),
+:root[data-theme="pixel"][data-theme-tone="night"] .equip-sort-select {
+  border-color: #7fb4e8;
+  background: #e4edf7;
+  color: #17345f;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .search-hero .large-search input {
+  border-color: #7fb4e8;
+  background: #e6eef8;
+  color: #15243c;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .suggestion-list {
+  border: 2px solid #7fb4e8;
+  background: #101b2d;
+  color: #e7eef8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .suggestion-list a {
+  color: #e7eef8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .suggestion-list span {
+  color: #b9c7d8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .ai-badge {
+  border: 2px solid #f5c933;
+  background: #f8dc6a;
+  color: #3a2c08;
+  border-radius: 0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .link-button {
+  color: #8ed7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .calendar-cell {
+  background: rgba(255, 255, 255, .72);
+  border: 2px solid #6fa6cf;
+  border-radius: 0;
+}
+
 :root[data-theme="pixel"][data-theme-tone="night"] .welcome-overlay {
   background:
     linear-gradient(135deg, rgba(4, 6, 20, 0.72) 0%, rgba(30, 20, 80, 0.45) 60%, rgba(8, 12, 40, 0.60) 100%);
@@ -6695,6 +7306,2843 @@ select {
 /* pixel welcome — hide media grid on pixel mode (room IS the visual) */
 :root[data-theme="pixel"] .welcome-hero--pixel .welcome-media {
   display: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-screen {
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 92px 32px 40px;
+  color: #15243c;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(10, 30, 60, .035) 2px,
+      rgba(10, 30, 60, .035) 3px
+    ),
+    linear-gradient(180deg, #bcdcf5 0%, #cfe7fa 52%, #d8eafb 100%);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-bg-video {
+  opacity: .22;
+  filter: saturate(.95) contrast(1.05);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-overlay {
+  background:
+    linear-gradient(180deg, rgba(196, 220, 242, .16), rgba(216, 234, 251, .72)),
+    radial-gradient(circle at 16% 12%, rgba(255, 255, 255, .45), transparent 22%);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-session {
+  top: 16px;
+  right: 24px;
+  z-index: 5;
+}
+
+/* PixelDay home: room-style landing based on the handoff screenshot */
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-screen {
+  min-height: 100vh;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 92px 0 56px;
+  overflow: hidden;
+  color: #10213d;
+  background: #b7ddf4;
+  image-rendering: pixelated;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-bg {
+  background-size: cover;
+  background-position: center bottom;
+  image-rendering: pixelated;
+  transform: scale(1.01);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-overlay {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0) 2px,
+      rgba(10, 30, 60, .055) 2px,
+      rgba(10, 30, 60, .055) 3px
+    ),
+    linear-gradient(90deg, rgba(188, 220, 245, .18), rgba(188, 220, 245, 0) 46%);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-session {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  min-height: 26px;
+  padding: 0 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  background: rgba(237, 245, 255, .82);
+  border-bottom: 3px solid #6fa6cf;
+  box-shadow: none;
+  backdrop-filter: blur(4px);
+}
+
+/* Keep Pixel Day home layout identical to Pixel Night; only the video asset changes. */
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-screen {
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  background: #0a1022;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-bg-video {
+  opacity: 1;
+  filter: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-overlay {
+  background:
+    linear-gradient(135deg, rgba(10, 30, 70, 0.52) 0%, rgba(20, 60, 120, 0.22) 50%, rgba(180, 220, 255, 0.10) 100%);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-session {
+  top: 24px;
+  right: 28px;
+  left: auto;
+  min-height: auto;
+  padding: 0;
+  background: transparent;
+  border-bottom: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel {
+  width: 100%;
+  max-width: 1100px;
+  min-height: auto;
+  margin-left: 0;
+  padding-right: 6%;
+  justify-content: flex-end;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy {
+  width: min(100%, 480px);
+  gap: 18px;
+  padding-top: 0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .eyebrow {
+  justify-self: auto;
+  margin: 0;
+  padding: 0;
+  color: var(--clr-accent);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.30);
+  letter-spacing: 0.12em;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy h1 {
+  width: auto;
+  color: var(--clr-heading);
+  font-family: "Press Start 2P", monospace;
+  font-size: 18px;
+  line-height: 2;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.30);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy p:not(.eyebrow) {
+  width: auto;
+  color: #c0d8f0;
+  font: 14px/1.8 "Courier New", monospace;
+  text-shadow: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .primary-button,
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .secondary-button {
+  min-width: auto;
+  min-height: 40px;
+  padding: 10px 14px;
+  font-size: 11px;
+}
+
+@media (max-width: 760px) {
+  :root[data-theme="pixel"][data-theme-tone="day"] .welcome-screen {
+    padding: 60px;
+  }
+
+  :root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+/* Pixel home final layout: clear video, left copy, PixelDay kit typography/buttons. */
+:root[data-theme="pixel"] .welcome-screen {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: clamp(86px, 12vh, 118px) 0 48px;
+  background: #0a1022;
+}
+
+:root[data-theme="pixel"] .welcome-bg-video {
+  opacity: 1;
+  filter: none;
+}
+
+:root[data-theme="pixel"] .welcome-overlay {
+  background: transparent;
+}
+
+:root[data-theme="pixel"] .welcome-session {
+  top: 24px;
+  right: 28px;
+  left: auto;
+  min-height: auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+:root[data-theme="pixel"] .welcome-hero--pixel {
+  width: min(100%, 1100px);
+  max-width: none;
+  min-height: auto;
+  margin-left: clamp(56px, 8vw, 104px);
+  padding: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+:root[data-theme="pixel"] .welcome-hero--pixel .welcome-media {
+  display: none;
+}
+
+:root[data-theme="pixel"] .welcome-hero--pixel .welcome-copy {
+  width: min(100%, 430px);
+  gap: 16px;
+  padding-top: 0;
+}
+
+:root[data-theme="pixel"] .welcome-hero--pixel .eyebrow {
+  justify-self: start;
+  width: auto;
+  margin: 0 0 6px;
+  padding: 6px 12px 5px;
+  color: #1c3050;
+  background: #f5c933;
+  border: 3px solid #b8881a;
+  box-shadow: 3px 3px 0 rgba(20, 45, 80, .28);
+  font-family: "Press Start 2P", monospace;
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-shadow: none;
+  text-transform: uppercase;
+}
+
+:root[data-theme="pixel"] .welcome-hero--pixel .welcome-copy h1 {
+  width: min(100%, 390px);
+  margin: 0;
+  color: #10213d;
+  font-family: var(--theme-font-display);
+  font-size: clamp(24px, 2.65vw, 34px);
+  line-height: 1.55;
+  letter-spacing: 0;
+  text-shadow:
+    2px 2px 0 rgba(255, 255, 255, .85),
+    3px 3px 0 rgba(46, 82, 130, .20);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy h1 {
+  color: #eaf3ff;
+  text-shadow:
+    2px 2px 0 rgba(0, 0, 0, .68),
+    0 0 14px rgba(112, 96, 248, .24);
+}
+
+:root[data-theme="pixel"] .welcome-hero--pixel .welcome-copy p:not(.eyebrow) {
+  width: min(100%, 420px);
+  color: #1c3050;
+  font-family: "Noto Sans KR", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.85;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, .70);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy p:not(.eyebrow) {
+  color: #d7e7ff;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, .55);
+}
+
+:root[data-theme="pixel"] .welcome-actions {
+  gap: 12px;
+  margin-top: 2px;
+}
+
+:root[data-theme="pixel"] .welcome-hero--pixel .primary-button,
+:root[data-theme="pixel"] .welcome-hero--pixel .secondary-button {
+  min-width: 92px;
+  min-height: 42px;
+  padding: 10px 18px;
+  border-radius: 0;
+  font-family: var(--theme-font-ui);
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0;
+  box-shadow:
+    4px 4px 0 rgba(20, 45, 80, .42),
+    inset 2px 2px 0 rgba(255, 255, 255, .25),
+    inset -2px -2px 0 rgba(0, 0, 0, .18);
+}
+
+:root[data-theme="pixel"] .welcome-hero--pixel .primary-button {
+  color: #fff;
+  background: #3872b8;
+  border: 3px solid #245a9e;
+}
+
+:root[data-theme="pixel"] .welcome-hero--pixel .secondary-button {
+  color: #1c3050;
+  background: #fcf3da;
+  border: 3px solid #1c3050;
+  box-shadow:
+    4px 4px 0 rgba(20, 45, 80, .28),
+    inset 2px 2px 0 rgba(255, 255, 255, .50),
+    inset -2px -2px 0 rgba(122, 79, 40, .16);
+}
+
+:root[data-theme="pixel"] .welcome-hero--pixel .primary-button:hover:not(:disabled),
+:root[data-theme="pixel"] .welcome-hero--pixel .secondary-button:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow:
+    6px 6px 0 rgba(20, 45, 80, .42),
+    inset 2px 2px 0 rgba(255, 255, 255, .25),
+    inset -2px -2px 0 rgba(0, 0, 0, .18);
+}
+
+:root[data-theme="pixel"] .welcome-hero--pixel .primary-button:active:not(:disabled),
+:root[data-theme="pixel"] .welcome-hero--pixel .secondary-button:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(20, 45, 80, .38);
+}
+
+@media (max-width: 760px) {
+  :root[data-theme="pixel"] .welcome-screen {
+    justify-content: flex-start;
+    padding: 92px 18px 40px;
+  }
+
+  :root[data-theme="pixel"] .welcome-session {
+    top: 16px;
+    right: 16px;
+  }
+
+  :root[data-theme="pixel"] .welcome-hero--pixel {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  :root[data-theme="pixel"] .welcome-hero--pixel .welcome-copy {
+    width: min(100%, 420px);
+  }
+
+  :root[data-theme="pixel"] .welcome-hero--pixel .welcome-copy h1 {
+    font-size: 22px;
+  }
+}
+
+/* Pixel home exact final override: day/night share layout; only palette differs. */
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-screen,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-screen {
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  background: #0a1022;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-bg-video,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-bg-video {
+  opacity: 1;
+  filter: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-overlay,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-overlay {
+  background: transparent;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-session,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-session {
+  top: 24px;
+  right: 28px;
+  left: auto;
+  min-height: auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel {
+  width: 100%;
+  max-width: 1100px;
+  min-height: auto;
+  margin-left: 0;
+  padding-right: 6%;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-media,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-media {
+  display: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy {
+  width: min(100%, 480px);
+  gap: 18px;
+  padding-top: 0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .eyebrow,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .eyebrow {
+  justify-self: auto;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  font-family: var(--theme-font-display);
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .eyebrow {
+  color: #f5c933;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, .30);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .eyebrow {
+  color: #f5c933;
+  text-shadow: 0 0 12px rgba(245, 201, 51, .50);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy h1,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy h1 {
+  width: auto;
+  margin: 0;
+  font-family: var(--theme-font-display);
+  font-size: 18px;
+  line-height: 2;
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy h1 {
+  color: #10213d;
+  text-shadow: 2px 2px 0 rgba(255, 255, 255, .72);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy h1 {
+  color: #eaf3ff;
+  text-shadow:
+    2px 2px 0 rgba(0, 0, 0, .68),
+    0 0 14px rgba(112, 96, 248, .24);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy p:not(.eyebrow),
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy p:not(.eyebrow) {
+  width: auto;
+  font-family: "Noto Sans KR", system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.85;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy p:not(.eyebrow) {
+  color: #1c3050;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, .58);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy p:not(.eyebrow) {
+  color: #d7e7ff;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, .55);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .primary-button,
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .secondary-button,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .primary-button,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .secondary-button {
+  min-width: 92px;
+  min-height: 42px;
+  padding: 10px 18px;
+  border-radius: 0;
+  font-family: var(--theme-font-ui);
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .primary-button,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .primary-button {
+  color: #fff;
+  background: #3872b8;
+  border: 3px solid #245a9e;
+  box-shadow:
+    4px 4px 0 rgba(20, 45, 80, .42),
+    inset 2px 2px 0 rgba(255, 255, 255, .25),
+    inset -2px -2px 0 rgba(0, 0, 0, .18);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .secondary-button,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .secondary-button {
+  color: #1c3050;
+  background: #fcf3da;
+  border: 3px solid #1c3050;
+  box-shadow:
+    4px 4px 0 rgba(20, 45, 80, .28),
+    inset 2px 2px 0 rgba(255, 255, 255, .50),
+    inset -2px -2px 0 rgba(122, 79, 40, .16);
+}
+
+@media (max-width: 760px) {
+  :root[data-theme="pixel"][data-theme-tone="day"] .welcome-screen,
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-screen {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 92px 18px 40px;
+  }
+
+  :root[data-theme="pixel"][data-theme-tone="day"] .welcome-session,
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-session {
+    top: 16px;
+    right: 16px;
+  }
+
+  :root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel,
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel {
+    width: 100%;
+    margin-left: 0;
+    padding-right: 0;
+    justify-content: flex-start;
+  }
+}
+
+/* Pixel home text scale: match large title/body/button proportions. */
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel {
+  max-width: 1180px;
+  padding-right: 3%;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy {
+  width: min(100%, 650px);
+  gap: 24px;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .eyebrow,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .eyebrow {
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy h1,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy h1 {
+  max-width: 640px;
+  font-size: clamp(34px, 3.2vw, 46px);
+  line-height: 1.45;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy p:not(.eyebrow),
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy p:not(.eyebrow) {
+  max-width: 620px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-actions,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-actions {
+  gap: 14px;
+  margin-top: 2px;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .primary-button,
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .secondary-button,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .primary-button,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .secondary-button {
+  min-width: 128px;
+  min-height: 56px;
+  padding: 15px 22px;
+  font-size: 15px;
+}
+
+@media (max-width: 980px) {
+  :root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel,
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel {
+    padding-right: 0;
+    justify-content: center;
+  }
+
+  :root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy,
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy {
+    width: min(100%, 620px);
+  }
+}
+
+@media (max-width: 760px) {
+  :root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy h1,
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy h1 {
+    font-size: 28px;
+  }
+
+  :root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy p:not(.eyebrow),
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy p:not(.eyebrow) {
+    font-size: 15px;
+  }
+}
+
+/* Pixel game search page: shared day/night layout from PixelDay kit. */
+:root[data-theme="pixel"] .search-hero {
+  justify-items: stretch;
+  gap: 18px;
+  padding: 22px 24px 26px;
+  background: #fcf3da;
+  border: 4px solid #7a4f28;
+  border-radius: 0;
+  box-shadow:
+    6px 6px 0 rgba(20, 45, 80, .22),
+    inset 0 0 0 2px #d8bd8a;
+}
+
+:root[data-theme="pixel"] .search-mode-tabs {
+  display: flex;
+  gap: 10px;
+  width: fit-content;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+}
+
+:root[data-theme="pixel"] .search-mode-tabs button {
+  min-height: 50px;
+  padding: 0 24px;
+  border-radius: 0;
+  border: 3px solid #b88a4a;
+  background: #ecd6a4;
+  color: #7a6a4a;
+  box-shadow:
+    3px 3px 0 rgba(20, 45, 80, .18),
+    inset 2px 2px 0 rgba(255, 255, 255, .35);
+  font-family: var(--theme-font-ui);
+  font-size: 17px;
+  line-height: 1;
+}
+
+:root[data-theme="pixel"] .search-mode-tabs button.active {
+  color: #fff;
+  background: #3872b8;
+  border-color: #245a9e;
+  box-shadow:
+    4px 4px 0 rgba(20, 45, 80, .36),
+    inset 2px 2px 0 rgba(255, 255, 255, .25),
+    inset -2px -2px 0 rgba(0, 0, 0, .18);
+}
+
+:root[data-theme="pixel"] .large-search {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 116px;
+  gap: 14px;
+  align-items: stretch;
+}
+
+:root[data-theme="pixel"] .large-search input {
+  min-height: 66px;
+  border-radius: 0;
+  border: 4px solid #1c3050;
+  padding: 0 22px;
+  background: #fff;
+  color: #15243c;
+  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, .06);
+  font-family: "Noto Sans KR", system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+:root[data-theme="pixel"] .large-search input::placeholder {
+  color: #8b9aae;
+}
+
+:root[data-theme="pixel"] .large-search input:focus {
+  border-color: #245a9e;
+  box-shadow:
+    inset 2px 2px 0 rgba(0, 0, 0, .06),
+    0 0 0 3px rgba(56, 114, 184, .18);
+}
+
+:root[data-theme="pixel"] .large-search .primary-button {
+  min-height: 66px;
+  min-width: 116px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  border: 4px solid #245a9e;
+  background: #3872b8;
+  color: #fff;
+  box-shadow:
+    5px 5px 0 rgba(20, 45, 80, .40),
+    inset 2px 2px 0 rgba(255, 255, 255, .25),
+    inset -2px -2px 0 rgba(0, 0, 0, .18);
+  font-family: var(--theme-font-ui);
+  font-size: 18px;
+  line-height: 1;
+}
+
+:root[data-theme="pixel"] .filter-row {
+  gap: 12px;
+}
+
+:root[data-theme="pixel"] .filter-chip {
+  min-height: 51px;
+  min-width: 126px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border-radius: 0;
+  border: 3px solid #1c3050;
+  background: #fff;
+  color: #1c3050;
+  box-shadow: 4px 4px 0 rgba(20, 45, 80, .22);
+  font-family: var(--theme-font-ui);
+  font-size: 17px;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+:root[data-theme="pixel"] .filter-chip.active {
+  color: #fff;
+  background: #3872b8;
+  border-color: #245a9e;
+  box-shadow:
+    4px 4px 0 rgba(20, 45, 80, .36),
+    inset 2px 2px 0 rgba(255, 255, 255, .25),
+    inset -2px -2px 0 rgba(0, 0, 0, .18);
+}
+
+:root[data-theme="pixel"] .game-card .game-art > span:not(.chip-new):not(.chip-popular):not(.chip-ai) {
+  border-radius: 0;
+  border: 2px solid #c49a24;
+  background: #f8dc6a;
+  color: #3a2c08;
+  backdrop-filter: none;
+  box-shadow:
+    2px 2px 0 rgba(20, 45, 80, .26),
+    inset 2px 2px 0 rgba(255, 255, 255, .45),
+    inset -2px -2px 0 rgba(122, 79, 40, .22);
+  padding: 5px 8px;
+  font-family: var(--theme-font-ui);
+  font-size: 11px;
+  line-height: 1;
+}
+
+:root[data-theme="pixel"] .genre-tag-row {
+  gap: 10px;
+}
+
+:root[data-theme="pixel"] .genre-tag {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  border-radius: 0;
+  border: 2px solid #3872b8;
+  background: #fff;
+  color: #3872b8;
+  box-shadow: 3px 3px 0 rgba(20, 45, 80, .18);
+  font-family: var(--theme-font-ui);
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"] .genre-tag:hover {
+  background: #f6fbff;
+  border-color: #245a9e;
+}
+
+:root[data-theme="pixel"] .hero-community-btn {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 0;
+  border: 3px solid #cfe6f7;
+  background: rgba(56, 114, 184, .42);
+  color: #eaf3ff;
+  backdrop-filter: none;
+  box-shadow:
+    4px 4px 0 rgba(0, 0, 0, .30),
+    inset 2px 2px 0 rgba(255, 255, 255, .20);
+  font-family: var(--theme-font-ui);
+  font-size: 13px;
+  line-height: 1;
+}
+
+:root[data-theme="pixel"] .hero-community-btn:hover {
+  background: #3872b8;
+  transform: translate(-2px, -2px);
+  box-shadow:
+    6px 6px 0 rgba(0, 0, 0, .30),
+    inset 2px 2px 0 rgba(255, 255, 255, .20);
+}
+
+:root[data-theme="pixel"] .game-detail-page .detail-panel h2,
+:root[data-theme="pixel"] .game-detail-page .review-section h2,
+:root[data-theme="pixel"] .game-detail-page .game-compat-sidebar h2,
+:root[data-theme="pixel"] .game-detail-page .upgrade-section h3 {
+  font-family: var(--theme-font-ui);
+  color: #10243f;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.55;
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .detail-panel h2,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .review-section h2,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .game-compat-sidebar h2,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .upgrade-section h3 {
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"] .game-detail-page .review-card {
+  align-items: flex-start;
+}
+
+:root[data-theme="pixel"] .game-detail-page .review-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 0;
+  border: 3px solid #2d6fb5;
+  background: #3b7fc6;
+  color: #fff;
+  box-shadow:
+    3px 3px 0 rgba(20, 45, 80, .26),
+    inset 2px 2px 0 rgba(255, 255, 255, .22);
+  font-family: var(--theme-font-ui);
+  font-size: 14px;
+  line-height: 1;
+}
+
+:root[data-theme="pixel"] .game-detail-page .review-avatar img {
+  border-radius: 0;
+}
+
+:root[data-theme="pixel"] .game-detail-page .review-vote {
+  min-height: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border-radius: 0;
+  border: 2px solid #1f8a5b;
+  background: #24b77a;
+  color: #fff;
+  box-shadow: 2px 2px 0 rgba(20, 45, 80, .22);
+  font-family: var(--theme-font-ui);
+  font-size: 10px;
+  line-height: 1;
+}
+
+:root[data-theme="pixel"] .game-detail-page .review-vote.bad {
+  border-color: #b84b43;
+  background: #e8695f;
+  color: #fff;
+}
+
+:root[data-theme="pixel"] .game-detail-page .detail-panel,
+:root[data-theme="pixel"] .game-detail-page .review-section,
+:root[data-theme="pixel"] .game-detail-page .review-form,
+:root[data-theme="pixel"] .game-detail-page .game-compat-sidebar,
+:root[data-theme="pixel"] .game-detail-page .upgrade-card {
+  border-radius: 0;
+  border: 2px solid #bcc9d7;
+  box-shadow: 4px 4px 0 rgba(110, 132, 154, .26);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .detail-panel,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .review-section,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .review-form,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .game-compat-sidebar,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .upgrade-card {
+  border-color: rgba(214, 225, 238, .42);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, .28);
+}
+
+:root[data-theme="pixel"] .game-detail-page .game-hero-image,
+:root[data-theme="pixel"] .game-card,
+:root[data-theme="pixel"] .game-card .game-art,
+:root[data-theme="pixel"] .game-card img {
+  border-radius: 0;
+}
+
+:root[data-theme="pixel"] .game-detail-page .game-hero-image {
+  border: 2px solid #bcc9d7;
+  box-shadow: 4px 4px 0 rgba(110, 132, 154, .26);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .game-hero-image {
+  border-color: rgba(214, 225, 238, .42);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, .28);
+}
+
+:root[data-theme="pixel"] .game-detail-page .review-form textarea {
+  border: 2px solid #bcc9d7;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+:root[data-theme="pixel"] .game-detail-page .recommend-toggle button {
+  border-radius: 0;
+  border: 2px solid #bcc9d7;
+  background: #f8fbff;
+  box-shadow: 2px 2px 0 rgba(110, 132, 154, .22);
+  font-family: var(--theme-font-ui);
+  font-size: 11px;
+  color: #34465c;
+}
+
+:root[data-theme="pixel"] .game-detail-page .recommend-toggle button.active:first-child {
+  border-color: #7bc99b;
+  background: #eaf8ef;
+  color: #12613f;
+}
+
+:root[data-theme="pixel"] .game-detail-page .recommend-toggle button.active:last-child {
+  border-color: #e2aaa6;
+  background: #fff2f1;
+  color: #9b2f29;
+}
+
+:root[data-theme="pixel"] .game-detail-page .review-section {
+  border: 0;
+  box-shadow: none;
+}
+
+:root[data-theme="pixel"] .game-detail-page .detail-action-stack .primary-button,
+:root[data-theme="pixel"] .game-detail-page .detail-action-stack .secondary-button,
+:root[data-theme="pixel"] .game-detail-page .review-heading .secondary-button,
+:root[data-theme="pixel"] .game-detail-page .game-compat-sidebar .primary-button,
+:root[data-theme="pixel"] .game-detail-page .game-compat-sidebar .secondary-button {
+  font-size: 12px;
+}
+
+:root[data-theme="pixel"] .game-detail-page .game-compat-sidebar .primary-button,
+:root[data-theme="pixel"] .game-detail-page .game-compat-sidebar .secondary-button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
+:root[data-theme="pixel"] .game-detail-page .recommend-toggle button {
+  font-size: 12px;
+}
+
+:root[data-theme="pixel"] .game-detail-page .detail-back {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+:root[data-theme="pixel"] .game-detail-page .detail-back:hover {
+  background: transparent;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page {
+  color: #e7eef8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .detail-back {
+  color: #8ed7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .detail-back:hover {
+  color: #f6d56f;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .detail-panel,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .review-form,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .game-compat-sidebar,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .upgrade-card {
+  background: #17243a;
+  color: #e7eef8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .game-title-row,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .storage-spec-row {
+  border-color: rgba(190, 210, 232, .24);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .game-title-row p,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .compat-summary,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .timing-message,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .history-low-bar,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .lp-original-price,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .chart-labels,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .review-card p,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .empty-state,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .upgrade-card small {
+  color: #aebdd0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .requirement-list article,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .compat-spec-list div,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .timing-factors li,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .live-price-row,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .review-card {
+  border-color: rgba(190, 210, 232, .22);
+  background: #101b2d;
+  color: #e7eef8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .requirement-list strong,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .compat-spec-list dt,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .compat-spec-list strong,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .storage-spec-row strong,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .lp-shop,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .lp-price,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .review-meta a,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .buy-timing {
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .requirement-list p,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .compat-spec-list small,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .storage-spec-row span {
+  color: #b9c7d8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .review-form textarea,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .recommend-toggle button {
+  border-color: rgba(190, 210, 232, .38);
+  background: #0f1a2b;
+  color: #dbe7f6;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .recommend-toggle button.active:first-child {
+  border-color: #65c58f;
+  background: rgba(36, 183, 122, .18);
+  color: #90f0ba;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .recommend-toggle button.active:last-child {
+  border-color: #df7d78;
+  background: rgba(232, 105, 95, .18);
+  color: #ffaaa4;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .genre-tag {
+  border-color: #7fb4e8;
+  background: #13233a;
+  color: #b9ddff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .line-chart-grid {
+  stroke: rgba(190, 210, 232, .18);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .chart-y-label {
+  fill: #9fb0c4;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .game-title-row h1 {
+  color: #f5f8ff;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, .38);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .panel-heading.compact span,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .panel-heading.compact a {
+  color: #7fd8ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .line-chart-line {
+  stroke: #55c8ef;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .line-chart-dot {
+  fill: #17243a;
+  stroke: #89e5ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .timing-score-num,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .timing-score-num small,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .factor-text strong,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .timing-lows strong {
+  color: #f5f8ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .factor-text small,
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .timing-lows {
+  color: #8fc6ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .timing-score-track {
+  background: rgba(202, 219, 239, .78);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .game-detail-page .timing-score-fill.signal-good {
+  background: #55c8ef;
+}
+
+/* Pixel equipment detail: mirror game detail styling. */
+:root[data-theme="pixel"] .equipment-detail-page .detail-back {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+:root[data-theme="pixel"] .equipment-detail-page .detail-back:hover {
+  background: transparent;
+}
+
+:root[data-theme="pixel"] .equipment-detail-page .equip-hero,
+:root[data-theme="pixel"] .equipment-detail-page .detail-panel,
+:root[data-theme="pixel"] .equipment-detail-page .equipment-compare-sidebar,
+:root[data-theme="pixel"] .equipment-detail-page .equipment-judgement-card,
+:root[data-theme="pixel"] .equipment-detail-page .game-fit-card,
+:root[data-theme="pixel"] .equipment-detail-page .price-stats-bar,
+:root[data-theme="pixel"] .equipment-detail-page .price-market-list article,
+:root[data-theme="pixel"] .equipment-detail-page .compare-spec-box {
+  border-radius: 0;
+  border: 2px solid #bcc9d7;
+  box-shadow: 4px 4px 0 rgba(110, 132, 154, .26);
+}
+
+:root[data-theme="pixel"] .equipment-detail-page .equip-hero {
+  border-color: #bcc9d7;
+}
+
+:root[data-theme="pixel"] .equipment-detail-page .detail-panel h2,
+:root[data-theme="pixel"] .equipment-detail-page .equipment-compare-sidebar h2,
+:root[data-theme="pixel"] .equipment-detail-page .equipment-judgement-card h3 {
+  font-family: var(--theme-font-ui);
+  color: #10243f;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.55;
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"] .equipment-detail-page .equip-hero-content h1 {
+  font-family: var(--theme-font-ui);
+  font-size: 24px;
+  line-height: 1.55;
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"] .equipment-detail-page .equip-hero-category,
+:root[data-theme="pixel"] .equipment-detail-page .fit-badge,
+:root[data-theme="pixel"] .equipment-detail-page .price-trend-badge,
+:root[data-theme="pixel"] .equipment-detail-page .price-link-button,
+:root[data-theme="pixel"] .equipment-detail-page .compat-spec-list div,
+:root[data-theme="pixel"] .equipment-detail-page .equipment-current-specs div,
+:root[data-theme="pixel"] .equipment-detail-page .price-market-list em,
+:root[data-theme="pixel"] .equipment-detail-page .storage-meter,
+:root[data-theme="pixel"] .equipment-detail-page .storage-meter span,
+:root[data-theme="pixel"] .equipment-detail-page .spec-badge {
+  border-radius: 0;
+}
+
+:root[data-theme="pixel"] .equipment-detail-page .equip-hero-category,
+:root[data-theme="pixel"] .equipment-detail-page .fit-badge,
+:root[data-theme="pixel"] .equipment-detail-page .price-trend-badge,
+:root[data-theme="pixel"] .equipment-detail-page .price-link-button {
+  font-family: var(--theme-font-ui);
+}
+
+:root[data-theme="pixel"] .equipment-detail-page .compat-spec-list div,
+:root[data-theme="pixel"] .equipment-detail-page .equipment-current-specs div {
+  border: 2px solid #d7e0ea;
+}
+
+:root[data-theme="pixel"] .equipment-detail-page .equip-hero-actions .primary-button,
+:root[data-theme="pixel"] .equipment-detail-page .equip-hero-actions .secondary-button,
+:root[data-theme="pixel"] .equipment-detail-page .compat-actions .secondary-button,
+:root[data-theme="pixel"] .equipment-detail-page .price-link-button {
+  font-size: 12px;
+}
+
+:root[data-theme="pixel"] .equipment-detail-page .compat-actions .secondary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+}
+
+:root[data-theme="pixel"] .equipment-detail-page .equip-bench-bar,
+:root[data-theme="pixel"] .equipment-detail-page .equip-bench-fill {
+  border-radius: 0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-detail-page .detail-panel,
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-detail-page .equipment-compare-sidebar,
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-detail-page .equipment-judgement-card {
+  background: #fff;
+  color: #15243c;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-detail-page .game-fit-card,
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-detail-page .price-stats-bar,
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-detail-page .price-market-list article,
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-detail-page .compare-spec-box,
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-detail-page .compat-spec-list div,
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-detail-page .equipment-current-specs div {
+  background: #f8fbff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-detail-page .equipment-current-specs div.highlighted {
+  border-color: #8cb4e4;
+  background: #fff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-detail-page .equip-desc-panel p.equip-description,
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-detail-page .game-fit-detail,
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-detail-page .equipment-judgement-card p,
+:root[data-theme="pixel"][data-theme-tone="day"] .equipment-detail-page .fit-loading {
+  color: #52647b;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page {
+  color: #e7eef8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .detail-back {
+  color: #8ed7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .detail-back:hover {
+  color: #f6d56f;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .detail-panel,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equipment-compare-sidebar,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equipment-judgement-card {
+  border-color: rgba(214, 225, 238, .42);
+  background: #17243a;
+  color: #e7eef8;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, .28);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .game-fit-card,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .price-stats-bar,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .price-market-list article,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .compare-spec-box,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equipment-current-specs div {
+  border-color: rgba(190, 210, 232, .24);
+  background: #101b2d;
+  color: #e7eef8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equipment-current-specs div.highlighted {
+  border-color: #8ed7ff;
+  background: #13233a;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .detail-panel h2,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equipment-compare-sidebar h2,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equipment-judgement-card h3,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .game-fit-header strong,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .price-stat-item > strong,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .price-market-list strong,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .price-market-list span,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .compare-spec-box strong,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .compat-spec-list dt,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .compat-spec-list strong {
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equip-desc-panel p.equip-description,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .game-fit-detail,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equipment-judgement-card p,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .fit-loading,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .price-stat-item > span,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .compare-label,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .compat-spec-list small {
+  color: #b9c7d8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equip-hero {
+  border-color: rgba(214, 225, 238, .42);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, .28);
+}
+
+:root[data-theme="pixel"] .equipment-detail-page .equipment-current-specs div.highlighted {
+  border-radius: 0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equip-hero-category {
+  border: 2px solid rgba(199, 224, 255, .46);
+  background: rgba(16, 27, 45, .76);
+  color: #f2f7ff;
+  backdrop-filter: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equip-hero-maker,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equip-bench-label {
+  color: #c2d0e2;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equip-bench-score {
+  color: #89e5ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equip-bench-bar {
+  background: rgba(226, 238, 252, .30);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equip-bench-fill {
+  background: #55c8ef;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equip-hero-price,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .equip-hero-content h1 {
+  color: #fff;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, .45);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .price-link-button {
+  border: 3px solid #2d6fb5;
+  background: #3872b8;
+  color: #fff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .price-market-list em {
+  background: #f8dc6a;
+  color: #3a2c08;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .fit-pass,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .trend-down {
+  background: #dcfce7;
+  color: #166534;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .fit-warn {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .fit-fail,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .trend-up {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .fit-unknown,
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .trend-stable {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .equipment-detail-page .fit-info {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+/* Pixel calendar: square controls and readable night mode. */
+:root[data-theme="pixel"] .segmented-control {
+  border-radius: 0;
+  border: 2px solid #1c3050;
+  background: transparent;
+  padding: 0;
+  box-shadow: 3px 3px 0 rgba(20, 45, 80, .18);
+}
+
+:root[data-theme="pixel"] .segmented-control button {
+  min-height: 38px;
+  border-radius: 0;
+  font-family: var(--theme-font-ui);
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"] .segmented-control button.active {
+  background: #3872b8;
+  color: #fff;
+}
+
+:root[data-theme="pixel"] .month-calendar,
+:root[data-theme="pixel"] .calendar-filter-panel,
+:root[data-theme="pixel"] .calendar-panel,
+:root[data-theme="pixel"] .calendar-card,
+:root[data-theme="pixel"] .calendar-cell,
+:root[data-theme="pixel"] .calendar-legend span,
+:root[data-theme="pixel"] .calendar-cell p {
+  border-radius: 0;
+}
+
+:root[data-theme="pixel"] .month-header h2 {
+  font-family: var(--theme-font-ui);
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .segmented-control {
+  border-color: #7fb4e8;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, .32);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .segmented-control button {
+  background: #101b2d;
+  color: #c2d0e2;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .segmented-control button.active {
+  background: #3872b8;
+  color: #fff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .month-calendar,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-filter-panel,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-panel {
+  border-color: #2c416c;
+  background: #17243a;
+  color: #e7eef8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .month-header h2,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card strong,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-cell span,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-grid > strong {
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .month-header span,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card p,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-name-filter,
+:root[data-theme="pixel"][data-theme-tone="night"] .subtle {
+  color: #c2d0e2;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-cell,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card {
+  border-color: rgba(190, 210, 232, .24);
+  background: #101b2d;
+  color: #e7eef8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .muted-cell {
+  background: rgba(16, 27, 45, .55);
+  opacity: .55;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card time {
+  color: #8ed7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-legend span,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-cell p {
+  border-width: 2px;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .event-discount,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-cell p.event-discount,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-discount {
+  border-color: #f5c933;
+  background: #f8dc6a;
+  color: #3a2c08;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .event-game_release,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-cell p.event-game_release,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-game_release {
+  border-color: #7fb4e8;
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .event-hardware_release,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-cell p.event-hardware_release,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-hardware_release {
+  border-color: #c4b5fd;
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-discount p,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-game_release p,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-hardware_release p {
+  color: inherit;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-legend span.event-discount {
+  color: #3a2c08;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-legend span.event-game_release {
+  color: #1d4ed8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-legend span.event-hardware_release {
+  color: #5b21b6;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-discount strong,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-discount p {
+  color: #3a2c08;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-game_release strong,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-game_release p {
+  color: #17345f;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-hardware_release strong,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-hardware_release p {
+  color: #3b2178;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-discount time,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-game_release time,
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-card.event-hardware_release time {
+  color: #0f5f96;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-filter-panel .filter-chip {
+  border-color: #7fb4e8;
+  background: #f8fafc;
+  color: #17345f;
+  text-shadow: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .calendar-filter-panel .filter-chip.active {
+  border-color: #f5c933;
+  background: #f8dc6a;
+  color: #3a2c08;
+  text-shadow: none;
+}
+
+/* Pixel community: board-style colors matching the pixel reference. */
+:root[data-theme="pixel"] .community-hero,
+:root[data-theme="pixel"] .board-panel,
+:root[data-theme="pixel"] .sidebar-section {
+  border-radius: 0;
+}
+
+:root[data-theme="pixel"] .community-hero-info h1,
+:root[data-theme="pixel"] .sidebar-title,
+:root[data-theme="pixel"] .my-group-name,
+:root[data-theme="pixel"] .group-result-name {
+  font-family: var(--theme-font-ui);
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"] .board-controls,
+:root[data-theme="pixel"] .board-footer {
+  border-color: #1c3050;
+}
+
+:root[data-theme="pixel"] .category-chip,
+:root[data-theme="pixel"] .board-panel .page-btn,
+:root[data-theme="pixel"] .category-badge,
+:root[data-theme="pixel"] .my-group-card,
+:root[data-theme="pixel"] .group-result-item {
+  border-radius: 0;
+}
+
+:root[data-theme="pixel"] .category-chip,
+:root[data-theme="pixel"] .board-panel .page-btn {
+  box-shadow: none;
+  font-family: var(--theme-font-ui);
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"] .category-badge {
+  padding: 3px 8px;
+  font-family: var(--theme-font-ui);
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .community-hero,
+:root[data-theme="pixel"][data-theme-tone="day"] .sidebar-section {
+  border-color: #7a4f28;
+  background: #fcf3da;
+  box-shadow:
+    5px 5px 0 rgba(20, 45, 80, .20),
+    inset 0 0 0 2px #d8bd8a;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .board-panel {
+  border-color: #1c3050;
+  background: #fff;
+  box-shadow: 5px 5px 0 rgba(20, 45, 80, .22);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .board-controls,
+:root[data-theme="pixel"][data-theme-tone="day"] .board-footer {
+  background:
+    linear-gradient(rgba(28, 48, 80, .035) 1px, transparent 1px) 0 0 / 100% 4px,
+    #fff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .post-card {
+  border-bottom-color: #1c3050;
+  background: #fff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .post-card:hover {
+  background: #f4f8fd;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .post-author,
+:root[data-theme="pixel"][data-theme-tone="day"] .post-card-title,
+:root[data-theme="pixel"][data-theme-tone="day"] .sidebar-title,
+:root[data-theme="pixel"][data-theme-tone="day"] .my-group-name,
+:root[data-theme="pixel"][data-theme-tone="day"] .group-result-name {
+  color: #10243f;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .post-time,
+:root[data-theme="pixel"][data-theme-tone="day"] .post-comment-count,
+:root[data-theme="pixel"][data-theme-tone="day"] .post-card-preview,
+:root[data-theme="pixel"][data-theme-tone="day"] .my-group-meta,
+:root[data-theme="pixel"][data-theme-tone="day"] .group-result-meta {
+  color: #52647b;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .category-chip,
+:root[data-theme="pixel"][data-theme-tone="day"] .board-panel .page-btn {
+  border: 2px solid #1c3050;
+  background: #fff;
+  color: #1c3050;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .category-chip.active,
+:root[data-theme="pixel"][data-theme-tone="day"] .board-panel .page-btn.active {
+  border-color: #245a9e;
+  background: #3872b8;
+  color: #fff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .category-badge {
+  border: 2px solid #2d6fb5;
+  background: #e8f2ff;
+  color: #245a9e;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .my-group-card,
+:root[data-theme="pixel"][data-theme-tone="day"] .group-result-item,
+:root[data-theme="pixel"][data-theme-tone="day"] .group-create-form {
+  border: 1px solid #b88a4f;
+  background: #fffaf0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .post-detail-panel {
+  border-color: #7a4f28;
+  background: #fff;
+  color: #15243c;
+  box-shadow:
+    5px 5px 0 rgba(20, 45, 80, .20),
+    inset 0 0 0 2px #d8bd8a;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .group-search-row input {
+  border-color: #1c3050;
+  background: #fff;
+  color: #15243c;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .community-hero,
+:root[data-theme="pixel"][data-theme-tone="night"] .sidebar-section {
+  border-color: #2c416c;
+  background: #101b2d;
+  color: #e7eef8;
+  box-shadow:
+    5px 5px 0 rgba(0, 0, 0, .48),
+    inset 0 0 0 2px rgba(124, 154, 210, .18);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .board-panel {
+  border-color: #7fb4e8;
+  background: #e8f1fb;
+  color: #10243f;
+  box-shadow:
+    5px 5px 0 rgba(0, 0, 0, .42),
+    inset 0 0 0 2px #b9d2ec;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .board-controls,
+:root[data-theme="pixel"][data-theme-tone="night"] .board-footer {
+  border-color: #1c3050;
+  background:
+    linear-gradient(rgba(28, 48, 80, .055) 1px, transparent 1px) 0 0 / 100% 4px,
+    #eef5fd;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .post-card {
+  border-bottom-color: #1c3050;
+  background: #eef5fd;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .post-card:hover {
+  background: #dcebf8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .post-author,
+:root[data-theme="pixel"][data-theme-tone="night"] .sidebar-title,
+:root[data-theme="pixel"][data-theme-tone="night"] .my-group-name,
+:root[data-theme="pixel"][data-theme-tone="night"] .group-result-name {
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .post-card-title,
+:root[data-theme="pixel"][data-theme-tone="night"] .board-panel .post-author {
+  color: #10243f;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .post-time,
+:root[data-theme="pixel"][data-theme-tone="night"] .post-comment-count,
+:root[data-theme="pixel"][data-theme-tone="night"] .my-group-meta,
+:root[data-theme="pixel"][data-theme-tone="night"] .group-result-meta {
+  color: #c2d0e2;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .board-panel .post-time,
+:root[data-theme="pixel"][data-theme-tone="night"] .board-panel .post-comment-count,
+:root[data-theme="pixel"][data-theme-tone="night"] .board-panel .post-card-preview {
+  color: #52647b;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .like-count {
+  color: #52647b;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .category-chip,
+:root[data-theme="pixel"][data-theme-tone="night"] .board-panel .page-btn {
+  border: 2px solid #7fb4e8;
+  background: #f8fafc;
+  color: #17345f;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .category-chip.active,
+:root[data-theme="pixel"][data-theme-tone="night"] .board-panel .page-btn.active {
+  border-color: #7fb4e8;
+  background: #3872b8;
+  color: #fff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .category-badge {
+  border: 2px solid #7fb4e8;
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .my-group-card,
+:root[data-theme="pixel"][data-theme-tone="night"] .group-result-item,
+:root[data-theme="pixel"][data-theme-tone="night"] .group-create-form {
+  border-color: #7fb4e8;
+  background: #eef6ff;
+  color: #10243f;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .group-result-item:hover,
+:root[data-theme="pixel"][data-theme-tone="night"] .my-group-card:hover {
+  border-color: #f5c933;
+  background: #ffffff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .group-result-capacity {
+  color: #245a9e;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .my-group-card .my-group-name,
+:root[data-theme="pixel"][data-theme-tone="night"] .group-result-item .group-result-name {
+  color: #10243f;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .my-group-card .my-group-meta,
+:root[data-theme="pixel"][data-theme-tone="night"] .group-result-item .group-result-meta {
+  color: #52647b;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .group-search-row input,
+:root[data-theme="pixel"][data-theme-tone="night"] .group-create-form input,
+:root[data-theme="pixel"][data-theme-tone="night"] .group-create-form textarea {
+  border-color: #7fb4e8;
+  background: #f8fafc;
+  color: #15243c;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .post-detail-panel {
+  border-color: #7fb4e8;
+  background: #e8f1fb;
+  color: #10243f;
+  box-shadow:
+    5px 5px 0 rgba(0, 0, 0, .42),
+    inset 0 0 0 2px #b9d2ec;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .post-detail-panel .post-detail-title,
+:root[data-theme="pixel"][data-theme-tone="night"] .post-detail-panel .post-author-name,
+:root[data-theme="pixel"][data-theme-tone="night"] .post-detail-panel .comment-section-title,
+:root[data-theme="pixel"][data-theme-tone="night"] .post-detail-panel .comment-author {
+  color: #10243f;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .post-detail-panel .post-detail-body,
+:root[data-theme="pixel"][data-theme-tone="night"] .post-detail-panel .comment-body {
+  color: #1c3050;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .post-detail-panel .post-time,
+:root[data-theme="pixel"][data-theme-tone="night"] .post-detail-panel .comment-time {
+  color: #52647b;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .post-detail-panel .post-detail-body,
+:root[data-theme="pixel"][data-theme-tone="night"] .post-detail-panel .comment-section-title {
+  border-color: #1c3050;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .post-detail-panel .comment-input,
+:root[data-theme="pixel"][data-theme-tone="night"] .post-detail-panel .comment-item {
+  border-color: #2d6fb5;
+  background: #eef5fd;
+  color: #10243f;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .taste-report-board .tag-row span {
+  border: 2px solid #7fb4e8;
+  background: #f8fafc;
+  color: #2d6fb5;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, .26);
+}
+
+:root[data-theme="pixel"] .profile-social-row .profile-stat-btn {
+  border-radius: 0;
+  border: 2px solid #1c3050;
+  background: #fff;
+  box-shadow: 3px 3px 0 rgba(20, 45, 80, .22);
+}
+
+:root[data-theme="pixel"] .profile-social-row .profile-stat-btn strong,
+:root[data-theme="pixel"] .profile-social-row .profile-stat-btn span {
+  font-family: var(--theme-font-ui);
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"] .profile-social-row .profile-stat-btn strong {
+  color: #10243f;
+}
+
+:root[data-theme="pixel"] .profile-social-row .profile-stat-btn span {
+  color: #52647b;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .profile-social-row .profile-stat-btn {
+  border-color: #7a4f28;
+  background: #fffaf0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-social-row .profile-stat-btn {
+  border-color: #6f8fb8;
+  background: rgba(21, 36, 60, .84);
+  color: #e7eef8;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, .38);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-social-row .profile-stat-btn strong {
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-social-row .profile-stat-btn span {
+  color: #c2d0e2;
+}
+
+:root[data-theme="pixel"] .profile-detail-panel {
+  border-radius: 0;
+  border: 3px solid #9bb9d2;
+  box-shadow: 5px 5px 0 rgba(20, 45, 80, .20);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .profile-detail-panel {
+  border-color: #9bb9d2;
+  background: #fff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-detail-panel {
+  border-color: #6f8fb8;
+  background: rgba(16, 27, 45, .82);
+  color: #e7eef8;
+  box-shadow:
+    5px 5px 0 rgba(0, 0, 0, .38),
+    inset 0 0 0 2px rgba(124, 154, 210, .14);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-hero {
+  border-color: #f3cf63;
+  background: rgba(24, 40, 66, .90);
+  color: #e7eef8;
+  box-shadow:
+    5px 5px 0 rgba(0, 0, 0, .42),
+    0 0 0 1px rgba(245, 201, 51, .34),
+    0 0 22px rgba(245, 201, 51, .24),
+    0 0 42px rgba(245, 201, 51, .12);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-identity h1,
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-detail-panel h2 {
+  color: #f2f7ff;
+  text-shadow: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-username,
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-pc-panel .spec-grid dt,
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-pc-panel .spec-empty {
+  color: #c2d0e2;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-pc-panel .spec-grid dd,
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-pc-panel .spec-chip {
+  color: #dbeafe;
+}
+
+:root[data-theme="pixel"] .profile-review-panel .my-review-card {
+  border-radius: 0;
+  border: 2px solid #b9c5d3;
+  background: #fff;
+  box-shadow: 4px 4px 0 rgba(110, 132, 154, .24);
+}
+
+:root[data-theme="pixel"] .profile-review-panel .my-review-card:hover {
+  border-color: #8fa3b8;
+  box-shadow: 5px 5px 0 rgba(110, 132, 154, .28);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-review-panel .my-review-card {
+  border-color: #6f8fb8;
+  background: rgba(31, 48, 76, .86);
+  color: #e7eef8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-review-panel .my-review-content,
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-review-panel .my-review-date {
+  color: #c2d0e2;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-review-panel .my-review-game-title {
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"] .profile-pc-panel,
+:root[data-theme="pixel"] .profile-pc-panel .spec-grid,
+:root[data-theme="pixel"] .profile-pc-panel .spec-grid dt,
+:root[data-theme="pixel"] .profile-pc-panel .spec-grid dd,
+:root[data-theme="pixel"] .profile-pc-panel .spec-chip,
+:root[data-theme="pixel"] .profile-pc-panel .spec-empty {
+  font-family: var(--theme-font-body);
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"] .profile-pc-panel h2 {
+  font-family: var(--theme-font-ui);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"] .profile-pc-panel .spec-chip {
+  border-radius: 0;
+  border: 1px solid rgba(45, 111, 181, .24);
+  background: transparent;
+  color: inherit;
+  font-weight: 600;
+}
+
+:root[data-theme="pixel"] .profile-games-panel .game-cover {
+  border-radius: 0;
+  border: 3px solid #1c3050;
+  box-shadow: 5px 5px 0 rgba(20, 45, 80, .22);
+}
+
+:root[data-theme="pixel"] .profile-games-panel .game-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(5, 15, 30, .08), rgba(5, 15, 30, .62));
+  pointer-events: none;
+}
+
+:root[data-theme="pixel"] .profile-games-panel .game-cover-img {
+  opacity: .9;
+  filter: saturate(1.08) contrast(1.05);
+}
+
+:root[data-theme="pixel"] .profile-games-panel .game-cover span,
+:root[data-theme="pixel"] .profile-games-panel .game-cover small {
+  z-index: 2;
+}
+
+:root[data-theme="pixel"] .profile-games-panel .game-cover span {
+  color: #fff;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, .70);
+}
+
+:root[data-theme="pixel"] .profile-games-panel .game-cover small {
+  border-radius: 0;
+  border: 2px solid rgba(255, 255, 255, .70);
+  background: rgba(16, 36, 63, .56);
+  color: #fff;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, .28);
+  backdrop-filter: none;
+}
+
+:root[data-theme="pixel"] .profile-games-panel .platform-filter label {
+  border-radius: 0;
+  border: 2px solid #7fb4e8;
+  background: rgba(248, 250, 252, .72);
+  color: #1c3050;
+  box-shadow: 3px 3px 0 rgba(20, 45, 80, .18);
+  font-family: var(--theme-font-ui);
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"] .profile-games-panel .panel-heading {
+  align-items: center;
+}
+
+:root[data-theme="pixel"] .profile-games-panel .panel-actions {
+  justify-content: flex-end;
+}
+
+:root[data-theme="pixel"] .profile-games-panel .platform-filter {
+  margin: 0 0 14px;
+  justify-content: flex-start;
+}
+
+:root[data-theme="pixel"] .profile-games-panel .profile-heading-inline {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+:root[data-theme="pixel"] .profile-games-panel .profile-heading-inline h2 {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+:root[data-theme="pixel"] .profile-games-panel .platform-filter input {
+  accent-color: #3872b8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-games-panel .platform-filter label {
+  border-color: #8aa7c8;
+  background: rgba(232, 241, 251, .88);
+  color: #10243f;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, .28);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-games-panel {
+  border-color: #f3cf63;
+  background: rgba(24, 40, 66, .90);
+  color: #e7eef8;
+  box-shadow:
+    5px 5px 0 rgba(0, 0, 0, .42),
+    0 0 0 1px rgba(245, 201, 51, .34),
+    0 0 22px rgba(245, 201, 51, .24),
+    0 0 42px rgba(245, 201, 51, .12);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-games-panel .panel-heading h2,
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-games-panel .panel-heading a {
+  color: #f2f7ff;
+  text-shadow: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-games-panel .segmented-control {
+  border-color: #6f8fb8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-games-panel .segmented-control button {
+  background: rgba(21, 36, 60, .84);
+  color: #c2d0e2;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-games-panel .segmented-control button.active {
+  background: #3872b8;
+  color: #fff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-games-panel .game-cover {
+  border-color: #2d4b78;
+  background: #17243a;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, .36);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-games-panel .game-cover::before {
+  background: linear-gradient(180deg, rgba(5, 15, 30, .02), rgba(5, 15, 30, .44));
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-games-panel .game-cover-img {
+  opacity: .98;
+  filter: saturate(1.16) contrast(1.08) brightness(1.08);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-games-panel .game-cover span {
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, .82);
+}
+
+/* Pixel home: night must share the exact PixelDay layout; palette only differs. */
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-screen {
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-overlay {
+  background: transparent;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-session {
+  top: 24px;
+  right: 28px;
+  left: auto;
+  min-height: auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel {
+  width: 100%;
+  max-width: 1180px;
+  min-height: auto;
+  margin-left: 0;
+  padding: 0 3% 0 0;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-media {
+  display: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy {
+  width: min(100%, 650px);
+  gap: 24px;
+  padding-top: 0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .eyebrow {
+  justify-self: auto;
+  width: auto;
+  margin: 0 0 2px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  font-family: var(--theme-font-display);
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f5c933;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy h1 {
+  width: auto;
+  max-width: 640px;
+  margin: 0;
+  font-family: var(--theme-font-display);
+  font-size: clamp(34px, 3.2vw, 46px);
+  line-height: 1.45;
+  letter-spacing: 0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy p:not(.eyebrow) {
+  width: auto;
+  max-width: 620px;
+  font-family: "Noto Sans KR", system-ui, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-actions {
+  gap: 14px;
+  margin-top: 2px;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .primary-button,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .secondary-button {
+  min-width: 128px;
+  min-height: 56px;
+  padding: 15px 22px;
+  border-radius: 0;
+  font-family: var(--theme-font-ui);
+  font-size: 15px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+@media (max-width: 980px) {
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel {
+    padding-right: 0;
+    justify-content: center;
+  }
+
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy {
+    width: min(100%, 620px);
+  }
+}
+
+@media (max-width: 760px) {
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-screen {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 92px 18px 40px;
+  }
+
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-session {
+    top: 16px;
+    right: 16px;
+  }
+
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel {
+    width: 100%;
+    margin-left: 0;
+    padding-right: 0;
+    justify-content: flex-start;
+  }
+
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy h1 {
+    font-size: 28px;
+  }
+
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy p:not(.eyebrow) {
+    font-size: 15px;
+  }
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-util-row .profile-util-btn {
+  border-radius: 0;
+  min-height: 42px;
+  border: 3px solid #2d4b78;
+  box-shadow:
+    4px 4px 0 rgba(0, 0, 0, .44),
+    inset 2px 2px 0 rgba(255, 255, 255, .24),
+    inset -2px -2px 0 rgba(0, 0, 0, .22);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-util-row .profile-util-btn:first-child {
+  background: #55c8ef;
+  color: #092338;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-util-row .profile-util-btn:last-child {
+  border-color: #5b4db4;
+  background: #a78bfa;
+  color: #140f37;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .profile-util-row .profile-util-btn:hover {
+  filter: brightness(1.06);
+  color: #06101f;
+  box-shadow:
+    4px 4px 0 rgba(0, 0, 0, .44),
+    inset 2px 2px 0 rgba(255, 255, 255, .28),
+    inset -2px -2px 0 rgba(0, 0, 0, .20);
+  transform: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .social-modal {
+  border-radius: 0;
+  border: 3px solid #8eb1d8;
+  background: rgba(16, 27, 45, .96);
+  color: #e7eef8;
+  box-shadow:
+    6px 6px 0 rgba(0, 0, 0, .48),
+    inset 0 0 0 2px rgba(190, 210, 232, .12);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .social-modal h2,
+:root[data-theme="pixel"][data-theme-tone="night"] .social-modal strong {
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .social-modal .eyebrow {
+  color: #f5c933;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .social-modal .subtle,
+:root[data-theme="pixel"][data-theme-tone="night"] .social-modal span {
+  color: #c2d0e2;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .social-modal .modal-close {
+  color: #8ed7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .social-list a,
+:root[data-theme="pixel"][data-theme-tone="night"] .user-search-result-row {
+  border-radius: 0;
+  border-color: #6f8fb8;
+  background: rgba(24, 40, 66, .86);
+  color: #e7eef8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .user-search-input {
+  border-radius: 0;
+  border: 2px solid #8eb1d8;
+  background: rgba(8, 16, 30, .88);
+  color: #f2f7ff;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, .38);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .user-search-input::placeholder {
+  color: #8ea1b8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .user-search-follow-btn {
+  border-radius: 0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .settings-menu,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel {
+  border-radius: 0;
+  border: 3px solid #8eb1d8;
+  background: rgba(16, 27, 45, .88);
+  color: #e7eef8;
+  box-shadow:
+    5px 5px 0 rgba(0, 0, 0, .42),
+    inset 0 0 0 2px rgba(190, 210, 232, .12);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .settings-menu {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .settings-menu button {
+  border-radius: 0;
+  border: 2px solid #6f8fb8;
+  background: rgba(21, 36, 60, .84);
+  color: #c2d0e2;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .settings-menu button.active {
+  border-color: #8ed7ff;
+  background: #3872b8;
+  color: #fff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel h2,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel h3,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .section-title h2 {
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .section-label,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .field-label,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .hw-field > label,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .tag-editor-label,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .hint-text,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .empty-hint {
+  color: #c2d0e2;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .divider,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .vertical-divider {
+  background: rgba(190, 210, 232, .24);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .game-edit-section,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .tag-chip-input-row,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .editable-row,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .avatar-preview {
+  border-radius: 0;
+  border-color: #6f8fb8;
+  background: rgba(24, 40, 66, .82);
+  color: #e7eef8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .basic-section {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .field-input,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .hw-input-wrap input,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .game-search-input,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .tag-input {
+  border-radius: 0;
+  border: 2px solid #8eb1d8;
+  background: rgba(8, 16, 30, .88);
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel input::placeholder,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel textarea::placeholder {
+  color: #8ea1b8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .tag-chip,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .memory-edit-chip,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .tag-preset-btn {
+  border-radius: 0;
+  border: 2px solid #7fb4e8;
+  background: rgba(232, 241, 251, .90);
+  color: #245a9e;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .tag-preset-btn.active {
+  border-color: #f5c933;
+  background: #f8dc6a;
+  color: #3a2c08;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .hw-dropdown,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .game-dropdown {
+  border-radius: 0;
+  border: 2px solid #8eb1d8;
+  background: #101b2d;
+  color: #e7eef8;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .hw-dropdown-item:hover,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .game-dropdown-item:hover {
+  background: rgba(56, 114, 184, .28);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .hw-item-name,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .game-dropdown-title {
+  color: #f2f7ff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .hw-item-maker,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .game-dropdown-platform,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .hw-dropdown-hint,
+:root[data-theme="pixel"][data-theme-tone="night"] .edit-panel .game-dropdown-hint {
+  color: #c2d0e2;
+}
+
+:root[data-theme="pixel"] .post-card-title {
+  font-family: var(--theme-font-body);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
+:root[data-theme="pixel"] .category-chip.cat-all,
+:root[data-theme="pixel"] .category-badge.cat-all {
+  --community-cat-bg: #3872b8;
+  --community-cat-border: #245a9e;
+  --community-cat-text: #ffffff;
+}
+
+:root[data-theme="pixel"] .category-chip.cat-guide,
+:root[data-theme="pixel"] .category-badge.cat-guide {
+  --community-cat-bg: #12a56f;
+  --community-cat-border: #0d7e55;
+  --community-cat-text: #ffffff;
+}
+
+:root[data-theme="pixel"] .category-chip.cat-question,
+:root[data-theme="pixel"] .category-badge.cat-question {
+  --community-cat-bg: #3b82f6;
+  --community-cat-border: #2563eb;
+  --community-cat-text: #ffffff;
+}
+
+:root[data-theme="pixel"] .category-chip.cat-purchase,
+:root[data-theme="pixel"] .category-badge.cat-purchase {
+  --community-cat-bg: #f5c933;
+  --community-cat-border: #b8881a;
+  --community-cat-text: #3a2c08;
+}
+
+:root[data-theme="pixel"] .category-chip.cat-group,
+:root[data-theme="pixel"] .category-badge.cat-group {
+  --community-cat-bg: #8b5cf6;
+  --community-cat-border: #6d28d9;
+  --community-cat-text: #ffffff;
+}
+
+:root[data-theme="pixel"] .category-chip.cat-review,
+:root[data-theme="pixel"] .category-badge.cat-review {
+  --community-cat-bg: #f2b84b;
+  --community-cat-border: #b7791f;
+  --community-cat-text: #3a2c08;
+}
+
+:root[data-theme="pixel"] .category-chip.cat-chat,
+:root[data-theme="pixel"] .category-badge.cat-chat {
+  --community-cat-bg: #55c8ef;
+  --community-cat-border: #1580a0;
+  --community-cat-text: #0f2c3d;
+}
+
+:root[data-theme="pixel"] .category-chip.cat-etc,
+:root[data-theme="pixel"] .category-badge.cat-etc {
+  --community-cat-bg: #94a3b8;
+  --community-cat-border: #64748b;
+  --community-cat-text: #ffffff;
+}
+
+:root[data-theme="pixel"] .category-chip.active {
+  border-color: var(--community-cat-border);
+  background: var(--community-cat-bg);
+  color: var(--community-cat-text);
+}
+
+:root[data-theme="pixel"] .category-badge {
+  border-color: var(--community-cat-border);
+  background: color-mix(in srgb, var(--community-cat-bg), #ffffff 82%);
+  color: var(--community-cat-border);
+}
+
+:root[data-theme="pixel"][data-theme-tone="night"] .category-badge {
+  background: color-mix(in srgb, var(--community-cat-bg), #ffffff 74%);
+  color: color-mix(in srgb, var(--community-cat-border), #06101f 18%);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .category-chip.active {
+  border-color: var(--community-cat-border);
+  background: var(--community-cat-bg);
+  color: var(--community-cat-text);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .category-badge {
+  border-color: var(--community-cat-border);
+  background: var(--community-cat-bg);
+  color: var(--community-cat-text);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .my-group-card,
+:root[data-theme="pixel"][data-theme-tone="day"] .group-result-item {
+  background: #fffdf7;
+}
+
+@media (max-width: 760px) {
+  :root[data-theme="pixel"] .large-search {
+    grid-template-columns: 1fr;
+  }
+
+  :root[data-theme="pixel"] .large-search .primary-button {
+    width: 100%;
+  }
+
+  :root[data-theme="pixel"] .search-mode-tabs,
+  :root[data-theme="pixel"] .filter-row {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+}
+
+/* Pixel game search compact ratio pass: keep width, reduce height. */
+:root[data-theme="pixel"] .search-hero {
+  gap: 13px;
+  padding: 16px 22px 18px;
+}
+
+:root[data-theme="pixel"] .search-mode-tabs {
+  gap: 8px;
+}
+
+:root[data-theme="pixel"] .search-mode-tabs button {
+  min-height: 42px;
+  padding: 0 20px;
+  border-width: 3px;
+  font-size: 14px;
+}
+
+:root[data-theme="pixel"] .large-search {
+  grid-template-columns: minmax(0, 1fr) 104px;
+  gap: 12px;
+}
+
+:root[data-theme="pixel"] .large-search input {
+  min-height: 52px;
+  padding: 0 20px;
+  border-width: 3px;
+  font-size: 15px;
+}
+
+:root[data-theme="pixel"] .large-search .primary-button {
+  min-height: 52px;
+  min-width: 104px;
+  border-width: 3px;
+  font-size: 15px;
+}
+
+:root[data-theme="pixel"] .filter-row {
+  gap: 10px;
+}
+
+:root[data-theme="pixel"] .filter-chip {
+  min-height: 42px;
+  min-width: 112px;
+  padding: 0 16px;
+  border-width: 2px;
+  font-size: 14px;
+}
+
+:root[data-theme="pixel"] .filter-chip.active {
+  border-width: 2px;
+}
+
+/* Pixel top navigation size: closer visual weight to Neon. */
+:root[data-theme="pixel"] .topnav a,
+:root[data-theme="pixel"][data-theme-tone="day"] .topnav a,
+:root[data-theme="pixel"][data-theme-tone="night"] .topnav a {
+  padding: 8px 13px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* Pixel home badge and button alignment polish. */
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .eyebrow,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-width: 112px;
+  min-height: 34px;
+  margin: 0 0 2px;
+  padding: 8px 14px 7px;
+  color: #1c3050;
+  background: #f5c933;
+  border: 4px solid #b8881a;
+  box-shadow:
+    4px 4px 0 rgba(20, 45, 80, .28),
+    inset 2px 2px 0 rgba(255, 255, 255, .45),
+    inset -2px -2px 0 rgba(122, 79, 40, .24);
+  font-family: "Press Start 2P", monospace;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .primary-button,
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .secondary-button,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .primary-button,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-width: 136px;
+  min-height: 58px;
+  padding: 16px 24px;
+  font-size: 16px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Pixel home final position lock: day and night share the same layout coordinates. */
+:root[data-theme="pixel"] .welcome-screen {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 60px;
+  overflow: hidden;
+}
+
+:root[data-theme="pixel"] .welcome-bg-video {
+  opacity: 1;
+  filter: none;
+}
+
+:root[data-theme="pixel"] .welcome-overlay {
+  background: transparent;
+}
+
+:root[data-theme="pixel"] .welcome-session {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  bottom: auto;
+  left: auto;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  width: auto;
+  min-height: auto;
+  margin: 0;
+  padding: 0;
+  transform: none;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+:root[data-theme="pixel"] .welcome-session .theme-selector {
+  flex: 0 0 auto;
+}
+
+:root[data-theme="pixel"] .welcome-hero--pixel {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: 100%;
+  max-width: 1180px;
+  min-height: auto;
+  margin: 0;
+  padding: 0 3% 0 0;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+:root[data-theme="pixel"] .welcome-hero--pixel .welcome-media {
+  display: none;
+}
+
+:root[data-theme="pixel"] .welcome-hero--pixel .welcome-copy {
+  width: min(100%, 650px);
+  margin: 0;
+  padding: 0;
+  gap: 24px;
+}
+
+@media (max-width: 980px) {
+  :root[data-theme="pixel"] .welcome-hero--pixel {
+    padding-right: 0;
+    justify-content: center;
+  }
+
+  :root[data-theme="pixel"] .welcome-hero--pixel .welcome-copy {
+    width: min(100%, 620px);
+  }
+}
+
+@media (max-width: 760px) {
+  :root[data-theme="pixel"] .welcome-screen {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 92px 18px 40px;
+  }
+
+  :root[data-theme="pixel"] .welcome-session {
+    top: 16px;
+    right: 16px;
+  }
+
+  :root[data-theme="pixel"] .welcome-hero--pixel {
+    width: 100%;
+    padding-right: 0;
+    justify-content: flex-start;
+  }
+}
+
+/* Pixel home specificity fix: override night-only relative positioning. */
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-session,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-session {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  bottom: auto;
+  left: auto;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  width: auto;
+  min-height: auto;
+  margin: 0;
+  padding: 0;
+  transform: none;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: 100%;
+  max-width: 1180px;
+  min-height: auto;
+  margin: 0;
+  padding: 0 3% 0 0;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel .welcome-copy,
+:root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel .welcome-copy {
+  width: min(100%, 650px);
+  margin: 0;
+  padding: 0;
+  gap: 24px;
+}
+
+@media (max-width: 980px) {
+  :root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel,
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel {
+    padding-right: 0;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 760px) {
+  :root[data-theme="pixel"][data-theme-tone="day"] .welcome-session,
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-session {
+    top: 16px;
+    right: 16px;
+  }
+
+  :root[data-theme="pixel"][data-theme-tone="day"] .welcome-hero--pixel,
+  :root[data-theme="pixel"][data-theme-tone="night"] .welcome-hero--pixel {
+    width: 100%;
+    padding-right: 0;
+    justify-content: flex-start;
+  }
 }
 
 
