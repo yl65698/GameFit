@@ -471,6 +471,18 @@ async function toggleSearchFollow(user) {
   text-align: center;
   font-size: 15px;
   font-weight: 800;
+  border: 0;
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow:
+    0 8px 18px rgba(67, 84, 106, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.68);
+}
+
+.profile-util-btn:hover {
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow:
+    0 10px 22px rgba(67, 84, 106, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.78);
 }
 
 .taste-analysis-btn {
