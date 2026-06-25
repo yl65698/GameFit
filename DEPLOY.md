@@ -30,14 +30,19 @@ cd backend && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
 
 ## Initial Data
 
-The production PostgreSQL database starts empty. After the first successful deploy, open the Render Shell for the `gamefit` service and run:
+The production PostgreSQL database starts empty. To seed fixture data without using Render Shell, temporarily set this environment variable in the Render service:
 
 ```bash
-cd backend
-python manage.py loaddata fixtures/db_fixture.json
+LOAD_FIXTURES_ON_DEPLOY=true
 ```
 
-Run this only when you intentionally want to seed or refresh fixture data.
+Then redeploy once. After the fixture data is loaded, set it back to:
+
+```bash
+LOAD_FIXTURES_ON_DEPLOY=false
+```
+
+This prevents fixture data from being refreshed on every deploy.
 
 ## Local Production Check
 
