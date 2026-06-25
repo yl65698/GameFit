@@ -76,7 +76,7 @@ class AISearchView(APIView):
 
         game_map = {g.id: g for g in games}
         matched = [
-            game_to_catalog(game_map[gid], request)
+            game_to_catalog(game_map[gid], request, include_price_history=False)
             for gid in game_ids
             if gid in game_map
         ]

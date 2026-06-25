@@ -226,18 +226,20 @@ def _recommended_games_for_axes(axes, user_games):
     return picked[:3]
 
 
-def game_to_catalog(game, request=None):
+def game_to_catalog(game, request=None, include_price_history=True):
     user = getattr(request, "user", None)
     is_authenticated = bool(user and user.is_authenticated)
     is_owned = game.user_games.filter(user=user, status="owned").exists() if is_authenticated else False
     is_interested = game.user_games.filter(user=user, status="interested").exists() if is_authenticated else False
 
-    price_history = _build_price_history(game.price_history.order_by("recorded_at"), max_points=100)
+    price_history = []
+    if include_price_history:
+        price_history = _build_price_history(game.price_history.order_by("recorded_at"), max_points=100)
 
     # GameGenre 기반 다중 장르 (prefetch_related 활용)
     genres = [
         {"key": gg.genre.key, "name": gg.genre.name}
-        for gg in game.game_genres.select_related("genre").all()
+        for gg in game.game_genres.all()
     ]
 
     krw_price, krw_orig = normalize_price(game.price, game.original_price)

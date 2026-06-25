@@ -20,7 +20,7 @@ class GameListView(APIView):
             request.query_params.get("sort", "created_at"),
             category_field="genre",
         )[:100]
-        return Response([game_to_catalog(game, request) for game in games])
+        return Response([game_to_catalog(game, request, include_price_history=False) for game in games])
 
 
 class GameAutocompleteView(APIView):
@@ -37,7 +37,7 @@ class FilteredGamesView(APIView):
     def get(self, request):
         filter_type = request.query_params.get("type", "top-discount")
         page = max(1, int(request.query_params.get("page", 1)))
-        games = Game.objects.prefetch_related("game_genres__genre", "user_games", "price_history")
+        games = Game.objects.prefetch_related("game_genres__genre", "user_games")
 
         if filter_type == "top-discount":
             games = games.filter(discount_percent__gt=0).order_by("-discount_percent")
@@ -75,7 +75,7 @@ class FilteredGamesView(APIView):
         page_obj = paginator.get_page(page)
 
         return Response({
-            "results": [game_to_catalog(g, request) for g in page_obj],
+            "results": [game_to_catalog(g, request, include_price_history=False) for g in page_obj],
             "total": paginator.count,
             "total_pages": paginator.num_pages,
             "page": page_obj.number,

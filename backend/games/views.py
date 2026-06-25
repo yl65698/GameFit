@@ -4,8 +4,11 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.db.models import Q
 from django.core.paginator import EmptyPage, Paginator
+from django.contrib.auth import get_user_model
 from .models import Game, UserGame, GameReview
 from .serializers import GameSerializer, UserGameSerializer, GameReviewSerializer
+
+User = get_user_model()
 
 
 PAGE_SIZE = 20
@@ -128,6 +131,34 @@ def my_reviews(request):
     reviews = (
         GameReview.objects
         .filter(user=request.user)
+        .select_related('game')
+        .order_by('-created_at')
+    )
+    data = [
+        {
+            'id': r.id,
+            'game_id': r.game.id,
+            'game_title': r.game.title,
+            'game_image_url': r.game.image_url,
+            'recommend': r.recommend,
+            'content': r.content,
+            'created_at': r.created_at,
+        }
+        for r in reviews
+    ]
+    return Response(data)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def user_reviews_by_username(request, username):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    reviews = (
+        GameReview.objects
+        .filter(user=user)
         .select_related('game')
         .order_by('-created_at')
     )
