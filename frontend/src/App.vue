@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import ThemeSelector from "./components/ThemeSelector.vue";
@@ -39,13 +39,37 @@ const router = useRouter();
 const route = useRoute();
 const showServiceNav = computed(() => auth.isAuthenticated && route.name !== "welcome");
 const isWelcome = computed(() => route.name === "welcome");
+let cursorFrame = 0;
 
 onMounted(() => {
   theme.init();
+  window.addEventListener("pointermove", handlePointerMove, { passive: true });
+});
+
+onUnmounted(() => {
+  window.removeEventListener("pointermove", handlePointerMove);
+  if (cursorFrame) {
+    cancelAnimationFrame(cursorFrame);
+  }
 });
 
 async function handleLogout() {
   await auth.logout();
   router.push("/");
+}
+
+function handlePointerMove(event) {
+  if (cursorFrame) {
+    cancelAnimationFrame(cursorFrame);
+  }
+
+  cursorFrame = requestAnimationFrame(() => {
+    const x = Math.round((event.clientX / window.innerWidth) * 100);
+    const y = Math.round((event.clientY / window.innerHeight) * 100);
+
+    document.documentElement.style.setProperty("--cursor-x", `${x}%`);
+    document.documentElement.style.setProperty("--cursor-y", `${y}%`);
+    cursorFrame = 0;
+  });
 }
 </script>
