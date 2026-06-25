@@ -59,28 +59,30 @@
 
 /* ── pixel day ───────────────────────────────────────────── */
 :root[data-theme="pixel"][data-theme-tone="day"] {
-  color: #1a2840;
-  background: #bed8ef;
-  --clr-primary: #3872b8;
-  --clr-primary-dark: #245a9e;
-  --clr-accent: #f5c933;
-  --clr-surface: #edf5ff;
-  --clr-surface-soft: #dff0ff;
-  --clr-page: #bed8ef;
-  --clr-border: #7aaed4;
-  --clr-text: #1a2840;
-  --clr-heading: #0e1a2c;
-  --clr-text-muted: #456080;
-  --clr-control: #c4daf4;
-  --clr-control-hover: #a8cce8;
-  --topbar-bg: rgba(10, 22, 44, 0.97);
-  --topbar-border: rgba(120, 180, 240, 0.18);
-  --topbar-text: #90bcd8;
-  --topbar-text-strong: #e8f5ff;
-  --shadow-sm: 4px 4px 0 rgba(0, 60, 120, 0.20);
-  --shadow-md: 4px 4px 0 rgba(0, 60, 120, 0.32);
-  --shadow-lg: 6px 6px 0 rgba(0, 60, 120, 0.40);
-  --pixel-shadow-color: rgba(0, 60, 120, 0.55);
+  color: #040e1c;
+  background: #9acde8;
+  --clr-primary: #0452c8;
+  --clr-primary-dark: #0338a0;
+  --clr-accent: #f7c800;
+  --clr-surface: #f4faff;
+  --clr-surface-soft: #e4f1ff;
+  --clr-page: #9acde8;
+  --clr-border: #1464c8;
+  --clr-text: #040e1c;
+  --clr-heading: #020810;
+  --clr-text-muted: #2c4e70;
+  --clr-control: #c4dcf8;
+  --clr-control-hover: #a8ccf0;
+  --topbar-bg: rgba(2, 8, 20, 0.98);
+  --topbar-border: rgba(4, 82, 200, 0.35);
+  --topbar-text: #5aacd8;
+  --topbar-text-strong: #e0f2ff;
+  --shadow-sm: 4px 4px 0 rgba(0, 30, 100, 0.22);
+  --shadow-md: 4px 4px 0 rgba(0, 30, 100, 0.38);
+  --shadow-lg: 6px 6px 0 rgba(0, 30, 100, 0.52);
+  --pixel-shadow-color: rgba(0, 30, 100, 0.68);
+  --pixel-inset-light: inset 2px 2px 0 rgba(255, 255, 255, 0.38);
+  --pixel-inset-dark: inset -2px -2px 0 rgba(0, 30, 80, 0.28);
 }
 
 /* ── pixel night ─────────────────────────────────────────── */
@@ -6462,12 +6464,12 @@ select {
 }
 
 :root[data-theme="pixel"][data-theme-tone="day"] .welcome-screen {
-  background: #bed8ef;
+  background: #9acde8;
 }
 
 :root[data-theme="pixel"][data-theme-tone="day"] .welcome-overlay {
   background:
-    linear-gradient(135deg, rgba(10, 30, 70, 0.52) 0%, rgba(20, 60, 120, 0.22) 50%, rgba(180, 220, 255, 0.10) 100%);
+    linear-gradient(135deg, rgba(2, 8, 30, 0.60) 0%, rgba(4, 40, 120, 0.28) 50%, rgba(154, 205, 232, 0.08) 100%);
 }
 
 :root[data-theme="pixel"][data-theme-tone="night"] .welcome-overlay {
@@ -6478,7 +6480,7 @@ select {
 :root[data-theme="pixel"][data-theme-tone="day"] .welcome-copy h1 {
   font-size: 18px;
   line-height: 2;
-  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.30);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.50);
 }
 
 :root[data-theme="pixel"][data-theme-tone="night"] .welcome-copy h1 {
@@ -6511,7 +6513,7 @@ select {
 }
 
 :root[data-theme="pixel"][data-theme-tone="day"] .welcome-copy p {
-  color: #c0d8f0;
+  color: #b8daf4;
 }
 
 :root[data-theme="pixel"][data-theme-tone="night"] .welcome-copy p {
@@ -6525,8 +6527,8 @@ select {
 }
 
 :root[data-theme="pixel"][data-theme-tone="day"] .media-card {
-  background: rgba(10, 30, 80, 0.36);
-  border-color: rgba(120, 180, 255, 0.28);
+  background: rgba(2, 20, 70, 0.44);
+  border-color: rgba(80, 160, 255, 0.36);
 }
 
 :root[data-theme="pixel"][data-theme-tone="night"] .media-card {
@@ -6694,6 +6696,54 @@ select {
 /* pixel welcome — hide media grid on pixel mode (room IS the visual) */
 :root[data-theme="pixel"] .welcome-hero--pixel .welcome-media {
   display: none;
+}
+
+/* ── pixel-day overrides ─────────────────────────────────── */
+:root[data-theme="pixel"][data-theme-tone="day"] .primary-button {
+  background: var(--clr-primary);
+  border: 2px solid var(--clr-primary-dark);
+  color: #ffffff;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.50);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .primary-button:hover:not(:disabled) {
+  background: #0038a0;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .filter-chip {
+  border: 2px solid var(--clr-border);
+  background: var(--clr-control);
+  color: var(--clr-text);
+  font-weight: 700;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .filter-chip.active,
+:root[data-theme="pixel"][data-theme-tone="day"] .filter-chip:focus {
+  background: var(--clr-primary);
+  border-color: var(--clr-primary-dark);
+  color: #ffffff;
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .topnav a {
+  color: var(--topbar-text);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .topnav a.router-link-active {
+  color: var(--clr-accent);
+  box-shadow: inset 0 -3px 0 var(--clr-accent);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .page-header h1,
+:root[data-theme="pixel"][data-theme-tone="day"] .detail-header h1 {
+  text-shadow: 2px 2px 0 rgba(0, 30, 100, 0.22);
+}
+
+:root[data-theme="pixel"][data-theme-tone="day"] .vector3d-canvas,
+:root[data-theme="pixel"][data-theme-tone="day"] .vector3d-stage {
+  background:
+    radial-gradient(circle at 30% 18%, rgba(4, 82, 200, 0.12), transparent 28%),
+    radial-gradient(circle at 74% 62%, rgba(247, 200, 0, 0.10), transparent 30%),
+    #e8f4ff;
 }
 
 
